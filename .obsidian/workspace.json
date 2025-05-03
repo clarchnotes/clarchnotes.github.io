@@ -63,8 +63,7 @@
               "title": "papers"
             }
           }
-        ],
-        "currentTab": 3
+        ]
       }
     ],
     "direction": "vertical"
@@ -138,7 +137,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "docs/CPU/Backend/LSU/MDP/papers.md",
+                "file": "docs/index.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -148,7 +147,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "papers 的反向链接列表"
+              "title": "index 的反向链接列表"
             }
           },
           {
@@ -212,15 +211,15 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "c35bea44c2094a0e",
+  "active": "dda0f45e45330644",
   "lastOpenFiles": [
+    "docs/CPU/Backend/LSU/basics.md",
+    "docs/CPU/Backend/LSU/MDP/papers.md",
     "docs/index.md",
     "docs/CPU/index.md",
-    "docs/CPU/Backend/LSU/MDP/papers.md",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250504000801.png",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250503233203.png",
     "docs/CPU/Backend/LSU/MDP/attachments",
-    "docs/CPU/Backend/LSU/basics.md",
     "docs/CPU/Backend/LSU/MDP",
     "docs/CPU/Backend/LSU",
     "docs/CPU/Backend",

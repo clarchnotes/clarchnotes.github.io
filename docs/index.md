@@ -5,6 +5,7 @@ CPU todo
 - [ ] MDP modern papers
 
 AI todo
+
 - [ ] attention; flash attention
 
 GPU todo

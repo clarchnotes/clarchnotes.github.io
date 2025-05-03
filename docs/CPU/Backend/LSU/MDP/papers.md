@@ -1,4 +1,4 @@
-# Store Sets：一种高效的内存依赖预测技术
+# Memory Dependence Prediction
 
 ## 1. 背景与问题
 
