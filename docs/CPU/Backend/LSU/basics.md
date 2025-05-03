@@ -1,3 +1,4 @@
+# LSU Basics
 # Load Store Unit (LSU) Responsibilities
 
 - Generate address (not fully encoded by instruction)

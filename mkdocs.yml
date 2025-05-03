@@ -82,3 +82,5 @@ nav:
       - "Backend":
           - "LSU":
               - CPU/Backend/LSU/basics.md
+              - "MDP":
+                  - CPU/Backend/LSU/MDP/papers.md
