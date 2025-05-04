@@ -77,10 +77,19 @@ markdown_extensions:
   - pymdownx.tilde
 
 nav:
+  - Home: index.md
   - CPU:
       - CPU/index.md
+      - "Frontend":
+          - "Decoder":
+              - CPU/fontend/decoder/ht_write_decoder.md
       - "Backend":
           - "LSU":
               - CPU/Backend/LSU/basics.md
+              - "Xiangshan":
+                  - CPU/Backend/LSU/xiangshan/index.md
+                  - "LSU Microarchitecture": CPU/Backend/LSU/xiangshan/lsu_microarch.md
+                  - "LSQ":
+                      - CPU/Backend/LSU/xiangshan/lsq/freelist.md
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
