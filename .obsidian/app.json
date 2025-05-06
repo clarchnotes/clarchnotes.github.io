@@ -2,5 +2,8 @@
   "newFileLocation": "current",
   "newLinkFormat": "relative",
   "attachmentFolderPath": "./attachments",
-  "useMarkdownLinks": true
+  "useMarkdownLinks": true,
+  "strictLineBreaks": true,
+  "readableLineLength": true,
+  "tabSize": 4
 }

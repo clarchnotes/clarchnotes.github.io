@@ -100,6 +100,8 @@ nav:
                       - CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md
                       - CPU/Backend/LSU/xiangshan/lsq/load_queue.md
                       - CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
   - RVV:

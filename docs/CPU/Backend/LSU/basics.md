@@ -67,7 +67,7 @@
 
 - Loads go Out-of-Order if older loads/stores have addresses
   - Indetermination matrix tracks readiness of address registers
-    - When to issue
+ 	- When to issue
   - Dependency matrix tracks dependencies
     - When to access memory
 
@@ -78,25 +78,25 @@
 ![](attachments/Pasted%20image%2020250429204643.png)
 
 - If loads can access memory OoO w.r.t. stores:
-  - With no address conflicts:
-    - stall (in-order), or
-    - load bypassing (OoO)
-  - With address conflicts:
-    - stall (in-order), or
-    - store forwarding (OoO)
-    - Store forwarding is critical for performance; otherwise conflicting loads must wait
-    - Implementing store forwarding is tricky due to size and alignment concerns
+	- With no address conflicts:
+		- stall (in-order), or
+		- load bypassing (OoO)
+	  - With address conflicts:
+		- stall (in-order), or
+		- store forwarding (OoO)
+		- Store forwarding is critical for performance; otherwise conflicting loads must wait
+		- Implementing store forwarding is tricky due to size and alignment concerns
 
 ## Load-Store Queue Implementation Details
 
 - **Physical Structure**: Typically implemented as circular buffers or CAMs (Content Addressable Memory)
 - **Capacity**: 32-64 entries in modern processors
 - **Tracking Fields**:
-  - PC value
-  - Memory address (virtual and physical)
-  - Data size (byte, half-word, word)
-  - Execution status flags
-  - Age counter for ordering
+	- PC value
+	- Memory address (virtual and physical)
+	- Data size (byte, half-word, word)
+	- Execution status flags
+	- Age counter for ordering
 
 # Address Speculation
 
@@ -108,9 +108,9 @@ Solution: Speculate lack of RAW hazard
 
 - Predict a load to be independent of stores, without knowing exact addresses
 - Proceed with the load, as well as all dependent instructions
-  - Significant improvement of IPC
+	- Significant improvement of IPC
 - If speculation found to be wrong, squash the load and all dependent instructions
-  - Similar to branch misprediction recovery
+	- Similar to branch misprediction recovery
 
 ## Address Prediction Techniques
 
@@ -130,20 +130,20 @@ Record all speculatively issued loads in a buffer, to match with stores
 # Selective Speculation: Motivation
 
 - We'd better speculate wisely:
-  - Difficult to predict: locality leads to non-trivial amount of conflicts
-  - Difficult to recover: hard to identify only dependent instructions, usually flush all
+	- Difficult to predict: locality leads to non-trivial amount of conflicts
+	- Difficult to recover: hard to identify only dependent instructions, usually flush all
 - Selective speculation: only select profitable loads to speculate
 
 ## Store Set Algorithm
 
 - For each load, track all stores with which it has conflicted in the past
-  - These stores form the store set of this load
-  - Assumption: previously encountered dependencies are likely to repeat
-  - A load does not issue if any member in its store set has not resolved the address
+	- These stores form the store set of this load
+	- Assumption: previously encountered dependencies are likely to repeat
+	- A load does not issue if any member in its store set has not resolved the address
 - Store set algorithm (ideal):
-  - Initially, all loads have empty store sets → naïve speculation
-  - When a load and a store cause a violation, the store PC is added to the load's store set
-  - When a load is encountered, it must be delayed if any store in its store set is still on-the-fly
+	- Initially, all loads have empty store sets → naïve speculation
+	- When a load and a store cause a violation, the store PC is added to the load's store set
+	- When a load is encountered, it must be delayed if any store in its store set is still on-the-fly
 
 ## Replay vs. Squash Recovery
 

@@ -134,6 +134,34 @@
             }
           },
           {
+            "id": "d502862999f43c54",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "load_queue_rar"
+            }
+          },
+          {
+            "id": "370a9694ed60535c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "docs/RVV/ISA/reduction.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "reduction"
+            }
+          },
+          {
             "id": "21b47bebb159d621",
             "type": "leaf",
             "state": {
@@ -176,7 +204,7 @@
             }
           }
         ],
-        "currentTab": 8
+        "currentTab": 10
       }
     ],
     "direction": "vertical"
@@ -323,24 +351,31 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "c6bfc99ff04798b1",
+  "active": "370a9694ed60535c",
   "lastOpenFiles": [
-    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue.md",
+    "docs/RVV/ISA/permutation.md",
+    "docs/RVV/ISA/mask_arith.md",
+    "docs/RVV/ISA/int_arith.md",
+    "docs/RVV/ISA/index.md",
+    "docs/RVV/ISA/fp_arith.md",
+    "docs/CPU/index.md",
+    "docs/CPU/fontend/decoder/ht_write_decoder.md",
+    "docs/CPU/Backend/LSU/basics.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
+    "docs/CPU/Backend/LSU/xiangshan/index.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/lsq.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/lsq_plan.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/lsq.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/freelist.md",
     "prgn_cache_timing_attacks.tex",
     "docs/javascripts/mathjax.js",
     "docs/javascripts",
     "RVV/ISA/permutation.md",
     "docs/RVV/ISA/reduction.md",
-    "docs/RVV/ISA/permutation.md",
-    "docs/RVV/ISA/mask_arith.md",
-    "docs/RVV/ISA/int_arith.md",
-    "docs/RVV/ISA/index.md",
-    "docs/RVV/ISA/fp_arith.md",
     "docs/RVV/index.md",
     "docs/RVV/ISA",
     "docs/RVV",
@@ -349,18 +384,11 @@
     "RVV/ISA/mask_arith.md",
     "RVV/ISA/fp_arith.md",
     "RVV/ISA/int_arith.md",
-    "RVV/ISA/reduction.md",
-    "docs/Benchmark/Simpoint.md",
     "docs/Benchmark",
     "RVV/ISA",
     "RVV",
-    "docs/GPU/index.md",
     "docs/GPU",
-    "docs/CPU/index.md",
     "docs/CPU/Backend/LSU/xiangshan/frlist.svg",
-    "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
-    "docs/CPU/Backend/LSU/xiangshan/index.md",
-    "docs/CPU/fontend/decoder/ht_write_decoder.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250504000801.png",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250503233203.png"

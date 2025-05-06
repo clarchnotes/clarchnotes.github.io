@@ -314,17 +314,17 @@ when (!need_rep && need_valid) {
 
 2. **计算出队数量**：
 
-      - `deqCountMask = 0b111`（条目 8-10 都可以出队）
-      - `commitCount = 3`（可以出队 3 个条目）
+	- `deqCountMask = 0b111`（条目 8-10 都可以出队）
+	- `commitCount = 3`（可以出队 3 个条目）
 
 3. **更新出队指针**：
 
-      - `deqPtrNext = 8 + 3 = 11`
-      - 下一个周期 `deqPtr` 更新为 11
+	- `deqPtrNext = 8 + 3 = 11`
+	- 下一个周期 `deqPtr` 更新为 11
 
 4. **释放条目**：
-      - 条目 8-10 的 `allocated` 标志设置为 `false`
-      - 这些条目现在可以被重新分配
+	- 条目 8-10 的 `allocated` 标志设置为 `false`
+	- 这些条目现在可以被重新分配
 
 ### 第 5 步：状态更新
 
