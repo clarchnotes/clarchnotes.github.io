@@ -75,6 +75,12 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
   - Home: index.md
@@ -93,3 +99,10 @@ nav:
                       - CPU/Backend/LSU/xiangshan/lsq/freelist.md
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
+  - RVV:
+      - RVV/index.md
+      - "ISA":
+          - RVV/ISA/index.md
+          - RVV/ISA/reduction.md
+          - RVV/ISA/permutation.md
+          - RVV/ISA/int_arith.md

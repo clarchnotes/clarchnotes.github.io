@@ -191,7 +191,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "0787161bd02b45d9",
@@ -283,8 +284,33 @@
   },
   "active": "36680f4c6b1c7720",
   "lastOpenFiles": [
-    "docs/CPU/index.md",
+    "prgn_cache_timing_attacks.tex",
+    "docs/javascripts/mathjax.js",
+    "docs/javascripts",
+    "RVV/ISA/permutation.md",
+    "docs/RVV/ISA/reduction.md",
+    "docs/RVV/ISA/permutation.md",
+    "docs/RVV/ISA/mask_arith.md",
+    "docs/RVV/ISA/int_arith.md",
+    "docs/RVV/ISA/index.md",
+    "docs/RVV/ISA/fp_arith.md",
+    "docs/RVV/index.md",
+    "docs/RVV/ISA",
+    "docs/RVV",
+    "RVV/ISA/index.md",
+    "RVV/index.md",
+    "RVV/ISA/mask_arith.md",
+    "RVV/ISA/fp_arith.md",
+    "RVV/ISA/int_arith.md",
+    "RVV/ISA/reduction.md",
+    "docs/Benchmark/Simpoint.md",
+    "docs/Benchmark",
     "docs/CPU/Backend/LSU/xiangshan/lsq/freelist.md",
+    "RVV/ISA",
+    "RVV",
+    "docs/GPU/index.md",
+    "docs/GPU",
+    "docs/CPU/index.md",
     "docs/CPU/Backend/LSU/xiangshan/frlist.svg",
     "docs/CPU/Backend/LSU/xiangshan/lsq/lsq.md",
     "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
@@ -293,17 +319,9 @@
     "docs/CPU/fontend/decoder/ht_write_decoder.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq",
     "docs/CPU/fontend/decoder",
-    "docs/CPU/fontend",
-    "docs/CPU/Backend/LSU/xiangshan",
     "docs/CPU/Backend/LSU/basics.md",
     "docs/CPU/Backend/LSU/MDP/papers.md",
-    "docs/index.md",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250504000801.png",
-    "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250503233203.png",
-    "docs/CPU/Backend/LSU/MDP/attachments",
-    "docs/CPU/Backend/LSU/MDP",
-    "docs/CPU/Backend/LSU",
-    "docs/CPU/Backend",
-    "docs/CPU"
+    "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250503233203.png"
   ]
 }
