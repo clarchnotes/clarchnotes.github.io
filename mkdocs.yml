@@ -97,6 +97,9 @@ nav:
                   - "LSU Microarchitecture": CPU/Backend/LSU/xiangshan/lsu_microarch.md
                   - "LSQ":
                       - CPU/Backend/LSU/xiangshan/lsq/freelist.md
+                      - CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_queue.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
   - RVV:
