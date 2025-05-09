@@ -1,0 +1,2491 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://clarchnotes.github.io/CPU/Backend/LSU/xiangshan/lsq/load_queue_replay/">
+      
+      
+        <link rel="prev" href="../load_queue_rar/">
+      
+      
+        <link rel="next" href="../load_queue_uncache/">
+      
+      
+      <link rel="icon" href="../../../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+    
+    
+      
+        <title>LoadQueueReplay 模块文档 - Arch Notes</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../../../assets/stylesheets/main.2afb09e1.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="lime" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#loadqueuereplay" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../../../../.." title="Arch Notes" class="md-header__button md-logo" aria-label="Arch Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arch Notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LoadQueueReplay 模块文档
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../../../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  CPU
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../../RISCV/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  RISCV
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../../../RVV/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  RVV
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../../../.." title="Arch Notes" class="md-nav__button md-logo" aria-label="Arch Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Arch Notes
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    CPU
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            CPU
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Frontend
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Frontend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2_1" id="__nav_2_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Decoder
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            Decoder
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../fontend/decoder/ht_write_decoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    How to write efficient decoder
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Backend
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Backend
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3_1" id="__nav_2_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    LSU
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_2_3_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            LSU
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LSU Basics
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_1_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    Xiangshan
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3_1_2" id="__nav_2_3_1_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_3_1_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            Xiangshan
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../lsu_microarch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LSU Microarchitecture
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_1_2_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2_3_1_2_3" id="__nav_2_3_1_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    LSQ
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_2_3_1_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3_1_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            LSQ
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../freelist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FreeList
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../virtual_load_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    VirtualLoadQueue
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LoadQueue
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load_queue_raw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LoadQueueRAW
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load_queue_rar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LoadQueueRAR
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    LoadQueueReplay 模块文档
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    LoadQueueReplay 模块文档
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 模块概述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 存储信息
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 重放原因与优先级
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 核心特性
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 核心特性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 特性1：乱序分配
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 特性2：唤醒机制
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.3 特性3：选择调度
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 数据流分析
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 数据流分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 入队流程
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 重放流水线
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-loadqueuereplay-loadqueue" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 LoadQueueReplay 与 LoadQueue 的关系
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. 与其他子模块的协作
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 与其他子模块的协作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-virtualloadqueue" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 与 VirtualLoadQueue 的协作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-loadqueuerarraw" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 与 LoadQueueRAR/RAW 的协作
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. 典型数据流场景示例
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 典型数据流场景示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      缓存未命中重放的完整数据流：
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. 总结
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load_queue_uncache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LoadQueueUncache 模块文档
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load_queue_exception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Load 异常缓冲 LqExceptionBuffer 模块
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../load_misalign_buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    LoadMisalignBuffer
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../store_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StoreQueue
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../store_queue_data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    StoreQueueData
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3_1_3" id="__nav_2_3_1_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    MDP
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_2_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            MDP
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MDP/papers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Memory Dependence Prediction
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../../RISCV/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    RISCV
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            RISCV
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    ISA
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            ISA
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../RISCV/ISA/softfloat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    SPIKE SoftFloat库分析
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../RISCV/ISA/Zfh_Zfhmin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RISC-V浮点扩展(Zfh/Zfhmin/Zfbfmin/Zvfbfmin/Zvfbfwma)研究报告
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../../RVV/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    RVV
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            RVV
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../../../../RVV/ISA/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    ISA
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            ISA
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../RVV/ISA/reduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RISC-V 向量归约指令概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../RVV/ISA/permutation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RISC-V 向量置换与移动指令概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../../../RVV/ISA/int_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    RISC-V 向量算术与逻辑运算指令概述
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      1. 模块概述
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      2. 存储信息
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      3. 重放原因与优先级
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      4. 核心特性
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 核心特性">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.1 特性1：乱序分配
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.2 特性2：唤醒机制
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      4.3 特性3：选择调度
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      5. 数据流分析
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. 数据流分析">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.1 入队流程
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.2 重放流水线
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-loadqueuereplay-loadqueue" class="md-nav__link">
+    <span class="md-ellipsis">
+      5.3 LoadQueueReplay 与 LoadQueue 的关系
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      6. 与其他子模块的协作
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 与其他子模块的协作">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-virtualloadqueue" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.1 与 VirtualLoadQueue 的协作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-loadqueuerarraw" class="md-nav__link">
+    <span class="md-ellipsis">
+      6.2 与 LoadQueueRAR/RAW 的协作
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      7. 典型数据流场景示例
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. 典型数据流场景示例">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      缓存未命中重放的完整数据流：
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      8. 总结
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="loadqueuereplay">LoadQueueReplay 模块文档<a class="headerlink" href="#loadqueuereplay" title="Permanent link">&para;</a></h1>
+<h2 id="1">1. 模块概述<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>LoadQueueReplay 是 XiangShan 处理器 LoadQueue 系统中的关键组件，负责存储和管理需要重放的加载指令。它处理各种原因导致的重放需求，如缓存未命中、TLB 未命中、内存依赖冲突等，并在适当条件满足时安排这些指令重新执行<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>。</p>
+<h2 id="2">2. 存储信息<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<p>LoadQueueReplay 存储以下关键信息<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>allocated</td>
+<td>是否已经被分配，也代表是否该项是否有效</td>
+</tr>
+<tr>
+<td>scheduled</td>
+<td>是否已经被调度，代表该项已经被选出，已经或即将被发送至LoadUnit进行重发</td>
+</tr>
+<tr>
+<td>uop</td>
+<td>load指令执行包括的uop信息</td>
+</tr>
+<tr>
+<td>vecReplay</td>
+<td>向量load指令相关信息</td>
+</tr>
+<tr>
+<td>vaddrModule</td>
+<td>Load指令的虚拟地址</td>
+</tr>
+<tr>
+<td>cause</td>
+<td>某load replay queue项对应load指令重发的原因</td>
+</tr>
+<tr>
+<td>blocking</td>
+<td>Load指令正在被阻塞</td>
+</tr>
+<tr>
+<td>strict</td>
+<td>访存依赖预测器判断指令是否需要等待它之前的所有store指令执行完毕进入调度阶段</td>
+</tr>
+<tr>
+<td>blockSqIdx</td>
+<td>与load指令有相关性的store指令的StoreQueue Index</td>
+</tr>
+<tr>
+<td>missMSHRId</td>
+<td>load指令的dcache miss请求接受ID</td>
+</tr>
+<tr>
+<td>tlbHintId</td>
+<td>load指令的tlb miss请求接受ID</td>
+</tr>
+<tr>
+<td>replacementUpdated</td>
+<td>DCcahe的替换算法是否已经更新</td>
+</tr>
+<tr>
+<td>replayCarry</td>
+<td>DCache的路预测器预测信息</td>
+</tr>
+<tr>
+<td>missDbUpdated</td>
+<td>ChiselDB中Miss相关情况更新</td>
+</tr>
+<tr>
+<td>dataInLastBeatReg</td>
+<td>Load指令需要的数据在两笔回填请求的最后一笔</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3">3. 重放原因与优先级<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<p>LoadQueueReplay 模块处理多种重放原因，按优先级从高到低排列<sup id="fnref3:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_MA</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c1">// 存储-加载预测违例</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_TM</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="w">  </span><span class="c1">// TLB未命中</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_FF</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w">  </span><span class="c1">// 存储-加载转发(store数据未准备好)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_DR</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w">  </span><span class="c1">// DCache拒绝(无法分配MSHR)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_DM</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w">  </span><span class="c1">// DCache未命中</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_WF</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="w">  </span><span class="c1">// 路预测器预测错误</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_BC</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">6</span><span class="w">  </span><span class="c1">// DCache bank冲突</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_RAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7</span><span class="w">  </span><span class="c1">// 读后读队列空间不足</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_RAW</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="w">  </span><span class="c1">// 读后写队列空间不足</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_NK</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">9</span><span class="w">  </span><span class="c1">// LoadUnit监测到store-to-load-forwarding违例</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="kd">val</span><span class="w"> </span><span class="nc">C_MF</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="c1">// LoadMisalignBuffer空间不足</span>
+</span></code></pre></div>
+<p>优先级设计确保了更关键的重放原因优先处理，避免潜在的死锁问题。</p>
+<h2 id="4">4. 核心特性<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="41-1">4.1 特性1：乱序分配<a class="headerlink" href="#41-1" title="Permanent link">&para;</a></h3>
+<p>LoadQueueReplay 采用 Freelist 进行队列空闲管理<sup id="fnref4:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<ul>
+<li>Freelist 的大小为 LoadQueueReplay 的项数</li>
+<li>分配宽度为 Load 的宽度（LoadUnit 的数量）</li>
+<li>释放宽度为 4</li>
+</ul>
+<p>分配流程：</p>
+<ul>
+<li>当 LoadUnit S3 传入一条 load 请求后，首先判断是否需要入队</li>
+<li>如果不需要重发、发生异常或因 redirect 被冲刷，则不需要入队</li>
+<li>为每个 LoadUnit 从空闲项中选出一个项索引</li>
+<li>根据索引将指令信息填入对应的索引项中</li>
+</ul>
+<p>回收流程：</p>
+<ul>
+<li>成功重发或被刷新的 load 指令占用的项需要回收</li>
+<li>通过位图 FreeMask 保存正在释放的项</li>
+<li>每个周期 Freelist 最多回收 4 项</li>
+</ul>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// 分配逻辑示例</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">needEnqueue</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">enq</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="n">freeList</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">doAllocate</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="o">!</span><span class="n">enq</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">isLoadReplay</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="n">allocated</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="n">scheduled</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="n">uop</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">enq</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">uop</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">  </span><span class="c1">// 其他字段设置...</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p">}</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="c1">// 回收逻辑示例</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">enq</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">enq</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">isLoadReplay</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">needReplay</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">hasExceptions</span><span class="p">(</span><span class="n">w</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="n">allocated</span><span class="p">(</span><span class="n">schedIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="n">freeMaskVec</span><span class="p">(</span><span class="n">schedIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="42-2">4.2 特性2：唤醒机制<a class="headerlink" href="#42-2" title="Permanent link">&para;</a></h3>
+<p>不同阻塞条件有不同的唤醒条件<sup id="fnref5:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<table>
+<thead>
+<tr>
+<th>重放原因</th>
+<th>唤醒条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C_MA</td>
+<td>如果strict=1，需等待load指令之前所有store指令地址计算完成；否则只需等待blockSqIdx对应store指令地址计算完成</td>
+</tr>
+<tr>
+<td>C_TM</td>
+<td>如果TLB无空间处理miss请求，标记为可重发等待调度；否则等待TLB返回tlbHintId匹配的hint信号</td>
+</tr>
+<tr>
+<td>C_FF</td>
+<td>等待blockSqIdx对应store指令数据准备完成</td>
+</tr>
+<tr>
+<td>C_DR</td>
+<td>可直接标记为可重发状态，等待调度</td>
+</tr>
+<tr>
+<td>C_DM</td>
+<td>等待与missMSHRId匹配的L2 Hint信号</td>
+</tr>
+<tr>
+<td>C_WF</td>
+<td>可直接标记为可重发状态，等待调度</td>
+</tr>
+<tr>
+<td>C_BC</td>
+<td>可直接标记为可重发状态，等待调度</td>
+</tr>
+<tr>
+<td>C_RAR</td>
+<td>等待LoadQueueRAR有空闲空间或该条指令是最老的load指令</td>
+</tr>
+<tr>
+<td>C_RAW</td>
+<td>等待LoadQueueRAW有空闲空间或该条load指令在之前store指令地址都计算完成</td>
+</tr>
+<tr>
+<td>C_MF</td>
+<td>等待LoadMisalignBuffer有空闲空间</td>
+</tr>
+</tbody>
+</table>
+<p>这些唤醒条件决定了指令何时从阻塞状态转为可重放状态：</p>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// 更新阻塞条件示例</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p">(</span><span class="mi">0</span><span class="w"> </span><span class="n">until</span><span class="w"> </span><span class="nc">LoadQueueReplaySize</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="c1">// 对于C_MA原因</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">cause</span><span class="p">(</span><span class="n">i</span><span class="p">)(</span><span class="nc">LoadReplayCauses</span><span class="p">.</span><span class="nc">C_MA</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">blocking</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">stAddrDeqVec</span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span><span class="p">,</span><span class="w"> </span><span class="n">blocking</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">  </span><span class="c1">// 对于C_TM原因</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">  </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">cause</span><span class="p">(</span><span class="n">i</span><span class="p">)(</span><span class="nc">LoadReplayCauses</span><span class="p">.</span><span class="nc">C_TM</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="n">blocking</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="nc">Mux</span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">tlb_hint</span><span class="p">.</span><span class="n">resp</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">                   </span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">tlb_hint</span><span class="p">.</span><span class="n">resp</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">replay_all</span><span class="w"> </span><span class="o">||</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">                   </span><span class="n">io</span><span class="p">.</span><span class="n">tlb_hint</span><span class="p">.</span><span class="n">resp</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">id</span><span class="w"> </span><span class="o">===</span><span class="w"> </span><span class="n">tlbHintId</span><span class="p">(</span><span class="n">i</span><span class="p">)),</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span><span class="p">,</span><span class="w"> </span><span class="n">blocking</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span><span class="c1">// 其他原因的处理...</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="p">})</span>
+</span></code></pre></div>
+<h3 id="43-3">4.3 特性3：选择调度<a class="headerlink" href="#43-3" title="Permanent link">&para;</a></h3>
+<p>LoadQueueReplay 采用三种选择调度方式<sup id="fnref6:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<ol>
+<li>
+<p><strong>根据入队年龄</strong>：</p>
+<ul>
+<li>使用3个年龄矩阵(每一个Bank对应一个年龄矩阵)记录入队时间</li>
+<li>从已准备好可重发的指令中选择入队时间最长的指令</li>
+</ul>
+</li>
+<li>
+<p><strong>根据Load指令的年龄</strong>：</p>
+<ul>
+<li>根据LqPtr判断靠近最老的load指令进行重发</li>
+<li>判断宽度为OldestSelectStride=4</li>
+</ul>
+</li>
+<li>
+<p><strong>数据相关优先调度</strong>：</p>
+<ul>
+<li>首先调度因L2 Hint唤醒的重发（L2 Cache回填前2-3拍提前给出唤醒信号）</li>
+<li>如不存在L2 Hint情况，将重放原因分为高低优先级：<ul>
+<li>高优先级：dcache缺失(C_DM)或转发失败(C_FF)导致的重放</li>
+<li>低优先级：其他重放原因</li>
+</ul>
+</li>
+</ul>
+</li>
+</ol>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// 重放优先级选择逻辑</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kd">val</span><span class="w"> </span><span class="n">s0_remPriorityReplaySelVec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nc">VecInit</span><span class="p">((</span><span class="mi">0</span><span class="w"> </span><span class="n">until</span><span class="w"> </span><span class="nc">LoadPipelineWidth</span><span class="p">).</span><span class="n">map</span><span class="p">(</span><span class="n">rem</span><span class="w"> </span><span class="o">=&gt;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nc">Mux</span><span class="p">(</span><span class="n">s0_remHintSelValidVec</span><span class="p">(</span><span class="n">rem</span><span class="p">),</span><span class="w"> </span><span class="n">s0_remLoadHintSelMask</span><span class="p">(</span><span class="n">rem</span><span class="p">),</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="nc">Mux</span><span class="p">(</span><span class="nc">ParallelORR</span><span class="p">(</span><span class="n">s0_remLoadHigherPriorityReplaySelMask</span><span class="p">(</span><span class="n">rem</span><span class="p">)),</span><span class="w"> </span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="n">s0_remLoadHigherPriorityReplaySelMask</span><span class="p">(</span><span class="n">rem</span><span class="p">),</span><span class="w"> </span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="n">s0_remLoadLowerPriorityReplaySelMask</span><span class="p">(</span><span class="n">rem</span><span class="p">)))</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}))</span>
+</span></code></pre></div>
+<h2 id="5">5. 数据流分析<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<h3 id="51">5.1 入队流程<a class="headerlink" href="#51" title="Permanent link">&para;</a></h3>
+<p>入队时序有两种情况：重发入队和非重发入队<sup id="fnref7:1"><a class="footnote-ref" href="#fn:1">1</a></sup>。</p>
+<p>非重发入队流程：
+1. LoadUnit 执行指令发现需要重放（如缓存未命中）
+2. 通过 <code>io.enq</code> 接口发送信息到 LoadQueueReplay
+3. LoadQueueReplay 分配一个条目并记录重放信息：</p>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">needEnqueue</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">enq</span><span class="p">.</span><span class="n">ready</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="c1">// 分配新条目</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="n">allocated</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="n">scheduled</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="n">uop</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">enq</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">uop</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="c1">// 设置重放原因和状态</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span><span class="n">cause</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">replayInfo</span><span class="p">.</span><span class="n">cause</span><span class="p">.</span><span class="n">asUInt</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span><span class="n">blocking</span><span class="p">(</span><span class="n">enqIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span><span class="w">  </span><span class="c1">// 默认阻塞直到条件满足</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="c1">// 根据不同重放原因设置特定状态</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span><span class="c1">// ...</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>重发入队流程：
+1. 已重放但仍需再次重放的指令返回到 LoadQueueReplay
+2. 不重新分配条目，而是更新现有条目的状态：</p>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">enq</span><span class="p">.</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">enq</span><span class="p">.</span><span class="n">bits</span><span class="p">.</span><span class="n">isLoadReplay</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">needReplay</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">hasExceptions</span><span class="p">(</span><span class="n">w</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="c1">// 如果不再需要重放或有异常，释放重放条目</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="n">allocated</span><span class="p">(</span><span class="n">schedIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="n">freeMaskVec</span><span class="p">(</span><span class="n">schedIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="p">.</span><span class="n">otherwise</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="c1">// 否则，重置调度状态，准备下一次重放</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="n">scheduled</span><span class="p">(</span><span class="n">schedIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">false</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="52">5.2 重放流水线<a class="headerlink" href="#52" title="Permanent link">&para;</a></h3>
+<p>重放过程分为三个阶段<sup id="fnref8:1"><a class="footnote-ref" href="#fn:1">1</a></sup>：</p>
+<ol>
+<li>
+<p><strong>S0阶段</strong>：选择需要重放的条目</p>
+<ul>
+<li>优先处理L2 Hint唤醒的条目</li>
+<li>然后是高优先级原因（C_DM和C_FF）</li>
+<li>最后是其他原因的重放条目</li>
+<li>可能还会考虑入队年龄和指令年龄</li>
+</ul>
+</li>
+<li>
+<p><strong>S1阶段</strong>：读取虚拟地址并标记调度状态
+   <div class="language-scala highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">until</span><span class="w"> </span><span class="nc">LoadPipelineWidth</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">  </span><span class="c1">// 更新调度状态</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">s0_can_go</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">s0_oldestSel</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">s0_oldestSelIndexOH</span><span class="p">(</span><span class="n">j</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">scheduled</span><span class="p">(</span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">  </span><span class="c1">// 读取虚拟地址</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">  </span><span class="n">vaddrModule</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">ren</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">s1_oldestSel</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">s1_can_go</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span><span class="n">vaddrModule</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">raddr</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">s1_oldestSel</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">bits</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="p">}</span>
+</span></code></pre></div></p>
+</li>
+<li>
+<p><strong>S2阶段</strong>：发送重放请求到加载单元
+   <div class="language-scala highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">replay_req</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">valid</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">s2_oldestSel</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">valid</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">replay_req</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">bits</span><span class="p">.</span><span class="n">uop</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">s2_replayUop</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">replay_req</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">bits</span><span class="p">.</span><span class="n">vaddr</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">vaddrModule</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">rdata</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="n">replay_req</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">bits</span><span class="p">.</span><span class="n">isLoadReplay</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1">// 连接到输出接口</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="n">io</span><span class="p">.</span><span class="n">replay</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">replay_req</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span></code></pre></div></p>
+</li>
+</ol>
+<p>另外，LoadQueueReplay 还实现了重放冷却机制，避免频繁重放导致资源浪费：</p>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// 冷却机制实现</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">lastReplay</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">io</span><span class="p">.</span><span class="n">replay</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">fire</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="n">coldCounter</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">coldCounter</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="nc">U</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">}</span><span class="w"> </span><span class="p">.</span><span class="n">elsewhen</span><span class="w"> </span><span class="p">(</span><span class="n">coldDownNow</span><span class="p">(</span><span class="n">i</span><span class="p">))</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="n">coldCounter</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">coldCounter</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">.</span><span class="nc">U</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="p">}</span><span class="w"> </span><span class="p">.</span><span class="n">otherwise</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">  </span><span class="n">coldCounter</span><span class="p">(</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="mi">0</span><span class="p">.</span><span class="nc">U</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<h3 id="53-loadqueuereplay-loadqueue">5.3 LoadQueueReplay 与 LoadQueue 的关系<a class="headerlink" href="#53-loadqueuereplay-loadqueue" title="Permanent link">&para;</a></h3>
+<p>LoadQueueReplay 与 LoadQueue 是相互配合但状态独立的两个模块：</p>
+<ol>
+<li>
+<p><strong>独立的条目管理</strong>：</p>
+<ul>
+<li>LoadQueueReplay 有自己独立的条目，不直接修改 LoadQueue 中的条目状态</li>
+<li>每个需要重放的加载指令在 LoadQueueReplay 中有独立的追踪条目</li>
+<li>LoadQueue 中的原始条目保持其状态，直到最终执行成功或被取消</li>
+</ul>
+</li>
+<li>
+<p><strong>数据流向</strong>：
+   <div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>LoadQueue -&gt; 加载单元 -&gt; [执行] -&gt; 
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>  如需重放: -&gt; LoadQueueReplay -&gt; 加载单元 -&gt; [再次执行] -&gt; 
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    如成功: -&gt; LoadQueue (通过 io.ldu.ldin 接口)
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    如仍需重放: -&gt; 返回 LoadQueueReplay
+</span></code></pre></div></p>
+</li>
+</ol>
+<p>重放后的数据无论是正常执行还是重放执行，其最终结果都通过相同的接口（<code>io.ldu.ldin</code>）返回给 LoadQueue。这意味着：</p>
+<ol>
+<li>重放指令使用与原始指令相同的 LQ 索引（lqIdx）</li>
+<li>LoadQueue 不区分数据来自正常执行还是重放执行</li>
+<li>只有当指令成功执行（不再需要重放）时，LoadQueue 才会将条目标记为已提交</li>
+</ol>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1">// 加载单元重新执行重放指令后，结果通过 io.ldu.ldin 接口返回给 LoadQueue</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">&lt;-</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="n">until</span><span class="w"> </span><span class="nc">LoadPipelineWidth</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span><span class="n">io</span><span class="p">.</span><span class="n">ldin</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">ready</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span><span class="kd">val</span><span class="w"> </span><span class="n">loadWbIndex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">io</span><span class="p">.</span><span class="n">ldin</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">bits</span><span class="p">.</span><span class="n">uop</span><span class="p">.</span><span class="n">lqIdx</span><span class="p">.</span><span class="n">value</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">  </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="n">io</span><span class="p">.</span><span class="n">ldin</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">valid</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="c1">// 如果执行成功且不需要再次重放，更新 LoadQueue 中对应条目的状态</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="n">when</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">need_rep</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">need_valid</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">io</span><span class="p">.</span><span class="n">ldin</span><span class="p">(</span><span class="n">i</span><span class="p">).</span><span class="n">bits</span><span class="p">.</span><span class="n">isvec</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">      </span><span class="n">committed</span><span class="p">(</span><span class="n">loadWbIndex</span><span class="p">)</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="kc">true</span><span class="p">.</span><span class="nc">B</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">      </span><span class="c1">// 其他状态更新...</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">  </span><span class="p">}</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<h2 id="6">6. 与其他子模块的协作<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<h3 id="61-virtualloadqueue">6.1 与 VirtualLoadQueue 的协作<a class="headerlink" href="#61-virtualloadqueue" title="Permanent link">&para;</a></h3>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// LoadQueueReplay 从 VirtualLoadQueue 获取写回指针信息</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">loadQueueReplay</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">ldWbPtr</span><span class="w">          </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">virtualLoadQueue</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">ldWbPtr</span>
+</span></code></pre></div>
+<p>LoadQueueReplay 使用 VirtualLoadQueue 提供的写回指针（ldWbPtr）来：
+- 确定队列中指令的相对顺序
+- 实现基于程序顺序的最旧指令选择（优先选择接近写回指针的指令）
+- 解除 RAR/RAW 阻塞条件（判断指令是否已超过写回界限）</p>
+<h3 id="62-loadqueuerarraw">6.2 与 LoadQueueRAR/RAW 的协作<a class="headerlink" href="#62-loadqueuerarraw" title="Permanent link">&para;</a></h3>
+<div class="language-scala highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="n">loadQueueReplay</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">rarFull</span><span class="w">          </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">loadQueueRAR</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">lqFull</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">loadQueueReplay</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">rawFull</span><span class="w">          </span><span class="o">&lt;&gt;</span><span class="w"> </span><span class="n">loadQueueRAW</span><span class="p">.</span><span class="n">io</span><span class="p">.</span><span class="n">lqFull</span>
+</span></code></pre></div>
+<p>LoadQueueReplay 监控 RAR 和 RAW 队列的状态：
+- 如果队列满，阻塞对应原因的重放
+- 当队列有空间时，解除阻塞并允许重放
+- 这确保了依赖冲突检测模块不会被大量重放指令压垮</p>
+<h2 id="7">7. 典型数据流场景示例<a class="headerlink" href="#7" title="Permanent link">&para;</a></h2>
+<h3 id="_1">缓存未命中重放的完整数据流：<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h3>
+<ol>
+<li>加载指令在 VirtualLoadQueue 分配条目（lqIdx = 10）</li>
+<li>加载单元执行指令，发现缓存未命中，设置重放标志</li>
+<li>执行结果通过 <code>io.ldu.ldin</code> 返回，同时：<ul>
+<li>VirtualLoadQueue 保持原始条目状态不变</li>
+<li>执行结果同时发送到 LoadQueueReplay 的 <code>io.enq</code> 接口</li>
+</ul>
+</li>
+<li>LoadQueueReplay 分配条目（例如 idx = 5），记录:<ul>
+<li>原始 uop（包含 lqIdx = 10）</li>
+<li>原因 = C_DM（缓存未命中）</li>
+<li>虚拟地址和 MSHR ID</li>
+</ul>
+</li>
+<li>收到 L2 提示或缓存行返回时：<ul>
+<li>LoadQueueReplay 解除条目（idx = 5）的阻塞</li>
+<li>通过 <code>io.replay</code> 接口发送重放请求到加载单元</li>
+</ul>
+</li>
+<li>加载单元重新执行指令：<ul>
+<li>使用相同的 lqIdx = 10</li>
+<li>这次从缓存或 MSHR 获取数据</li>
+</ul>
+</li>
+<li>重放结果通过 <code>io.ldu.ldin</code> 返回：<ul>
+<li>不需要继续重放时，LoadQueue 更新 lqIdx = 10 的条目状态（committed = true）</li>
+<li>LoadQueueReplay 释放条目 idx = 5</li>
+<li>最终数据通过 LoadQueue 的输出接口传递给处理器后端</li>
+</ul>
+</li>
+</ol>
+<h2 id="8">8. 总结<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<p>LoadQueueReplay 是 XiangShan 处理器内存系统的关键组件，负责管理需要重放的加载指令。它通过乱序分配、复杂的唤醒机制和智能的选择调度，高效地处理各种内存访问异常情况。它维护自己独立的条目状态，但与 LoadQueue 及其他子模块紧密协作，形成完整的数据流和控制流。重放后的数据总是通过标准路径返回到 LoadQueue，保持了数据流的一致性，同时确保了程序的正确执行。</p>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p><a href="https://docs.xiangshan.cc/projects/design/zh-cn/latest/memblock/LSU/LSQ/LoadQueueReplay/">LoadQueueReplay - 香山开源处理器设计文档</a>&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref3:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref4:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref5:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref6:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref7:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref8:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../load_queue_rar/" class="md-footer__link md-footer__link--prev" aria-label="上一页: LoadQueueRAR">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                LoadQueueRAR
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../load_queue_uncache/" class="md-footer__link md-footer__link--next" aria-label="下一页: LoadQueueUncache 模块文档">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                LoadQueueUncache 模块文档
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../../../../..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "navigation.footer", "navigation.tabs", "content.code.annotate", "navigation.indexes", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../../../../../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../../../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="../../../../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
