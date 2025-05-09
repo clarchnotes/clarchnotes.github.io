@@ -102,8 +102,19 @@ nav:
                       - CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md
                       - CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md
                       - CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_queue_exception.md
+                      - CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer.md
+                      - CPU/Backend/LSU/xiangshan/lsq/store_queue.md
+                      - CPU/Backend/LSU/xiangshan/lsq/store_queue_data.md
+
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
+  - RISCV:
+      - RISCV/index.md
+      - "ISA":
+          - RISCV/ISA/softfloat.md
+          - RISCV/ISA/Zfh_Zfhmin.md
   - RVV:
       - RVV/index.md
       - "ISA":

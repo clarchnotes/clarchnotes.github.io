@@ -4,95 +4,81 @@
     "type": "split",
     "children": [
       {
-        "id": "056971d553bdf297",
+        "id": "5e8563fce62fb372",
         "type": "tabs",
         "children": [
           {
-            "id": "dda0f45e45330644",
+            "id": "1449c9a91d24a771",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/CPU/Backend/LSU/MDP/papers.md",
+                "file": "docs/RISCV/ISA/softfloat.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "papers"
+              "title": "softfloat"
             }
           },
           {
-            "id": "b4bce7d948011838",
+            "id": "5a8366be4575036b",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
+                "file": "docs/RISCV/ISA/Zfh_Zfhmin.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "lsu_microarch"
+              "title": "Zfh_Zfhmin"
             }
           },
           {
-            "id": "b1bd1d5bfa9bbeba",
+            "id": "93b61abb1796ce50",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
+                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "lsu_microarch"
+              "title": "load_misalign_buffer"
             }
           },
           {
-            "id": "74963fa41960d1d9",
+            "id": "5809d1a2b3b173fd",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/lsq.md",
+                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/lsq_plan.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "lsq"
+              "title": "lsq_plan"
             }
           },
           {
-            "id": "15d3264107a3c680",
+            "id": "4963ab3277fb9e47",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/lsq.md",
+                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "lsq"
+              "title": "load_queue_uncache"
             }
           },
           {
-            "id": "36680f4c6b1c7720",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/freelist.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "freelist"
-            }
-          },
-          {
-            "id": "e959c109e9577000",
+            "id": "d79420213dfc6d98",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -106,105 +92,21 @@
             }
           },
           {
-            "id": "84b471a8de704870",
+            "id": "dadf3e9721cb8cf4",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue.md",
+                "file": "docs/RISCV/ISA/softfloat.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "load_queue"
-            }
-          },
-          {
-            "id": "c6bfc99ff04798b1",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "load_queue_raw"
-            }
-          },
-          {
-            "id": "d502862999f43c54",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "load_queue_rar"
-            }
-          },
-          {
-            "id": "370a9694ed60535c",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/RVV/ISA/reduction.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "reduction"
-            }
-          },
-          {
-            "id": "21b47bebb159d621",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/basics.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "basics"
-            }
-          },
-          {
-            "id": "79dbcd1f8d8da3b5",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/basics.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "basics"
-            }
-          },
-          {
-            "id": "c35bea44c2094a0e",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/MDP/papers.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "papers"
+              "title": "softfloat"
             }
           }
         ],
-        "currentTab": 10
+        "currentTab": 3
       }
     ],
     "direction": "vertical"
@@ -261,7 +163,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 391.5
   },
   "right": {
     "id": "0787161bd02b45d9",
@@ -351,45 +253,46 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "370a9694ed60535c",
+  "active": "5809d1a2b3b173fd",
   "lastOpenFiles": [
-    "docs/RVV/ISA/permutation.md",
-    "docs/RVV/ISA/mask_arith.md",
-    "docs/RVV/ISA/int_arith.md",
-    "docs/RVV/ISA/index.md",
-    "docs/RVV/ISA/fp_arith.md",
-    "docs/CPU/index.md",
-    "docs/CPU/fontend/decoder/ht_write_decoder.md",
-    "docs/CPU/Backend/LSU/basics.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
-    "docs/CPU/Backend/LSU/xiangshan/index.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/lsq_plan.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/lsq.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_exception.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue_data.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer.md",
+    "docs/RISCV/ISA/Zfh_Zfhmin.md",
+    "docs/RISCV/ISA/未命名.md",
+    "docs/RISCV/ISA/softfloat.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/freelist.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/attachments/Pasted image 20250509000613.png",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
+    "docs/CPU/fontend/decoder/ht_write_decoder.md",
+    "docs/RVV/ISA/fp_arith.md",
+    "docs/RVV/ISA/int_arith.md",
+    "docs/RVV/ISA/index.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/attachments",
+    "docs/RISCV/Spike",
+    "prgn.tex",
+    "docs/RVV/ISA/permutation.md",
+    "docs/RISCV/index.md",
+    "docs/RISCV/Zfh_Zfhmin.md",
+    "docs/RISCV/ISA",
+    "docs/RISCV",
+    "docs/RVV/ISA/mask_arith.md",
+    "docs/CPU/Backend/LSU/MDP/papers.md",
+    "docs/CPU/Backend/LSU/basics.md",
+    "docs/AI/attention",
+    "docs/AI/transformer",
+    "docs/AI",
     "prgn_cache_timing_attacks.tex",
     "docs/javascripts/mathjax.js",
-    "docs/javascripts",
-    "RVV/ISA/permutation.md",
-    "docs/RVV/ISA/reduction.md",
-    "docs/RVV/index.md",
-    "docs/RVV/ISA",
-    "docs/RVV",
-    "RVV/ISA/index.md",
-    "RVV/index.md",
-    "RVV/ISA/mask_arith.md",
-    "RVV/ISA/fp_arith.md",
-    "RVV/ISA/int_arith.md",
-    "docs/Benchmark",
-    "RVV/ISA",
-    "RVV",
-    "docs/GPU",
     "docs/CPU/Backend/LSU/xiangshan/frlist.svg",
-    "docs/CPU/Backend/LSU/xiangshan/lsq",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250504000801.png",
     "docs/CPU/Backend/LSU/MDP/attachments/Pasted image 20250503233203.png"
   ]
