@@ -1,7 +1,7 @@
 
 # LoadQueueUncache 模块文档
 
-![](attachments/Pasted%20image%2020250509000613.png)
+![](../../attachments/Pasted%20image%2020250509000613.png)
 
 ## 1. 功能描述
 

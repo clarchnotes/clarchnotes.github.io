@@ -107,6 +107,7 @@ nav:
                       - CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer.md
                       - CPU/Backend/LSU/xiangshan/lsq/store_queue.md
                       - CPU/Backend/LSU/xiangshan/lsq/store_queue_data.md
+                      - CPU/Backend/LSU/xiangshan/lsq/store_misalign_buffer.md
 
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
@@ -122,3 +123,13 @@ nav:
           - RVV/ISA/reduction.md
           - RVV/ISA/permutation.md
           - RVV/ISA/int_arith.md
+  - GPU:
+      - GPU/index.md
+      - "Basic Concepts":
+          - GPU/basics/index.md
+          - GPU/basics/basic_concepts.md
+
+  - Benchmark:
+      - Benchmark/index.md
+      - Benchmark/Simpoint.md
+      - Benchmark/SPEC2006.md
