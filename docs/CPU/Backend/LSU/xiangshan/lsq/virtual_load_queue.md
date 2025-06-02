@@ -2,7 +2,7 @@
 
 ## 1. 模块概述
 
-`VirtualLoadQueue.scala` 实现了一个高效的逻辑加载队列，用于跟踪、管理和监控处理器中标量加载指令的状态。该模块是 XiangShan 处理器 LSQ 系统的核心组件，作为所有 load 指令的"控制平面"，负责维护指令顺序和状态。
+`VirtualLoadQueue.scala` 实现了一个高效的逻辑 load 队列，用于跟踪、管理和监控处理器中标量 load 指令的状态。该模块是 XiangShan 处理器 LSQ 系统的核心组件，作为所有 load 指令的"控制平面"，负责维护指令顺序和状态。
 
 ### 1.1 核心功能
 
@@ -36,8 +36,8 @@ val io = IO(new Bundle() {
   // 分发阶段接口
   val enq         = new LqEnqIO                           // 入队请求和响应
 
-  // 加载单元接口
-  val ldin        = Vec(LoadPipelineWidth, Flipped(DecoupledIO(new LqWriteBundle))) // 从加载单元S3阶段接收
+  // load单元接口
+  val ldin        = Vec(LoadPipelineWidth, Flipped(DecoupledIO(new LqWriteBundle))) // 从load单元S3阶段接收
 
   // 指针接口
   val ldWbPtr     = Output(new LqPtr)                     // 提供给其他模块的写回指针
@@ -80,7 +80,7 @@ val deqPtrNext = Wire(new LqPtr)                         // 下一个出队指�
 
 ## 3. 入队算法
 
-VirtualLoadQueue 处理来自分发阶段的标量加载指令请求。
+VirtualLoadQueue 处理来自分发阶段的标量 load 指令请求。
 
 ### 3.1 可用空间检查
 
@@ -164,9 +164,9 @@ deqPtrNext := deqPtr + lastCommitCount
 deqPtr := RegEnable(deqPtrNext, 0.U.asTypeOf(new LqPtr), deqPtrUpdateEna)
 ```
 
-## 5. 加载写回处理
+## 5. Load 写回处理
 
-VirtualLoadQueue 接收来自加载单元的执行结果，并更新相应条目的状态。
+VirtualLoadQueue 接收来自 load 单元的执行结果，并更新相应条目的状态。
 
 ```scala
 for(i <- 0 until LoadPipelineWidth) {
@@ -224,9 +224,9 @@ QueuePerf(VirtualLoadQueueSize, validCount, !allowEnqueue)
 XSPerfAccumulate("mem_stall_anyload", memStallAnyLoad)
 ```
 
-## 8. 标量加载指令处理流程示例
+## 8. 标量 load 指令处理流程示例
 
-下面通过一个标量加载指令的处理流程来说明 VirtualLoadQueue 的工作机制。
+下面通过一个标量 load 指令的处理流程来说明 VirtualLoadQueue 的工作机制。
 
 ### 初始状态
 
@@ -238,7 +238,7 @@ XSPerfAccumulate("mem_stall_anyload", memStallAnyLoad)
 
 ### 第 1 步：指令分发阶段
 
-当处理器分发一条标量加载指令（如 LD x5, 0(x6)）时：
+当处理器分发一条标量 load 指令（如 LD x5, 0(x6)）时：
 
 ```scala
 io.enq.req(0).valid = true
@@ -271,21 +271,21 @@ io.enq.req(0).bits.uopIdx = 3   // 微操作索引
 
 ### 第 2 步：执行阶段
 
-加载指令进入执行阶段，流经加载单元的流水线：
+load 指令进入执行阶段，流经 load 单元的流水线：
 
-1. **加载发射**：指令从保留站发射到加载单元
+1. **load 发射**：指令从保留站发射到 load 单元
 2. **地址计算**：在 S1 阶段计算有效地址
 3. **缓存访问**：在 S2 阶段访问数据缓存
 4. **数据返回**：在 S3 阶段获取数据并写回
 
 ### 第 3 步：写回 VirtualLoadQueue
 
-当加载指令在 S3 阶段完成后，结果通过 `ldin` 接口写回 VirtualLoadQueue：
+当 load 指令在 S3 阶段完成后，结果通过 `ldin` 接口写回 VirtualLoadQueue：
 
 ```scala
 io.ldin(0).valid = true
 io.ldin(0).bits.uop.lqIdx.value = 10
-io.ldin(0).bits.rep_info.need_rep = false  // 不需要重播
+io.ldin(0).bits.rep_info.need_rep = false  // 不需要 replay
 io.ldin(0).bits.updateAddrValid = true     // 地址有效
 io.ldin(0).bits.paddr = 0x80001000         // 访问的物理地址
 io.ldin(0).bits.mmio = false               // 不是MMIO访问
@@ -307,7 +307,7 @@ when (!need_rep && need_valid) {
 
 1. **出队检查**：
 	- 对于条目 8 和 9（假设已提交）
-	- 对于条目 10（我们的加载指令）
+	- 对于条目 10（我们的 load 指令）
 		- `allocated(10) = true`
 		- `committed(10) = true`
 		- 可以出队
@@ -395,12 +395,12 @@ when (!need_rep && need_valid) {
 
 ## 10. 总结与应用
 
-VirtualLoadQueue 模块实现了一个高效的标量加载指令跟踪队列，具有以下特点：
+VirtualLoadQueue 模块实现了一个高效的标量 load 指令跟踪队列，具有以下特点：
 
 1. **高效分配**：O(1)时间复杂度的资源分配
-2. **状态跟踪**：精确跟踪每条加载指令的执行状态
+2. **状态跟踪**：精确跟踪每条 load 指令的执行状态
 3. **快速恢复**：提供高效的重定向恢复机制
 4. **循环复用**：使用循环队列机制高效利用有限资源
 5. **协同工作**：与其他 LSQ 模块协作，维护内存访问顺序
 
-在 XiangShan 处理器中，VirtualLoadQueue 作为 LSQ 系统的核心组件，负责维护加载指令的状态和顺序，为正确的乱序执行提供基础保障。通过与 LoadQueueRAW、LoadQueueRAR 等模块的协同工作，确保内存访问的一致性和正确性，是实现高性能内存系统的关键部分。
+In XiangShan 处理器中, VirtualLoadQueue 作为 LSQ 系统的核心组件,负责维护 load 指令的状态和顺序,为正确的乱序执行提供基础保障。通过与 LoadQueueRAW、LoadQueueRAR 等模块的协同工作,确保内存访问的一致性和正确性,是实现高性能内存系统的关键部分。

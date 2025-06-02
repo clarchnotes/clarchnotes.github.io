@@ -1,13 +1,12 @@
-
-# Load 异常缓冲 LqExceptionBuffer 模块
+# LqExceptionBuffer 
 
 ## 1. 模块概述
 
-`LqExceptionBuffer` 是 XiangShan 处理器 LSQ 系统中的专用组件，负责跟踪和管理加载指令执行过程中可能出现的各类异常。当加载指令执行过程中发生异常（如页错误、访问错误等），该模块负责捕获、缓存这些异常信息，并确保它们能够在适当的时机被精确处理[^1]。
+`LqExceptionBuffer` 是 XiangShan 处理器 LSQ 系统中的专用组件，负责跟踪和管理load指令执行过程中可能出现的各类异常。当load指令执行过程中发生异常（如页错误、访问错误等），该模块负责捕获、缓存这些异常信息，并确保它们能够在适当的时机被精确处理[^1]。
 
 ### 1.1 核心功能
 
-- 跟踪记录各类加载指令产生的异常情况
+- 跟踪记录各类load指令产生的异常情况
 - 根据 ROB 索引选择最老的异常指令
 - 向精确异常处理机制提供必要的异常信息和地址
 - 支持重定向时的异常条目刷新
@@ -16,8 +15,8 @@
 
 LqExceptionBuffer 处理的异常来自三种主要来源[^1]：
 
-1. **标量加载异常**：来自加载单元(LDU) S3 阶段的标量加载指令异常
-2. **向量加载异常**：来自向量加载合并缓冲器(vlMergeBuffer)的向量加载指令异常
+1. **标量load异常**：来自load单元(LDU) S3 阶段的标量load指令异常
+2. **向量load异常**：来自向量load合并缓冲器(vlMergeBuffer)的向量load指令异常
 3. **MMIO 异常**：来自 LoadUncacheBuffer 的 MMIO non-data 异常
 
 ## 3. 流水线结构
@@ -43,7 +42,7 @@ val io = IO(new Bundle() {
   // 控制接口
   val redirect = Flipped(Valid(new Redirect))  // 重定向/恢复信号
 
-  // 输入接口：从加载单元接收执行结果
+  // 输入接口：从load单元接收执行结果
   val req = Vec(LoadPipelineWidth, Flipped(Valid(new LqWriteBundle)))
 
   // 输出接口：报告异常地址
@@ -113,7 +112,7 @@ io.exceptionAddr.bits.exceptionVec := entries(oldestExceptionIdx).exceptionVec
 
 ### 8.1 异常捕获和记录
 
-1. 加载单元执行加载指令，检测到异常（如页错误）
+1. load单元执行load指令，检测到异常（如页错误）
 2. 异常信息通过 `io.req` 接口发送到 LqExceptionBuffer
 3. 第一级流水线缓存该异常信息，包括指令的 ROB 索引、虚拟地址和异常向量
 
@@ -131,6 +130,6 @@ io.exceptionAddr.bits.exceptionVec := entries(oldestExceptionIdx).exceptionVec
 
 ## 9. 总结
 
-LqExceptionBuffer 是 XiangShan 处理器 LSQ 系统中处理加载指令异常的关键组件。它通过两级流水线高效地跟踪来自三种不同来源的异常，并根据程序顺序选择最老的异常进行报告。这个模块是实现精确异常处理的重要部分，确保了乱序执行的处理器能够按照程序顺序处理异常，维护了程序执行的正确性和可预测性。
+LqExceptionBuffer 是 XiangShan 处理器 LSQ 系统中处理load指令异常的关键组件。它通过两级流水线高效地跟踪来自三种不同来源的异常，并根据程序顺序选择最老的异常进行报告。这个模块是实现精确异常处理的重要部分，确保了乱序执行的处理器能够按照程序顺序处理异常，维护了程序执行的正确性和可预测性。
 
 [^1]: [Load 异常缓冲 LqExceptionBuffer - 香山开源处理器设计文档](https://docs.xiangshan.cc/projects/design/zh-cn/latest/memblock/LSU/LSQ/LqExceptionBuffer/)

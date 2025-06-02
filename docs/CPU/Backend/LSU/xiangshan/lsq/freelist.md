@@ -74,7 +74,7 @@ val tailPtrNext = Wire(new FreeListPtr)       // 释放指针的下一个状态
 - `value`：0 到 size-1 之间的索引值
 - `flag`：布尔标志，用于处理环绕情况
 
-#### 2.2.2 资源存储
+#### 2.2.2 资源store
 
 ```scala
 val freeList = RegInit(VecInit(
@@ -82,7 +82,7 @@ val freeList = RegInit(VecInit(
 ))
 ```
 
-`freeList`存储可用资源的 ID，初始包含 0 到 size-1 的所有 ID。
+`freeList`store可用资源的 ID，初始包含 0 到 size-1 的所有 ID。
 
 #### 2.2.3 释放掩码
 

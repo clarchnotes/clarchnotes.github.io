@@ -4,165 +4,24 @@
     "type": "split",
     "children": [
       {
-        "id": "5e8563fce62fb372",
+        "id": "97ff050981fc19c0",
         "type": "tabs",
         "children": [
           {
-            "id": "1449c9a91d24a771",
+            "id": "c750c20e7e4c628f",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "docs/RISCV/ISA/softfloat.md",
+                "file": "docs/RVV/ISA/rvv_intrinsics.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "softfloat"
-            }
-          },
-          {
-            "id": "5a8366be4575036b",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/RISCV/ISA/Zfh_Zfhmin.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "Zfh_Zfhmin"
-            }
-          },
-          {
-            "id": "93b61abb1796ce50",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "load_misalign_buffer"
-            }
-          },
-          {
-            "id": "5809d1a2b3b173fd",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_exception.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "load_queue_exception"
-            }
-          },
-          {
-            "id": "90ce9b414dbb68dc",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/GPU/index.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "index"
-            }
-          },
-          {
-            "id": "f11f72d4608bca9f",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/GPU/basics/basic_concepts.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "basic_concepts"
-            }
-          },
-          {
-            "id": "a5ef98447b9dd39d",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/GPU/TinyGPU/index.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "index"
-            }
-          },
-          {
-            "id": "5a04568dbe67f2c4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/GPU/basics/basic_concepts.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "basic_concepts"
-            }
-          },
-          {
-            "id": "4963ab3277fb9e47",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "load_queue_uncache"
-            }
-          },
-          {
-            "id": "d79420213dfc6d98",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "virtual_load_queue"
-            }
-          },
-          {
-            "id": "dadf3e9721cb8cf4",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "docs/RISCV/ISA/softfloat.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "softfloat"
+              "title": "rvv_intrinsics"
             }
           }
-        ],
-        "currentTab": 7
+        ]
       }
     ],
     "direction": "vertical"
@@ -194,7 +53,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "## ",
+                "query": "intr",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -309,51 +168,53 @@
       "command-palette:打开命令面板": false
     }
   },
-  "active": "5a04568dbe67f2c4",
+  "active": "7e93ffd798febb4e",
   "lastOpenFiles": [
-    "docs/Benchmark/Simpoint.md",
+    "docs/RVV/ISA/fp_arith.md",
+    "docs/RVV/ISA/index.md",
+    "docs/RVV/ISA/int_arith.md",
+    "docs/RVV/ISA/mask_arith.md",
+    "docs/RVV/ISA/reduction.md",
+    "docs/RVV/index.md",
+    "docs/RVV/ISA/permutation.md",
+    "docs/RISCV/ISA/softfloat.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue.md",
+    "docs/index.md",
+    "docs/RVV/ISA/rvv_intrinsics.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/index.md",
+    "docs/RISCV/ISA/pointer_mask.md",
+    "docs/RISCV/ISA/Zfh_Zfhmin.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_exception.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/store_misalign_buffer.md",
+    "docs/CPU/fontend/decoder/ht_write_decoder.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
+    "docs/CPU/Backend/LSU/xiangshan/frlist.svg",
+    "docs/CPU/Backend/LSU/xiangshan/pipeline/load_unit.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_rar.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/freelist.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue.md",
+    "attachments/Pasted image 20250512225740.png",
+    "attachments",
+    "docs/CPU/Backend/LSU/xiangshan/pipeline",
+    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue.md.tmp",
+    "Untitled Diagram.svg",
+    "docs/GPU/CUDA",
+    "Untitled Diagram 1.svg",
+    "docs/Benchmark/tmp",
     "docs/GPU/basics/attachments/Pasted image 20250510231736.png",
-    "docs/GPU/basics/basic_concepts.md",
     "docs/GPU/basics/attachments/Pasted image 20250510231257.png",
     "docs/GPU/basics/attachments/Pasted image 20250510230714.png",
     "docs/GPU/basics/attachments/Pasted image 20250510230801.png",
-    "docs/CPU/Backend/LSU/basics.md",
     "docs/CPU/Backend/LSU/attachments/Pasted image 20250509000613.png",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue.md",
-    "docs/CPU/fontend/decoder/ht_write_decoder.md",
-    "docs/RISCV/ISA/softfloat.md",
-    "docs/RISCV/ISA/Zfh_Zfhmin.md",
-    "docs/RVV/ISA/permutation.md",
-    "docs/RVV/ISA/mask_arith.md",
-    "docs/RVV/ISA/int_arith.md",
-    "docs/RVV/ISA/index.md",
-    "docs/RVV/ISA/fp_arith.md",
-    "docs/Benchmark/index.md",
-    "docs/Benchmark/SPEC2006.md",
     "docs/Benchmark/attachments/Pasted image 20250511212201.png",
     "docs/Benchmark/attachments",
     "Benchmark",
-    "docs/GPU/basics/index.md",
     "docs/GPU/basics/attachments",
-    "docs/GPU/TinyGPU/index.md",
     "docs/GPU/attachments",
-    "docs/GPU/index.md",
-    "docs/GPU/basics",
-    "docs/GPU/TinyGPU",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/lsq_plan.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/store_misalign_buffer.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue_data.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsu_microarch.md",
-    "docs/CPU/Backend/LSU/xiangshan/index.md",
-    "docs/CPU/Backend/LSU/xiangshan/frlist.svg",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md",
-    "docs/CPU/Backend/LSU/attachments",
-    "docs/RISCV/Spike",
-    "prgn.tex",
-    "docs/RISCV/ISA",
-    "docs/CPU/Backend/LSU/attachments/Pasted image 20250504000801.png",
-    "docs/CPU/Backend/LSU/attachments/Pasted image 20250503233203.png"
+    "docs/GPU/basics"
   ]
 }

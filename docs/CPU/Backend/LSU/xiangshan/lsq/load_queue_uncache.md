@@ -1,11 +1,10 @@
-
 # LoadQueueUncache 模块文档
 
 ![](../../attachments/Pasted%20image%2020250509000613.png)
 
 ## 1. 功能描述
 
-LoadQueueUncache 是 XiangShan 处理器 LSQ 系统中的专用组件，负责处理非缓存加载指令，包括内存映射 I/O (MMIO) 和其他非缓存 (NC) 内存区域的访问[^1]。这些特殊访问需要绕过常规缓存系统，通过专用通道直接与外部设备或特殊内存区域交互。
+LoadQueueUncache 是 XiangShan 处理器 LSQ 系统中的专用组件，负责处理非缓存 load指令，包括内存映射 I/O (MMIO) 和其他非缓存 (NC) 内存区域的访问[^1]。这些特殊访问需要绕过常规缓存系统，通过专用通道直接与外部设备或特殊内存区域交互。
 
 ### 1.1 特性 1：入队逻辑
 
@@ -15,7 +14,7 @@ LoadQueueUncache 实现了两阶段流水线入队处理[^1]：
 2. **第二阶段(s2)**：判断请求是否满足入队条件：
 	- 未被重定向刷新
 	- 无异常
-	- 无需重放
+	- 无需 replay
 	- 是 MMIO 或 NC 请求
 
 符合条件的请求通过 FreeList 分配空闲条目，写入相应的 UncacheEntry。当 Buffer 满且无法分配空间时，会产生回滚请求要求重新执行最老的无法入队请求。
@@ -41,7 +40,7 @@ LoadQueueUncache 实现了两阶段流水线入队处理[^1]：
 2. **接收 ID 响应(idResp)**：
 	- Uncache Buffer 接收请求后返回 idResp
 	- 包含源 ID (mid) 和为该请求分配的目标 ID (sid)
-	- LoadQueueUncache 通过 mid 找到对应条目并存储 sid
+	- LoadQueueUncache 通过 mid 找到对应条目并store sid
 
 3. **接收结果响应(resp)**：
 	- Uncache Buffer 完成访问后返回结果
@@ -72,7 +71,7 @@ val freeList = Module(new FreeList(
 
 ## 3. UncacheEntry 模块
 
-UncacheEntry 是 LoadQueueUncache 的核心组件，负责处理单个非缓存加载请求的完整生命周期[^1]。
+UncacheEntry 是 LoadQueueUncache 的核心组件，负责处理单个非缓存load请求的完整生命周期[^1]。
 
 ### 3.1 特性 1：生命周期及状态机
 
@@ -181,7 +180,7 @@ for (w <- 0 until LoadPipelineWidth) {
 
 4. **s2 阶段筛选**：
 	- 检查异常状态 (`s2_has_exception`)
-	- 检查重放需求 (`s2_need_replay`)
+	- 检查replay需求 (`s2_need_replay`)
 	- 确认是 MMIO 或 NC 请求
 	- 生成最终入队需求 (`s2_enqueue`)
 
@@ -234,7 +233,7 @@ val nderr = RegInit(false.B)        // 硬件错误标志
 
 数据流转详细过程：
 
-1. **请求接收与存储**：
+1. **请求接收与store**：
    ```scala
    when (io.req.valid) {
      req_valid := true.B
@@ -243,7 +242,7 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      nderr := false.B
    }
    ```
-	- 接收请求时，设置 `req_valid` 并存储请求内容
+	- 接收请求时，设置 `req_valid` 并store请求内容
 	- 初始化错误标志和接受状态
 
 2. **状态转换与处理**：
@@ -306,7 +305,7 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      nderr := io.uncache.resp.bits.nderr
    }
    ```
-	- 接收 Uncache 返回的数据并存储
+	- 接收 Uncache 返回的数据并store
 	- 记录可能的硬件错误状态
 
 5. **结果处理与格式化**：
@@ -377,7 +376,7 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      e.io.uncache.resp <> io.uncache.resp
    }
    ```
-	- 根据响应中的 id 与 Entry 存储的 slaveId 比较
+	- 根据响应中的 id 与 Entry store的 slaveId 比较
 	- 将数据响应路由到匹配的 UncacheEntry
 
 ### 4.4 结果回写数据流 (LoadQueueUncache → LoadUnit)
@@ -501,12 +500,12 @@ val nderr = RegInit(false.B)        // 硬件错误标志
 	- 确保选中的请求未被这些重定向刷新
 	- 将验证通过的回滚请求在下一周期输出
 
-### 4.6 完整数据流示例：MMIO 加载指令
+### 4.6 完整数据流示例：MMIO load指令
 
-以一个 MMIO 加载指令为例，完整数据流如下：
+以一个 MMIO load指令为例，完整数据流如下：
 
-1. **加载单元检测与发送**：
-	- 加载单元执行 `LD x5, 0x10000000` 指令，地址映射到设备寄存器
+1. **load单元检测与发送**：
+	- load单元执行 `LD x5, 0x10000000` 指令，地址映射到设备寄存器
 	- 检测到 MMIO 属性，设置 `mmio=true, nc=false`
 	- 请求通过 `io.req(w)` 发送到 LoadQueueUncache
 
@@ -526,7 +525,7 @@ val nderr = RegInit(false.B)        // 硬件错误标志
 
 5. **接收 ID 响应**：
 	- Uncache 返回 ID 响应，包含 sid=7
-	- UncacheEntry(3) 存储 slaveId 并进入 s_resp 状态
+	- UncacheEntry(3) store slaveId 并进入 s_resp 状态
 
 6. **等待数据响应**：
 	- Uncache 执行总线访问，获取设备寄存器数据

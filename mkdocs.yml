@@ -116,10 +116,12 @@ nav:
       - "ISA":
           - RISCV/ISA/softfloat.md
           - RISCV/ISA/Zfh_Zfhmin.md
+          - RISCV/ISA/pointer_mask.md
   - RVV:
       - RVV/index.md
       - "ISA":
           - RVV/ISA/index.md
+          - RVV/ISA/rvv_intrinsics.md
           - RVV/ISA/reduction.md
           - RVV/ISA/permutation.md
           - RVV/ISA/int_arith.md
@@ -128,6 +130,8 @@ nav:
       - "Basic Concepts":
           - GPU/basics/index.md
           - GPU/basics/basic_concepts.md
+      - "CUDA":
+          - GPU/CUDA/cuda_example.md
 
   - Benchmark:
       - Benchmark/index.md

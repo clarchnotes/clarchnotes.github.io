@@ -2,17 +2,17 @@
 
 ## 1. 模块概述
 
-`LoadMisalignBuffer.scala` 实现了一个专用的非对齐加载处理器，作为 XiangShan 处理器 LSQ 系统中处理非对齐内存访问的关键组件。当加载指令的地址未按数据类型大小对齐时（如半字、字或双字加载的地址非对齐），该模块负责将非对齐访问分解为多个对齐访问，然后合并结果。
+`LoadMisalignBuffer.scala` 实现了一个专用的非对齐load处理器，作为 XiangShan 处理器 LSQ 系统中处理非对齐内存访问的关键组件。当load指令的地址未按数据类型大小对齐时（如半字、字或双字load的地址非对齐），该模块负责将非对齐访问分解为多个对齐访问，然后合并结果。
 
 ### 1.1 核心功能
 
-- 检测和处理非对齐加载指令
+- 检测和处理非对齐load指令
 - 将非对齐访问分割为最多两个对齐访问
 - 根据指令类型和地址精确计算分割方式
 - 管理分割后请求的发送和接收
 - 合并分割访问的结果并处理字节对齐
 - 处理异常情况，特别是跨页异常
-- 支持向量和标量非对齐加载指令
+- 支持向量和标量非对齐load指令
 
 ### 1.2 模块定义
 
@@ -29,7 +29,7 @@ class LoadMisalignBuffer(implicit p: Parameters) extends XSModule
 
 ### 2.1 内部状态机设计
 
-LoadMisalignBuffer 是一个独立的功能模块，使用状态机控制非对齐加载的处理流程：
+LoadMisalignBuffer 是一个独立的功能模块，使用状态机控制非对齐load的处理流程：
 
 ```scala
 val s_idle :: s_split :: s_req :: s_resp :: s_comb_wakeup_rep :: s_wb :: Nil = Enum(6)
@@ -37,7 +37,7 @@ val bufferState = RegInit(s_idle)
 ```
 
 - **s_idle**: 空闲状态，等待新请求
-- **s_split**: 分割非对齐加载，确定分割方案
+- **s_split**: 分割非对齐load，确定分割方案
 - **s_req**: 发送分割后的请求
 - **s_resp**: 接收分割请求的响应
 - **s_comb_wakeup_rep**: 合并分割结果数据
@@ -60,14 +60,14 @@ val io = IO(new Bundle() {
   val redirect        = Flipped(Valid(new Redirect))          // 重定向信号
   val enq             = Vec(enqPortNum, Flipped(new MisalignBufferEnqIO))  // 非对齐请求入队接口
   val rob             = Flipped(new RobLsqIO)                 // ROB接口
-  val splitLoadReq    = Decoupled(new LsPipelineBundle)       // 分割加载请求接口
-  val splitLoadResp   = Flipped(Valid(new LqWriteBundle))     // 分割加载响应接口
+  val splitLoadReq    = Decoupled(new LsPipelineBundle)       // 分割load请求接口
+  val splitLoadResp   = Flipped(Valid(new LqWriteBundle))     // 分割load响应接口
   val writeBack       = Decoupled(new MemExuOutput)           // 标量结果写回接口
   val vecWriteBack    = Decoupled(new VecPipelineFeedbackIO(isVStore = false))  // 向量结果写回接口
-  val loadOutValid    = Input(Bool())                         // 标量加载输出有效信号
-  val loadVecOutValid = Input(Bool())                         // 向量加载输出有效信号
+  val loadOutValid    = Input(Bool())                         // 标量load输出有效信号
+  val loadVecOutValid = Input(Bool())                         // 向量load输出有效信号
   val overwriteExpBuf = Output(new XSBundle {...})            // 覆盖异常缓冲区信息
-  val flushLdExpBuff  = Output(Bool())                        // 刷新加载异常缓冲区
+  val flushLdExpBuff  = Output(Bool())                        // 刷新load异常缓冲区
   val loadMisalignFull = Output(Bool())                       // 缓冲区满信号
 })
 ```
@@ -81,13 +81,13 @@ LoadMisalignBuffer 维护以下关键内部状态和数据结构：
 val req_valid = RegInit(false.B)           // 当前是否有有效请求
 val req = Reg(new LqWriteBundle)           // 当前正在处理的请求
 
-// 分割请求和响应存储
+// 分割请求和响应store
 val splitLoadReqs = RegInit(VecInit(List.fill(maxSplitNum)(0.U.asTypeOf(new LsPipelineBundle))))
 val splitLoadResp = RegInit(VecInit(List.fill(maxSplitNum)(0.U.asTypeOf(new LqWriteBundle))))
 
 // 分割控制和状态
 val exceptionVec = RegInit(0.U.asTypeOf(ExceptionVec()))  // 异常向量
-val unSentLoads = RegInit(0.U(maxSplitNum.W))             // 未发送的加载请求位图
+val unSentLoads = RegInit(0.U(maxSplitNum.W))             // 未发送的load请求位图
 val curPtr = RegInit(0.U(log2Ceil(maxSplitNum).W))        // 当前处理的分割请求指针
 
 // 结果处理
@@ -106,11 +106,11 @@ val globalMMIO = RegInit(false.B)       // 是否MMIO访问
 val globalNC = RegInit(false.B)         // 是否NC访问
 ```
 
-## 5. 非对齐加载处理流程
+## 5. 非对齐load处理流程
 
 ### 5.1 请求接收与选择
 
-LoadMisalignBuffer 从多个加载单元接收非对齐请求，并选择优先级最高的处理：
+LoadMisalignBuffer 从多个load单元接收非对齐请求，并选择优先级最高的处理：
 
 ```scala
 val select_req_bit = ParallelPriorityMux(io.enq.map(_.req.valid), io.enq.map(_.req.bits))
@@ -162,7 +162,7 @@ when (bufferState === s_split) {
     
     // 根据指令类型和地址情况，确定分割方式
     switch (alignedType(1, 0)) {
-      is (LB) { /* 字节加载不应该非对齐 */ }
+      is (LB) { /* 字节load不应该非对齐 */ }
       is (LH) { /* 处理半字非对齐访问 */ }
       is (LW) { /* 处理字非对齐访问 */ }
       is (LD) { /* 处理双字非对齐访问 */ }
@@ -276,7 +276,7 @@ val isUncache = io.splitLoadResp.bits.mmio || io.splitLoadResp.bits.nc
 当非对齐访问跨页且高地址页面发生异常时的特殊处理：
 
 ```scala
-// 特殊情况：非对齐加载跨页，页错误发生在下一页
+// 特殊情况：非对齐load跨页，页错误发生在下一页
 val shouldOverwrite = req_valid && globalException
 val overwriteExpBuf = GatedValidRegNext(shouldOverwrite)
 val overwriteVaddr = RegEnable(
@@ -319,7 +319,7 @@ switch(bufferState) {
         globalMMIO := io.splitLoadResp.bits.mmio
         globalNC   := io.splitLoadResp.bits.nc
       } .elsewhen(io.splitLoadResp.bits.rep_info.need_rep || (unSentLoads & ~clearOh).orR) {
-        // 需要重放或还有未处理的分割请求
+        // 需要replay或还有未处理的分割请求
         bufferState := s_req
       } .otherwise {
         // 所有分割请求正常完成，准备合并
@@ -360,12 +360,12 @@ switch(bufferState) {
 }
 ```
 
-## 7. 非对齐加载指令处理示例：LW
+## 7. 非对齐load指令处理示例：LW
 
 ### 7.1 初始状态
 
-- 指令：`LW x5, 0x1001` (从地址0x1001加载4字节，跨越16字节边界)
-- 加载单元检测到非对齐访问，将请求发送到LoadMisalignBuffer
+- 指令：`LW x5, 0x1001` (从地址0x1001load4字节，跨越16字节边界)
+- load单元检测到非对齐访问，将请求发送到LoadMisalignBuffer
 
 ### 7.2 分割决策 (s_split)
 
@@ -502,14 +502,14 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
    ```
 
 3. **执行流路径**：
-   - 非对齐加载指令的执行路径为：LoadUnit → LoadMisalignBuffer → LoadUnit → Cache/Memory → LoadUnit → LoadMisalignBuffer → 处理器后端
+   - 非对齐load指令的执行路径为：LoadUnit → LoadMisalignBuffer → LoadUnit → Cache/Memory → LoadUnit → LoadMisalignBuffer → 处理器后端
    - LoadUnit仍然负责实际访问缓存/内存，LoadMisalignBuffer只负责分割和合并
 
 ### 10.2 数据流和结果传递
 
 LoadMisalignBuffer的处理结果通过两个不同路径返回，取决于请求类型：
 
-1. **标量加载指令结果传递**：
+1. **标量load指令结果传递**：
    ```scala
    io.writeBack.valid := req_valid && (bufferState === s_wb) && 
                        (io.splitLoadResp.valid && io.splitLoadResp.bits.misalignNeedWakeUp || 
@@ -519,7 +519,7 @@ LoadMisalignBuffer的处理结果通过两个不同路径返回，取决于请�
    - 结果包含处理后的数据、异常信息和调试信息
    - 目标是LSQ和ROB，完成执行阶段处理
 
-2. **向量加载指令结果传递**：
+2. **向量load指令结果传递**：
    ```scala
    io.vecWriteBack.valid := req_valid && (bufferState === s_wb) && !io.loadVecOutValid && req.isvec
    ```
@@ -557,17 +557,17 @@ LoadMisalignBuffer与LoadUnit的职责划分：
    - 将响应信息通过`io.misalign_ldout`返回给LoadMisalignBuffer
    - LoadMisalignBuffer根据响应中的miss信息决定后续处理
 
-3. **重放机制**：
+3. **replay机制**：
    ```scala
    when (io.splitLoadResp.valid) {
      ...
      .elsewhen(io.splitLoadResp.bits.rep_info.need_rep || (unSentLoads & ~clearOh).orR) {
-       // 需要重放或还有未处理的分割请求
+       // 需要replay或还有未处理的分割请求
        bufferState := s_req
      }
    }
    ```
-   - 当需要重放时，LoadMisalignBuffer回到`s_req`状态重新发送请求
+   - 当需要replay时，LoadMisalignBuffer回到`s_req`状态重新发送请求
    - LoadUnit实际负责与缓存缺失处理逻辑交互(如MSHR)
    - LoadMisalignBuffer不直接与缓存交互，而是通过LoadUnit间接处理Miss
 
@@ -641,7 +641,7 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
 ### 11.2 特殊情况优化
 
 1. **向量指令支持**：
-   - 对向量非对齐加载进行特殊处理
+   - 对向量非对齐load进行特殊处理
    - 包括掩码和元素索引的管理
 
 2. **MMIO和非缓存访问**：
@@ -667,7 +667,7 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
    val needWakeUpWB = RegInit(false.B)
    val needWakeUpReqsWire = Wire(Bool())
    ```
-   - 使用专用的唤醒信号，确保依赖于非对齐加载的指令能够及时执行
+   - 使用专用的唤醒信号，确保依赖于非对齐load的指令能够及时执行
 
 ## 12. 总结与应用
 
@@ -676,7 +676,7 @@ LoadMisalignBuffer 作为 XiangShan 处理器 LSQ 系统的专用组件，具有
 1. **精确分割机制**：根据指令类型和地址精确计算分割方案
 2. **高效数据合并**：字节级精细合并确保正确结果
 3. **完备的异常处理**：处理各种异常情况，特别是跨页异常
-4. **统一接口**：支持向量和标量非对齐加载指令
-5. **流水线交互**：与加载流水线无缝衔接
+4. **统一接口**：支持向量和标量非对齐load指令
+5. **流水线交互**：与load流水线无缝衔接
 
 在乱序处理器中，LoadMisalignBuffer 解决了非对齐内存访问的挑战，提高了处理器对不同内存访问模式的适应性。它将复杂的非对齐访问问题转化为可管理的对齐访问，在保证功能正确性的同时最小化性能影响。

@@ -1,14 +1,13 @@
-
 # LoadQueueRAW
 
 ## 1. 模块概述
 
-`LoadQueueRAW.scala` 实现了XiangShan处理器中的写后读(RAW: Read-After-Write)依赖检测机制，这是确保乱序处理器中内存操作正确性的关键组件。该模块负责检测加载指令可能违反的存储-加载数据依赖，并在必要时触发流水线回滚。
+`LoadQueueRAW.scala` 实现了XiangShan处理器中的写后读(RAW: Read-After-Write)依赖检测机制，这是确保乱序处理器中内存操作正确性的关键组件。该模块负责检测load指令可能违反的store-load数据依赖，并在必要时触发流水线回滚。
 
 ### 1.1 核心功能
 
-- 检测加载指令与早先存储指令之间的数据依赖
-- 高效识别地址重叠的存储-加载操作
+- 检测load指令与早先store指令之间的数据依赖
+- 高效识别地址重叠的store-load操作
 - 生成精确的违例信号和回滚请求
 - 支持推测执行和原子性保证
 - 处理内存一致性模型要求的顺序约束
@@ -33,7 +32,7 @@ val io = IO(new Bundle() {
   // 控制接口
   val redirect = Flipped(Valid(new Redirect))
   
-  // 存储指令接口
+  // store指令接口
   val storeIn = Vec(StorePipelineWidth, Flipped(Valid(new LsPipelineBundle)))
   val stAddrReadySqPtr = Input(new SqPtr)
   val stIssuePtr = Input(new SqPtr)
@@ -55,7 +54,7 @@ val io = IO(new Bundle() {
 ### 2.2 内部数据结构
 
 ```scala
-// 已执行的加载指令记录
+// 已执行的load指令记录
 val uop = Reg(Vec(RawQueueSize, new MicroOp))
 val mask = Reg(Vec(RawQueueSize, UInt(8.W)))
 val paddr = Reg(Vec(RawQueueSize, UInt(PAddrBits.W)))
@@ -74,9 +73,9 @@ val deqPtr = deqPtrExt.value
 
 ## 3. 依赖检测算法
 
-### 3.1 加载指令查询
+### 3.1 load指令查询
 
-加载指令在执行阶段需要查询是否存在与之依赖的存储指令：
+load指令在执行阶段需要查询是否存在与之依赖的store指令：
 
 ```scala
 def addrMatch(addr1: UInt, addr2: UInt, mask1: UInt, mask2: UInt): Bool = {
@@ -96,7 +95,7 @@ for (i <- 0 until LoadPipelineWidth) {
     val queryMask = req.bits.mask
     val queryRobIdx = req.bits.robIdx
     
-    // 检查与所有已地址就绪但数据未就绪的存储之间的依赖
+    // 检查与所有已地址就绪但数据未就绪的store之间的依赖
     val matchVec = VecInit((0 until StoreQueueSize).map(j => {
       val stReady = stAddrReadyVec(j) && !stDataReadyVec(j)
       val match = addrMatch(queryAddr, stAddr(j), queryMask, stMask(j))
@@ -111,26 +110,26 @@ for (i <- 0 until LoadPipelineWidth) {
 }
 ```
 
-### 3.2 存储指令地址就绪
+### 3.2 store指令地址就绪
 
-当存储指令地址就绪时，需要检查已经执行过的加载指令是否可能违反了内存依赖：
+当store指令地址就绪时，需要检查已经执行过的load指令是否可能违反了内存依赖：
 
 ```scala
 for (i <- 0 until StorePipelineWidth) {
   val stIn = io.storeIn(i)
   
   when (stIn.valid && !io.redirect.valid) {
-    // 获取存储信息
+    // 获取store信息
     val stAddr = stIn.bits.vaddr
     val stMask = stIn.bits.mask
     val stRobIdx = stIn.bits.uop.robIdx
     
-    // 检查所有已执行的加载指令
+    // 检查所有已执行的load指令
     val violationVec = VecInit((0 until RawQueueSize).map(j => {
       val ldValid = allocated(j) && addrvalid(j)
       val ldRobIdx = uop(j).robIdx
       
-      // 判断顺序: 加载在该存储之后发射但已经执行
+      // 判断顺序: load在该store之后发射但已经执行
       val ordering = ldRobIdx.needBrFlush(stRobIdx)
       
       // 判断地址重叠
@@ -139,7 +138,7 @@ for (i <- 0 until StorePipelineWidth) {
       ldValid && ordering && match
     }))
     
-    // 找到最早的违例加载
+    // 找到最早的违例load
     val violationIdx = PriorityEncoder(violationVec)
     val hasViolation = violationVec.asUInt.orR
     
@@ -162,17 +161,17 @@ LoadQueueRAW的队列管理包括入队操作和多种清理机制，确保队�
 
 ### 4.1 入队操作
 
-当加载指令执行时，其信息被记录到LoadQueueRAW中：
+当load指令执行时，其信息被记录到LoadQueueRAW中：
 
 ```scala
-// 记录加载指令信息
+// 记录load指令信息
 for (i <- 0 until LoadPipelineWidth) {
   val ld = io.query(i)
   
   when (ld.req.valid && ld.req.bits.isFirstIssue && !ld.resp.bits.conflict) {
     val idx = enqPtr + PopCount(ld.req.bits.isFirstIssue.take(i))
     
-    // 记录加载信息
+    // 记录load信息
     uop(idx) := ld.req.bits.uop
     paddr(idx) := ld.req.bits.addr
     mask(idx) := ld.req.bits.mask
@@ -191,10 +190,10 @@ LoadQueueRAW中的条目清理有三种主要途径：
 
 #### 4.2.1 正常提交清理
 
-对于没有冲突的加载指令，它们在ROB中正常提交时被清理：
+对于没有冲突的load指令，它们在ROB中正常提交时被清理：
 
 ```scala
-// 识别已提交的加载指令
+// 识别已提交的load指令
 val commitMask = WireInit(0.U(RawQueueSize.W))
 
 // 遍历所有ROB提交的指令
@@ -298,7 +297,7 @@ for (i <- 0 until RawQueueSize) {
 }
 ```
 
-## 5. 具体示例：标量加载与存储的依赖处理
+## 5. 具体示例：标量load与store的依赖处理
 
 ### 5.1 违例检测示例
 
@@ -306,11 +305,11 @@ for (i <- 0 until RawQueueSize) {
 1. `ST [0x1000], x1` (ROB索引: 42)
 2. `LD x2, [0x1000]` (ROB索引: 43)
 
-但由于乱序执行，假设加载指令在存储指令计算地址之前就已经执行完成。
+但由于乱序执行，假设load指令在store指令计算地址之前就已经执行完成。
 
-#### 第1步：加载指令执行
+#### 第1步：load指令执行
 
-1. 加载指令在执行阶段发送查询请求：
+1. load指令在执行阶段发送查询请求：
    ```
    io.query(0).req.valid = true
    io.query(0).req.bits.addr = 0x1000
@@ -318,25 +317,25 @@ for (i <- 0 until RawQueueSize) {
    io.query(0).req.bits.uop.robIdx = 43
    ```
 
-2. 此时存储指令的地址尚未就绪，因此没有检测到冲突：
+2. 此时store指令的地址尚未就绪，因此没有检测到冲突：
    ```
    io.query(0).resp.bits.conflict = false
    ```
 
-3. 加载指令被记录到队列中：
+3. load指令被记录到队列中：
    ```
-   uop(enqPtr) = 加载指令uop(robIdx=43)
+   uop(enqPtr) = load指令uop(robIdx=43)
    paddr(enqPtr) = 0x1000
    mask(enqPtr) = 0xFF
    allocated(enqPtr) = true
    addrvalid(enqPtr) = true
    ```
 
-#### 第2步：存储指令地址生成
+#### 第2步：store指令地址生成
 
-稍后，存储指令完成地址计算：
+稍后，store指令完成地址计算：
 
-1. 存储地址信息发送到LoadQueueRAW：
+1. store地址信息发送到LoadQueueRAW：
    ```
    io.storeIn(0).valid = true
    io.storeIn(0).bits.vaddr = 0x1000
@@ -344,12 +343,12 @@ for (i <- 0 until RawQueueSize) {
    io.storeIn(0).bits.uop.robIdx = 42
    ```
 
-2. 检查是否有加载指令违反了与该存储的依赖：
+2. 检查是否有load指令违反了与该store的依赖：
    ```
    // 对于队列中的每个条目
    val ldValid = allocated(j) && addrvalid(j)  // 条目有效
-   val ldRobIdx = uop(j).robIdx  // 加载的ROB索引=43
-   val stRobIdx = 42  // 存储的ROB索引
+   val ldRobIdx = uop(j).robIdx  // load的ROB索引=43
+   val stRobIdx = 42  // store的ROB索引
    
    // 判断顺序: 43需要在42之后执行，但已经执行了
    val ordering = ldRobIdx.needBrFlush(stRobIdx)  // 返回true
@@ -364,17 +363,17 @@ for (i <- 0 until RawQueueSize) {
 3. 发现违例并生成回滚请求：
    ```
    io.rollback(0).valid = true
-   io.rollback(0).bits.robIdx = 43  // 违例加载的ROB索引
+   io.rollback(0).bits.robIdx = 43  // 违例load的ROB索引
    io.rollback(0).bits.level = RedirectLevel.flush
    ```
 
-### 5.2 无冲突加载的清理示例
+### 5.2 无冲突load的清理示例
 
-假设有一个加载指令：`LD x2, [0x2000]` (ROB索引: 50)，它与前面的存储指令没有地址重叠，因此不存在RAW冲突。
+假设有一个load指令：`LD x2, [0x2000]` (ROB索引: 50)，它与前面的store指令没有地址重叠，因此不存在RAW冲突。
 
-#### 第1步：加载指令执行和记录
+#### 第1步：load指令执行和记录
 
-1. 加载指令执行并查询潜在冲突：
+1. load指令执行并查询潜在冲突：
    ```
    io.query(0).req.valid = true
    io.query(0).req.bits.addr = 0x2000
@@ -387,9 +386,9 @@ for (i <- 0 until RawQueueSize) {
    io.query(0).resp.bits.conflict = false
    ```
 
-3. 加载指令被记录到队列中：
+3. load指令被记录到队列中：
    ```
-   uop(enqPtr) = 加载指令uop(robIdx=50)
+   uop(enqPtr) = load指令uop(robIdx=50)
    paddr(enqPtr) = 0x2000
    mask(enqPtr) = 0xFF
    allocated(enqPtr) = true
@@ -398,7 +397,7 @@ for (i <- 0 until RawQueueSize) {
 
 #### 第2步：指令正常提交
 
-加载指令最终在ROB中正常提交：
+load指令最终在ROB中正常提交：
 
 1. ROB发送提交信号：
    ```
@@ -438,7 +437,7 @@ LoadQueueRAW实现了多种优化机制来提高性能和准确度：
 ### 6.1 多路并行查询
 
 ```scala
-// 支持多个加载单元并行查询
+// 支持多个load单元并行查询
 for (i <- 0 until LoadPipelineWidth) {
   // 查询处理逻辑
 }
@@ -503,23 +502,23 @@ XSPerfAccumulate("max_age", Mux(validCount > 0.U,
 
 ### 8.1 跨时序依赖检测
 
-**挑战**：乱序执行使得加载指令可能在其依赖的存储地址就绪前就执行。
+**挑战**：乱序执行使得load指令可能在其依赖的store地址就绪前就执行。
 
 **解决方案**：
-1. 记录所有已执行的加载指令信息
-2. 当存储地址就绪时回溯检查可能的违例
+1. 记录所有已执行的load指令信息
+2. 当store地址就绪时回溯检查可能的违例
 3. 一旦发现违例立即触发回滚
 4. 通过记录ROB索引确保正确的顺序判断
 
 ### 8.2 数据结构高效性
 
-**挑战**：需要高效存储和查询大量加载指令信息。
+**挑战**：需要高效store和查询大量load指令信息。
 
 **解决方案**：
 1. 使用适当大小的循环队列数据结构
 2. 通过标志位快速识别有效条目
 3. 利用优先级编码器快速定位违例条目
-4. 并行处理多个查询和存储条目
+4. 并行处理多个查询和store条目
 
 ### 8.3 精确恢复与性能平衡
 
@@ -533,15 +532,15 @@ XSPerfAccumulate("max_age", Mux(validCount > 0.U,
 
 ## 9. 总结：完整的条目生命周期
 
-一个加载指令在LoadQueueRAW中完整的生命周期包括：
+一个load指令在LoadQueueRAW中完整的生命周期包括：
 
 1. **入队**：执行阶段记录到队列中
-2. **冲突检查**：作为被查询对象参与后续存储指令的违例检测
+2. **冲突检查**：作为被查询对象参与后续store指令的违例检测
 3. **清理**：通过以下三种方式之一被清理
 	- **正常提交**：指令在ROB中提交时
 	- **重定向**：发生分支预测错误等重定向事件时
-	- **违例回滚**：由于该加载自身违例而被回滚时
+	- **违例回滚**：由于该load自身违例而被回滚时
 
-即使没有发生任何冲突，加载指令在正常执行完毕并提交后，也会通过监听ROB提交信号，被从LoadQueueRAW队列中正常清除，确保队列资源可以被新的加载指令使用。
+即使没有发生任何冲突，load指令在正常执行完毕并提交后，也会通过监听ROB提交信号，被从LoadQueueRAW队列中正常清除，确保队列资源可以被新的load指令使用。
 
 这种多路径的清理机制和精确的依赖检测，使LoadQueueRAW能够在XiangShan处理器中实现高效的内存一致性保障，平衡了性能和正确性的需求，是乱序执行内存系统的关键组件。

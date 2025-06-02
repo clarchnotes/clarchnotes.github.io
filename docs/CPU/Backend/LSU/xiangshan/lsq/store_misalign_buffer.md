@@ -2,17 +2,17 @@
 
 ## 1. 模块概述
 
-`StoreMisalignBuffer.scala` 实现了一个专用的非对齐存储处理器，作为 XiangShan 处理器 LSQ 系统中处理非对齐内存写入的关键组件。当存储指令的地址未按数据类型大小对齐时（如半字、字或双字存储的地址非对齐），该模块负责将非对齐访问分解为多个对齐访问，确保内存写入操作的正确执行。
+`StoreMisalignBuffer.scala` 实现了一个专用的非对齐store处理器，作为 XiangShan 处理器 LSQ 系统中处理非对齐内存写入的关键组件。当store指令的地址未按数据类型大小对齐时（如半字、字或双字store的地址非对齐），该模块负责将非对齐访问分解为多个对齐访问，确保内存写入操作的正确执行。
 
 ### 1.1 核心功能
 
-- 检测和处理非对齐存储指令
-- 将非对齐存储分割为最多两个对齐存储
+- 检测和处理非对齐store指令
+- 将非对齐store分割为最多两个对齐store
 - 根据指令类型和地址精确计算分割方式
 - 管理分割后请求的发送和接收
 - 处理异常情况，特别是跨页异常
-- 支持向量和标量非对齐存储指令
-- 处理跨缓存行和跨页边界的存储
+- 支持向量和标量非对齐store指令
+- 处理跨缓存行和跨页边界的store
 
 ### 1.2 模块定义
 
@@ -28,7 +28,7 @@ class StoreMisalignBuffer(implicit p: Parameters) extends XSModule
 
 ### 2.1 内部状态机设计
 
-StoreMisalignBuffer 是一个独立的功能模块，使用状态机控制非对齐存储的处理流程：
+StoreMisalignBuffer 是一个独立的功能模块，使用状态机控制非对齐store的处理流程：
 
 ```scala
 val s_idle :: s_split :: s_req :: s_resp :: s_wb :: s_block :: Nil = Enum(6)
@@ -36,11 +36,11 @@ val bufferState = RegInit(s_idle)
 ```
 
 - **s_idle**: 空闲状态，等待新请求
-- **s_split**: 分割非对齐存储，确定分割方案
+- **s_split**: 分割非对齐store，确定分割方案
 - **s_req**: 发送分割后的请求
 - **s_resp**: 接收分割请求的响应
 - **s_wb**: 执行写回操作
-- **s_block**: 等待指令到达ROB头部（针对跨页边界存储）
+- **s_block**: 等待指令到达ROB头部（针对跨页边界store）
 
 该模块设计为单例架构（只能同时处理一个非对齐请求），设置了以下关键参数：
 - `enqPortNum = StorePipelineWidth`: 入队端口数量
@@ -48,12 +48,12 @@ val bufferState = RegInit(s_idle)
 
 ### 2.2 在处理器内存系统中的位置
 
-StoreMisalignBuffer 位于 XiangShan 处理器的内存访问系统中，与 StoreQueue、StoreUnit 和缓存系统紧密交互，为非对齐存储提供专门优化。非对齐存储在下列情况下需要特殊处理：
+StoreMisalignBuffer 位于 XiangShan 处理器的内存访问系统中，与 StoreQueue、StoreUnit 和缓存系统紧密交互，为非对齐store提供专门优化。非对齐store在下列情况下需要特殊处理：
 
-1. 跨越16字节边界的存储指令
-2. 跨越4KB页面边界的存储指令
+1. 跨越16字节边界的store指令
+2. 跨越4KB页面边界的store指令
 
-当检测到这些情况时，StoreMisalignBuffer 将分割存储请求，处理后续流程，并确保数据正确写入内存。
+当检测到这些情况时，StoreMisalignBuffer 将分割store请求，处理后续流程，并确保数据正确写入内存。
 
 ## 3. 数据结构与接口
 
@@ -64,23 +64,23 @@ val io = IO(new Bundle() {
   val redirect         = Flipped(Valid(new Redirect))          // 重定向信号
   val enq              = Vec(enqPortNum, Flipped(new MisalignBufferEnqIO))  // 非对齐请求入队接口
   val rob              = Flipped(new RobLsqIO)                 // ROB接口
-  val splitStoreReq    = Decoupled(new LsPipelineBundle)       // 分割存储请求接口
-  val splitStoreResp   = Flipped(Valid(new SqWriteBundle))     // 分割存储响应接口
+  val splitStoreReq    = Decoupled(new LsPipelineBundle)       // 分割store请求接口
+  val splitStoreResp   = Flipped(Valid(new SqWriteBundle))     // 分割store响应接口
   val writeBack        = Decoupled(new MemExuOutput)           // 标量结果写回接口
   val vecWriteBack     = Vec(VecStorePipelineWidth, Decoupled(new VecPipelineFeedbackIO(isVStore = true)))  // 向量结果写回接口
-  val storeOutValid    = Input(Bool())                         // 标量存储输出有效信号
-  val storeVecOutValid = Input(Bool())                         // 向量存储输出有效信号
+  val storeOutValid    = Input(Bool())                         // 标量store输出有效信号
+  val storeVecOutValid = Input(Bool())                         // 向量store输出有效信号
   val overwriteExpBuf  = Output(new XSBundle {...})            // 覆盖异常缓冲区信息
   
   val sqControl        = new StoreMaBufToSqControlIO           // 与StoreQueue的控制接口
-  val toVecStoreMergeBuffer = Vec(VecStorePipelineWidth, new StoreMaBufToVecStoreMergeBufferIO) // 向量存储接口
+  val toVecStoreMergeBuffer = Vec(VecStorePipelineWidth, new StoreMaBufToVecStoreMergeBufferIO) // 向量store接口
   val full             = Output(Bool())                         // 缓冲区满信号
 })
 ```
 
 ### 3.2 关键数据类型和接口
 
-1. **MisalignBufferEnqIO**：用于非对齐存储请求的入队
+1. **MisalignBufferEnqIO**：用于非对齐store请求的入队
    ```scala
    class MisalignBufferEnqIO extends XSBundle {
      val req = Decoupled(new LsPipelineBundle)  // 入队请求
@@ -105,11 +105,11 @@ val io = IO(new Bundle() {
    }
    ```
 
-3. **StoreMaBufToVecStoreMergeBufferIO**：与向量存储合并缓冲区的接口
+3. **StoreMaBufToVecStoreMergeBufferIO**：与向量store合并缓冲区的接口
    ```scala
    class StoreMaBufToVecStoreMergeBufferIO extends XSBundle {
      val flush = Bool()                         // 刷新信号
-     val mbIndex = UInt(SuperScalarWidth.W)     // 向量存储合并缓冲区索引
+     val mbIndex = UInt(SuperScalarWidth.W)     // 向量store合并缓冲区索引
    }
    ```
 
@@ -122,14 +122,14 @@ StoreMisalignBuffer 维护以下关键内部状态和数据结构：
 val req_valid = RegInit(false.B)                                // 当前是否有有效请求
 val req = Reg(new StoreMisalignBufferEntry)                     // 当前正在处理的请求
 
-// 分割请求和响应存储
+// 分割请求和响应store
 val splitStoreReqs = RegInit(VecInit(List.fill(maxSplitNum)(0.U.asTypeOf(new LsPipelineBundle))))
 val splitStoreResp = RegInit(VecInit(List.fill(maxSplitNum)(0.U.asTypeOf(new SqWriteBundle))))
 
 // 分割控制和状态
 val exceptionVec = RegInit(0.U.asTypeOf(ExceptionVec()))        // 异常向量
-val unSentStores = RegInit(0.U(maxSplitNum.W))                  // 未发送的存储请求位图
-val unWriteStores = RegInit(0.U(maxSplitNum.W))                 // 未写入的存储请求位图
+val unSentStores = RegInit(0.U(maxSplitNum.W))                  // 未发送的store请求位图
+val unWriteStores = RegInit(0.U(maxSplitNum.W))                 // 未写入的store请求位图
 val curPtr = RegInit(0.U(log2Ceil(maxSplitNum).W))              // 当前处理的分割请求指针
 
 // 结果处理
@@ -145,11 +145,11 @@ val globalMMIO = RegInit(false.B)                               // 是否MMIO访
 val globalNC = RegInit(false.B)                                 // 是否NC访问
 ```
 
-## 5. 非对齐存储处理流程
+## 5. 非对齐store处理流程
 
 ### 5.1 请求接收与选择
 
-StoreMisalignBuffer 从多个存储单元接收非对齐请求，并选择最旧的请求优先处理：
+StoreMisalignBuffer 从多个store单元接收非对齐请求，并选择最旧的请求优先处理：
 
 ```scala
 val s1_req = VecInit(io.enq.map(_.req.bits))
@@ -216,7 +216,7 @@ when (bufferState === s_split) {
     
     // 根据指令类型和地址情况，确定分割方式
     switch (alignedType(1, 0)) {
-      is (SB) { /* 字节存储不应该非对齐 */ }
+      is (SB) { /* 字节store不应该非对齐 */ }
       is (SH) { /* 处理半字非对齐访问 */ }
       is (SW) { /* 处理字非对齐访问 */ }
       is (SD) { /* 处理双字非对齐访问 */ }
@@ -237,7 +237,7 @@ when (bufferState === s_split) {
 io.splitStoreReq.valid := req_valid && (bufferState === s_req)
 io.splitStoreReq.bits  := splitStoreReqs(curPtr)
 io.splitStoreReq.bits.isvec  := req.isvec
-// 恢复H扩展存储的信息
+// 恢复H扩展store的信息
 val reqIsHsv  = LSUOpType.isHsv(req.uop.fuOpType)
 io.splitStoreReq.bits.uop.fuOpType := Mux(req.isvec, req.uop.fuOpType, Cat(reqIsHsv, 0.U(2.W), splitStoreReqs(curPtr).uop.fuOpType(1, 0)))
 io.splitStoreReq.bits.alignedType  := Mux(req.isvec, splitStoreReqs(curPtr).uop.fuOpType(1, 0), req.alignedType)
@@ -276,7 +276,7 @@ when (io.splitStoreResp.valid) {
 
 ### 5.6 写回操作
 
-对于标量存储指令的写回：
+对于标量store指令的写回：
 
 ```scala
 io.writeBack.valid := req_valid && (bufferState === s_wb) && !io.storeOutValid && !req.isvec
@@ -287,7 +287,7 @@ io.writeBack.bits.uop.flushPipe := needFlushPipe
 io.writeBack.bits.uop.replayInst := false.B
 ```
 
-对于向量存储指令的写回：
+对于向量store指令的写回：
 
 ```scala
 io.vecWriteBack.zipWithIndex.map{
@@ -305,17 +305,17 @@ io.vecWriteBack.zipWithIndex.map{
 }
 ```
 
-## 6. 跨页边界存储处理
+## 6. 跨页边界store处理
 
 ### 6.1 跨页检测与特殊处理
 
-StoreMisalignBuffer 对跨页边界的存储进行特殊处理：
+StoreMisalignBuffer 对跨页边界的store进行特殊处理：
 
 ```scala
 // 检测是否跨页
 cross4KBPageBoundary := req_valid && (highPageAddress(12) =/= req.vaddr(12))
 
-// 针对跨页存储的状态控制
+// 针对跨页store的状态控制
 when(cross4KBPageBoundary && !s2_needRevoke) {
   when(robMatch) {
     bufferState := s_split
@@ -331,14 +331,14 @@ when(cross4KBPageBoundary && !s2_needRevoke) {
 
 ### 6.2 等待ROB头部状态
 
-对于跨页存储，需要等待指令到达ROB头部以确保系统状态一致：
+对于跨页store，需要等待指令到达ROB头部以确保系统状态一致：
 
 ```scala
 val robMatch = req_valid && io.rob.pendingst && (io.rob.pendingPtr === req.uop.robIdx)
 
 is (s_wb) {
   when (req.isvec) {
-    // 向量存储处理...
+    // 向量store处理...
   }.otherwise {
     when (io.writeBack.fire && (!isCrossPage || globalUncache || globalException)) {
       // 非跨页或异常情况直接完成
@@ -394,7 +394,7 @@ val isUncache = (io.splitStoreResp.bits.mmio || io.splitStoreResp.bits.nc) && !i
 当非对齐访问跨页且高地址页面发生异常时的特殊处理：
 
 ```scala
-// 特殊情况：非对齐存储跨页，页错误发生在下一页
+// 特殊情况：非对齐store跨页，页错误发生在下一页
 val shouldOverwrite = req_valid && cross16BytesBoundary && globalException && (curPtr === 1.U)
 val overwriteExpBuf = GatedValidRegNext(shouldOverwrite)
 val overwriteVaddr = RegEnable(splitStoreResp(curPtr).vaddr, shouldOverwrite)
@@ -452,7 +452,7 @@ switch(bufferState) {
         globalMMIO := io.splitStoreResp.bits.mmio
         globalNC   := io.splitStoreResp.bits.nc
       } .elsewhen(io.splitStoreResp.bits.need_rep || (unSentStores & (~clearOh).asUInt).orR) {
-        // 需要重放或还有未处理的分割请求
+        // 需要replay或还有未处理的分割请求
         bufferState := s_req
       } .otherwise {
         // 所有分割请求正常完成，等待一个周期以配合RAW延迟
@@ -467,10 +467,10 @@ switch(bufferState) {
   }
 
   is (s_wb) {
-    // 向量和标量存储的写回处理不同
+    // 向量和标量store的写回处理不同
     when (req.isvec) {
       when (io.vecWriteBack.map(x => x.fire).reduce(_ || _)) {
-        // 向量存储完成
+        // 向量store完成
         bufferState := s_idle
         // 重置状态...
       }
@@ -496,16 +496,16 @@ switch(bufferState) {
 }
 ```
 
-## 8. 非对齐存储指令处理示例：SW
+## 8. 非对齐store指令处理示例：SW
 
 ### 8.1 初始状态
 
-- 指令：`SW x5, 0x1001` (向地址0x1001存储4字节，跨越16字节边界)
-- 存储单元检测到非对齐访问，将请求发送到StoreMisalignBuffer
+- 指令：`SW x5, 0x1001` (向地址0x1001store4字节，跨越16字节边界)
+- store单元检测到非对齐访问，将请求发送到StoreMisalignBuffer
 
 ### 8.2 分割决策 (s_split)
 
-根据字存储指令和地址模式"01"，决定分割方式：
+根据字store指令和地址模式"01"，决定分割方式：
 
 ```scala
 lowAddrStore.uop.fuOpType := SW
@@ -548,7 +548,7 @@ highResultWidth    := BYTE1  // 取1字节
 
 ### 8.7 执行写回 (s_wb)
 
-非对齐存储写回分为两种情况：
+非对齐store写回分为两种情况：
 
 1. **非跨页情况**：
 	- 立即写回，更新ROB信息
@@ -563,28 +563,28 @@ highResultWidth    := BYTE1  // 取1字节
 StoreMisalignBuffer支持多种非对齐访问模式，每种模式有特定的分割策略：
 
 1. **非对齐半字(SH)**：
-	- 分割为两个字节存储(SB+SB)
+	- 分割为两个字节store(SB+SB)
 	- 例如：地址0x1001分割为0x1001和0x1002
 
 2. **非对齐字(SW)**：根据地址低2位不同有三种情况：
-	- 01：分割为(SW+SB)，前向对齐存储3字节+后向存储1字节
-	- 10：分割为(SH+SH)，前向存储2字节+后向存储2字节
-	- 11：分割为(SB+SW)，前向存储1字节+后向对齐存储3字节
+	- 01：分割为(SW+SB)，前向对齐store3字节+后向store1字节
+	- 10：分割为(SH+SH)，前向store2字节+后向store2字节
+	- 11：分割为(SB+SW)，前向store1字节+后向对齐store3字节
 
 3. **非对齐双字(SD)**：根据地址低3位不同有七种情况：
-	- 001：分割为(SD+SB)，前向对齐存储7字节+后向存储1字节
-	- 010：分割为(SD+SH)，前向对齐存储6字节+后向存储2字节
+	- 001：分割为(SD+SB)，前向对齐store7字节+后向store1字节
+	- 010：分割为(SD+SH)，前向对齐store6字节+后向store2字节
 	- ...
-	- 111：分割为(SB+SD)，前向存储1字节+后向对齐存储7字节
+	- 111：分割为(SB+SD)，前向store1字节+后向对齐store7字节
 
-## 10. 向量存储支持
+## 10. 向量store支持
 
-### 10.1 向量存储特殊处理
+### 10.1 向量store特殊处理
 
-StoreMisalignBuffer 支持向量存储指令的特殊处理：
+StoreMisalignBuffer 支持向量store指令的特殊处理：
 
 ```scala
-// 向量存储写回
+// 向量store写回
 io.vecWriteBack.zipWithIndex.map{
   case (wb, index) => {
     wb.valid := req_valid && (bufferState === s_wb) && req.isvec && !io.storeVecOutValid && UIntToOH(req.portIndex)(index)
@@ -603,12 +603,12 @@ io.vecWriteBack.zipWithIndex.map{
 }
 ```
 
-### 10.2 与向量存储合并缓冲区的交互
+### 10.2 与向量store合并缓冲区的交互
 
-当处理跨页的向量存储时，需要与向量存储合并缓冲区进行特殊协调：
+当处理跨页的向量store时，需要与向量store合并缓冲区进行特殊协调：
 
 ```scala
-// 通知向量存储合并缓冲区刷新
+// 通知向量store合并缓冲区刷新
 io.toVecStoreMergeBuffer.zipWithIndex.map{
   case (toStMB, index) => {
     toStMB.flush   := req_valid && cross4KBPageBoundary && cross4KBPageEnq && 
@@ -622,9 +622,9 @@ io.toVecStoreMergeBuffer.zipWithIndex.map{
 
 ### 11.1 与StoreQueue的交互
 
-StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐存储的关键：
+StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐store的关键：
 
-1. **跨页存储管理**：
+1. **跨页store管理**：
    ```scala
    // 提供跨页状态信息
    io.sqControl.toStoreQueue.crossPageWithHit := io.sqControl.toStoreMisalignBuffer.sqPtr === req.uop.sqIdx && isCrossPage
@@ -644,19 +644,19 @@ StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐存储
 
 ### 11.2 数据流路径
 
-1. **非对齐存储检测**：
-	- StoreUnit 检测到非对齐存储且跨16字节边界/4KB页边界
+1. **非对齐store检测**：
+	- StoreUnit 检测到非对齐store且跨16字节边界/4KB页边界
 	- 转发请求到 StoreMisalignBuffer
 
 2. **分割请求流程**：
 	- StoreMisalignBuffer 分割请求
 	- 通过 `io.splitStoreReq` 发送回 StoreUnit
-	- StoreUnit 执行实际存储操作
+	- StoreUnit 执行实际store操作
 	- 结果通过 `io.splitStoreResp` 返回
 
 3. **结果写回**：
-	- 对于标量存储：通过 `io.writeBack` 写回
-	- 对于向量存储：通过 `io.vecWriteBack` 写回
+	- 对于标量store：通过 `io.writeBack` 写回
+	- 对于向量store：通过 `io.vecWriteBack` 写回
 
 ### 11.3 异常和特殊情况处理
 
@@ -716,11 +716,11 @@ sequenceDiagram
 ### 12.1 流水线效率
 
 1. **单例设计**：
-	- 由于非对齐存储在实际程序中相对罕见，使用单个实例处理
+	- 由于非对齐store在实际程序中相对罕见，使用单个实例处理
 	- 减少了硬件开销，同时保持高效处理
 
 2. **跨页特殊处理**：
-	- 为跨页存储设计专用的处理路径
+	- 为跨页store设计专用的处理路径
 	- 确保处理器状态保持一致，同时不阻塞处理流水线
 
 ### 12.2 异常处理优化
@@ -736,17 +736,17 @@ sequenceDiagram
 
 2. **精确异常处理**：
 	- 对于跨页异常，使用准确的异常地址
-	- 支持向量存储的异常传播机制
+	- 支持向量store的异常传播机制
 
-### 12.3 与存储队列协作
+### 12.3 与store队列协作
 
 1. **跨页管理**：
    ```scala
    // 到StoreQueue的接口
    io.sqControl.toStoreQueue.crossPageWithHit := io.sqControl.toStoreMisalignBuffer.sqPtr === req.uop.sqIdx && isCrossPage
    ```
-	- 与StoreQueue紧密协作，确保跨页存储正确管理
-	- 防止跨页存储在未就绪时提交
+	- 与StoreQueue紧密协作，确保跨页store正确管理
+	- 防止跨页store在未就绪时提交
 
 2. **优化流水线控制**：
    ```scala
@@ -776,9 +776,9 @@ XSPerfAccumulate("flush_non_idle", flush && (bufferState =/= s_idle))
 StoreMisalignBuffer 作为 XiangShan 处理器 LSQ 系统的专用组件，具有以下核心特性：
 
 1. **精确分割机制**：根据指令类型和地址精确计算分割方案
-2. **跨页存储支持**：处理跨页存储的特殊情况
-3. **向量存储支持**：提供向量存储特殊处理机制
+2. **跨页store支持**：处理跨页store的特殊情况
+3. **向量store支持**：提供向量store特殊处理机制
 4. **完备的异常处理**：处理各种异常情况
-5. **与StoreQueue协作**：紧密协调确保正确的存储顺序
+5. **与StoreQueue协作**：紧密协调确保正确的store顺序
 
-在乱序处理器中，StoreMisalignBuffer 解决了非对齐内存存储的挑战，提高了处理器对不同内存访问模式的适应性。它将复杂的非对齐存储问题转化为可管理的对齐存储，在保证功能正确性的同时最小化性能影响。 
+在乱序处理器中，StoreMisalignBuffer 解决了非对齐内存store的挑战，提高了处理器对不同内存访问模式的适应性。它将复杂的非对齐store问题转化为可管理的对齐store，在保证功能正确性的同时最小化性能影响。 
