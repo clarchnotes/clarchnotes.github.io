@@ -18,6 +18,7 @@ RVV 的主要目标是：
     
 
 ### 1.3 内建函数 (Intrinsics) 的角色和重要性
+[Intrinsics viewer](https://dzaima.github.io/intrinsics-viewer/)
 
 虽然可以直接编写 RVV 汇编代码，但这通常非常复杂且难以维护。**内建函数 (Intrinsics)** 提供了一种在高级语言（如 C/C++）中直接访问和使用向量指令能力的方式。它们看起来像普通的函数调用，但编译器会将它们直接映射到相应的 RVV 汇编指令。
 

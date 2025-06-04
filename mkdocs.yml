@@ -132,7 +132,10 @@ nav:
           - GPU/basics/basic_concepts.md
       - "CUDA":
           - GPU/CUDA/cuda_example.md
-
+  - HWSEC:
+      - HWSec/index.md
+      - "Spectre":
+          - HWSec/spectre/spectre_variant.md
   - Benchmark:
       - Benchmark/index.md
       - Benchmark/Simpoint.md

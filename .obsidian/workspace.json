@@ -170,6 +170,11 @@
   },
   "active": "7e93ffd798febb4e",
   "lastOpenFiles": [
+    "docs/HWSec/index.md",
+    "docs/HWSec/spectre/spectre_variant.md",
+    "docs/HWSec/spectre",
+    "docs/HWSec",
+    "docs/RVV/Kernel",
     "docs/RVV/ISA/fp_arith.md",
     "docs/RVV/ISA/index.md",
     "docs/RVV/ISA/int_arith.md",
@@ -195,8 +200,6 @@
     "docs/CPU/Backend/LSU/xiangshan/lsq/freelist.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_raw.md",
     "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_replay.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache.md",
-    "docs/CPU/Backend/LSU/xiangshan/lsq/store_queue.md",
     "attachments/Pasted image 20250512225740.png",
     "attachments",
     "docs/CPU/Backend/LSU/xiangshan/pipeline",
@@ -212,9 +215,6 @@
     "docs/CPU/Backend/LSU/attachments/Pasted image 20250509000613.png",
     "docs/Benchmark/attachments/Pasted image 20250511212201.png",
     "docs/Benchmark/attachments",
-    "Benchmark",
-    "docs/GPU/basics/attachments",
-    "docs/GPU/attachments",
-    "docs/GPU/basics"
+    "Benchmark"
   ]
 }
