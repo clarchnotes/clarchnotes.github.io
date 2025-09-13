@@ -137,6 +137,8 @@ nav:
       - "Basics":
           - Chiplet/basics/index.md
           - Chiplet/basics/why-chiplet.md
+          - Chiplet/basics/chiplet_basetech.md
+          - Chiplet/basics/chiplet_example.md
   - HWSEC:
       - HWSec/index.md
       - "Spectre":
