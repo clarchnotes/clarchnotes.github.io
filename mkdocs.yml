@@ -132,6 +132,11 @@ nav:
           - GPU/basics/basic_concepts.md
       - "CUDA":
           - GPU/CUDA/cuda_example.md
+  - Chiplet:
+      - Chiplet/index.md
+      - "Basics":
+          - Chiplet/basics/index.md
+          - Chiplet/basics/why-chiplet.md
   - HWSEC:
       - HWSec/index.md
       - "Spectre":
