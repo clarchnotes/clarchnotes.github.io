@@ -34,4 +34,4 @@ Chiplet架构的核心思想是分解（Disaggregation)与重构（Reintegration
 
 2.  **绕过物理之墙：** Chiplet设计从根本上解决了Reticle Limit的限制。通过在封装基板（Substrate）或中介层（Interposer）上将多个Chiplet并排“拼接”，可以构建出总面积远超858mm²的超级计算系统，为算力的持续扩展打开了全新的空间。
 
-3.  **拆解设计之墙：** Chiplet是实现**异构集成（Heterogeneous Integration)** 的最佳载体。设计团队可以为计算、I/O、模拟等不同功能的Chiplet独立选择最优的工艺节点，实现系统级的PPA最优化。同时，这种模块化的设计理念支持IP复用，企业可以开发标准化的Chiplet，像搭积木一样快速组合出不同的产品，从而极大地缩短研发周期，加速产品上市。
+3.  **拆解设计之墙：** Chiplet是实现异构集成（Heterogeneous Integration) 的最佳载体。设计团队可以为计算、I/O、模拟等不同功能的Chiplet独立选择最优的工艺节点，实现系统级的PPA最优化。同时，这种模块化的设计理念支持IP复用，企业可以开发标准化的Chiplet，像搭积木一样快速组合出不同的产品，从而极大地缩短研发周期，加速产品上市。

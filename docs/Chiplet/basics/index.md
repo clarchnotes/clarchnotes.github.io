@@ -30,3 +30,4 @@ Chiplets are small, modular semiconductor dies that can be combined together usi
 - **Flexibility**: Mix different process technologies
 - **Time-to-Market**: Parallel development of chiplets
 - **Scalability**: Add/remove chiplets based on requirements
+

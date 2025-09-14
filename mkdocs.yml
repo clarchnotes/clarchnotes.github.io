@@ -84,6 +84,13 @@ extra_javascript:
 
 nav:
   - Home: index.md
+  - AI:
+      - AI/index.md
+      - "Attention":
+          - AI/attention/index.md
+          - AI/attention/attention_basic.md
+          - AI/attention/flash_attention.md
+          - AI/attention/rope.md
   - CPU:
       - CPU/index.md
       - "Frontend":
@@ -96,6 +103,7 @@ nav:
                   - CPU/Backend/LSU/xiangshan/index.md
                   - "LSU Microarchitecture": CPU/Backend/LSU/xiangshan/lsu_microarch.md
                   - "LSQ":
+                      - CPU/Backend/LSU/xiangshan/lsq/index.md
                       - CPU/Backend/LSU/xiangshan/lsq/freelist.md
                       - CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue.md
                       - CPU/Backend/LSU/xiangshan/lsq/load_queue.md
@@ -108,6 +116,8 @@ nav:
                       - CPU/Backend/LSU/xiangshan/lsq/store_queue.md
                       - CPU/Backend/LSU/xiangshan/lsq/store_queue_data.md
                       - CPU/Backend/LSU/xiangshan/lsq/store_misalign_buffer.md
+                  - "Pipeline":
+                      - CPU/Backend/LSU/xiangshan/pipeline/load_unit.md
 
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
@@ -117,14 +127,16 @@ nav:
           - RISCV/ISA/softfloat.md
           - RISCV/ISA/Zfh_Zfhmin.md
           - RISCV/ISA/pointer_mask.md
-  - RVV:
-      - RVV/index.md
-      - "ISA":
-          - RVV/ISA/index.md
-          - RVV/ISA/rvv_intrinsics.md
-          - RVV/ISA/reduction.md
-          - RVV/ISA/permutation.md
-          - RVV/ISA/int_arith.md
+      - "RVV":
+          - RISCV/RVV/index.md
+          - "ISA":
+              - RISCV/RVV/ISA/index.md
+              - RISCV/RVV/ISA/rvv_intrinsics.md
+              - RISCV/RVV/ISA/reduction.md
+              - RISCV/RVV/ISA/permutation.md
+              - RISCV/RVV/ISA/int_arith.md
+              - RISCV/RVV/ISA/fp_arith.md
+              - RISCV/RVV/ISA/mask_arith.md
   - GPU:
       - GPU/index.md
       - "Basic Concepts":
@@ -132,6 +144,9 @@ nav:
           - GPU/basics/basic_concepts.md
       - "CUDA":
           - GPU/CUDA/cuda_example.md
+          - GPU/CUDA/cuda_prgm_efficiency.md
+      - "TinyGPU":
+          - GPU/TinyGPU/index.md
   - Chiplet:
       - Chiplet/index.md
       - "Basics":
@@ -147,3 +162,5 @@ nav:
       - Benchmark/index.md
       - Benchmark/Simpoint.md
       - Benchmark/SPEC2006.md
+  - Blog:
+      - blog/index.md
