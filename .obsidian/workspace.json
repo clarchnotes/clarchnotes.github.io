@@ -171,6 +171,12 @@
   },
   "active": "c750c20e7e4c628f",
   "lastOpenFiles": [
+    "docs/Compiler/analysis/index.md",
+    "docs/Compiler/index.md",
+    "docs/Compiler/analysis/binary_loop_detection.md",
+    "docs/Compiler/analysis",
+    "docs/Compiler",
+    "docs/blog/posts/binary_loop_detection_comparison.md",
     "docs/AI/attention/rope_en.md",
     "docs/CPU/Backend/LSU/attachments/Pasted image 20250429205345.png",
     "docs/CPU/Backend/LSU/attachments/Pasted image 20250429204643.png",
@@ -209,13 +215,7 @@
     "docs/RVV/ISA/permutation.md",
     "docs/RVV/ISA/reduction.md",
     "docs/Chiplet/basics/attachments",
-    "docs/Chiplet/index.md",
-    "docs/RVV/ISA/rvv_intrinsics.md",
-    "docs/HWSec/index.md",
-    "docs/HWSec/spectre/spectre_variant.md",
     "docs/HWSec/spectre",
-    "docs/HWSec",
-    "docs/RVV/Kernel",
-    "attachments"
+    "docs/HWSec"
   ]
 }

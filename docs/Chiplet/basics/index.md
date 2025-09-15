@@ -31,3 +31,4 @@ Chiplets are small, modular semiconductor dies that can be combined together usi
 - **Time-to-Market**: Parallel development of chiplets
 - **Scalability**: Add/remove chiplets based on requirements
 
+

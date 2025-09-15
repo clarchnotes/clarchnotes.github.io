@@ -6,23 +6,23 @@ theme:
   palette:
     primary: lime
   features:
-    - content.action.edit # 编辑按钮
-    - content.action.view # 查看源代码按钮
-    - content.code.copy # 支持代码块复制
-    - navigation.footer # 上一页和下一页
-    - navigation.tabs # 一级导航在横着的导航栏
-    - content.code.annotate # 可以在代码块中增添点击展示的注释，参见 https://squidfunk.github.io/mkdocs-material/reference/code-blocks/#adding-annotations
-    # - navigation.tracking # 地址栏中的 URL 会随当前位置变化为对应小节的 URL
-    - navigation.indexes # 将 index 页面直接附到小节名上
-    - navigation.top # 回到顶部按钮
-    # - navigation.sections # 二级导航是粗体
-    # - navigation.expand # 导航默认展开
-    - toc.follow # toc 跟随
-    # - toc.integrate # 文档 toc 集成到总目录中
+    - content.action.edit # Edit button
+    - content.action.view # View source code button
+    - content.code.copy # Support code block copying
+    - navigation.footer # Previous and next page
+    - navigation.tabs # Top-level navigation in horizontal bar
+    - content.code.annotate # Add clickable annotations in code blocks, see https://squidfunk.github.io/mkdocs-material/reference/code-blocks/#adding-annotations
+    # - navigation.tracking # URL in address bar changes to section URL based on current position
+    - navigation.indexes # Attach index pages directly to section names
+    - navigation.top # Back to top button
+    # - navigation.sections # Second-level navigation in bold
+    # - navigation.expand # Navigation expanded by default
+    - toc.follow # TOC follows current position
+    # - toc.integrate # Integrate document TOC into main navigation
     - search.suggest
     - search.highlight
     - search.share
-  language: "zh"
+  language: "en"
 
 plugins:
   - search
@@ -139,7 +139,7 @@ nav:
               - RISCV/RVV/ISA/mask_arith.md
   - GPU:
       - GPU/index.md
-      - "Basic Concepts":
+      - "Basics":
           - GPU/basics/index.md
           - GPU/basics/basic_concepts.md
       - "CUDA":
@@ -164,3 +164,8 @@ nav:
       - Benchmark/SPEC2006.md
   - Blog:
       - blog/index.md
+  - Compiler:
+      - Compiler/index.md
+      - "Analysis":
+          - Compiler/analysis/index.md
+          - "Binary Loop Detection Comparison Study": Compiler/analysis/binary_loop_detection.md
