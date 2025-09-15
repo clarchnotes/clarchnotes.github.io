@@ -22,7 +22,7 @@ theme:
     - search.suggest
     - search.highlight
     - search.share
-  language: "en"
+  language: "zh"
 
 plugins:
   - search
@@ -142,6 +142,8 @@ nav:
       - "Basics":
           - GPU/basics/index.md
           - GPU/basics/basic_concepts.md
+      - "SFU":
+          - "SFU Design and Implementation": GPU/SFU/sfu_design_and_implementation.md
       - "CUDA":
           - GPU/CUDA/cuda_example.md
           - GPU/CUDA/cuda_prgm_efficiency.md
@@ -162,8 +164,6 @@ nav:
       - Benchmark/index.md
       - Benchmark/Simpoint.md
       - Benchmark/SPEC2006.md
-  - Blog:
-      - blog/index.md
   - Compiler:
       - Compiler/index.md
       - "Analysis":

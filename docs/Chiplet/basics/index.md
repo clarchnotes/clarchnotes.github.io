@@ -32,3 +32,4 @@ Chiplets are small, modular semiconductor dies that can be combined together usi
 - **Scalability**: Add/remove chiplets based on requirements
 
 
+
