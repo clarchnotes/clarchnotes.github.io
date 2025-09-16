@@ -43,6 +43,11 @@ $$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
   - 从O(n²)到O(n)的复杂度优化
   - 详细实现示例与性能分析
 
+- [RVV Flash Attention](rvv_flash_attention.md) - RISC-V Vector优化实现
+  - 完整的RVV intrinsics实现
+  - Gem5仿真环境配置与运行
+  - 向量化优化策略与性能分析
+
 ### 核心架构
 
 - [Transformer](transformer.md) - 革命性的神经网络架构
