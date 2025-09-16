@@ -121,6 +121,13 @@ nav:
 
               - "MDP":
                   - CPU/Backend/LSU/MDP/papers.md
+          - "MMU":
+              - CPU/Backend/MMU/index.md
+              - "RISC-V Sv39 虚拟内存架构": CPU/Backend/MMU/sv39_architecture.md
+              - "TLB 结构与硬件实现": CPU/Backend/MMU/tlb_structure.md
+              - "TLB 工作流程与查找过程": CPU/Backend/MMU/tlb_workflow.md
+              - "页表遍历器机制": CPU/Backend/MMU/page_table_walker.md
+              - "TLB 同步与 SFENCE.VMA": CPU/Backend/MMU/tlb_synchronization.md
   - RISCV:
       - RISCV/index.md
       - "ISA":
