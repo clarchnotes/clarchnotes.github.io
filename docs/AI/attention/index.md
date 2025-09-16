@@ -9,11 +9,13 @@
 ## 核心概念
 
 ### 数学基础
+
 注意力机制基于查询和键的兼容性计算值的加权和：
 
 $$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
 
 ### 关键特性
+
 - **排列不变性**: 与顺序无关的计算，需要显式的位置编码
 - **并行化能力**: 与 RNN 不同，注意力支持序列位置间的并行计算
 - **长距离依赖**: 序列中远距离位置间的直接连接
@@ -21,15 +23,28 @@ $$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
 ## 文档列表
 
 ### 基础概念
+
 - [Attention 基础](attention_basic.md) - 核心概念与数学原理
 
 ### 内存优化
+
 - [Flash Attention](flash_attention.md) - 内存高效的注意力计算
   - GPU 内存层次的分块策略
   - 在线 softmax 计算
   - 显著的加速和内存减少
 
+- [Paged Attention](paged_attention.md) - 基于虚拟内存分页的KV缓存管理
+  - 动态内存分配与页面管理
+  - 消除内存碎片化问题
+  - 支持序列间内存共享
+
+- [KV Cache](kv_cache.md) - 自回归生成的核心加速技术
+  - 避免重复计算的缓存机制
+  - 从O(n²)到O(n)的复杂度优化
+  - 详细实现示例与性能分析
+
 ### 位置编码
+
 - [RoPE 旋转位置编码](rope.md) - 旋转位置编码的全面分析
   - **数学优雅性**: 为什么旋转操作特别适合相对位置编码
   - **多尺度设计**: 不同旋转频率如何捕捉各种尺度的依赖关系
