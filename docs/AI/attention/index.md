@@ -43,6 +43,14 @@ $$\text{Attention}(Q,K,V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$
   - 从O(n²)到O(n)的复杂度优化
   - 详细实现示例与性能分析
 
+### 核心架构
+
+- [Transformer](transformer.md) - 革命性的神经网络架构
+  - 完全基于注意力机制的设计
+  - 编码器-解码器架构详解
+  - 多头注意力与位置编码
+  - 完整实现与训练技巧
+
 ### 位置编码
 
 - [RoPE 旋转位置编码](rope.md) - 旋转位置编码的全面分析
