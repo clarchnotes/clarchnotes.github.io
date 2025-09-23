@@ -91,6 +91,9 @@ nav:
           - AI/attention/attention_basic.md
           - AI/attention/flash_attention.md
           - AI/attention/rope.md
+  - NPU:
+    - "TimeLoop Framework":
+      - NPU/timeloop.md
   - CPU:
       - CPU/index.md
       - "Frontend":
@@ -135,6 +138,15 @@ nav:
           - RISCV/ISA/softfloat.md
           - RISCV/ISA/Zfh_Zfhmin.md
           - RISCV/ISA/pointer_mask.md
+          - "H Extension (Hypervisor)":
+              - RISCV/ISA/H_Extension/index.md
+              - RISCV/ISA/H_Extension/overview.md
+              - RISCV/ISA/H_Extension/privilege_model.md
+              - RISCV/ISA/H_Extension/two_stage_translation.md
+              - RISCV/ISA/H_Extension/csr_registers.md
+              - RISCV/ISA/H_Extension/virtual_interrupts.md
+              - RISCV/ISA/H_Extension/new_instructions.md
+              - RISCV/ISA/H_Extension/performance_optimization.md
       - "RVV":
           - RISCV/RVV/index.md
           - "ISA":
