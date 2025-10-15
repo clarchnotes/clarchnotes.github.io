@@ -163,7 +163,8 @@ nav:
           - GPU/basics/index.md
           - GPU/basics/basic_concepts.md
       - "SFU":
-          - "SFU Design and Implementation": GPU/SFU/sfu_design_and_implementation.md
+          - GPU/SFU/sfu_design_and_implementation.md
+          - GPU/SFU/power_function_implementation.md
       - "CUDA":
           - GPU/CUDA/cuda_example.md
           - GPU/CUDA/cuda_prgm_efficiency.md
