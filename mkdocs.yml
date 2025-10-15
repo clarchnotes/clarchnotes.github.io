@@ -162,14 +162,20 @@ nav:
       - "Basics":
           - GPU/basics/index.md
           - GPU/basics/basic_concepts.md
-      - "SFU":
-          - GPU/SFU/sfu_design_and_implementation.md
-          - GPU/SFU/power_function_implementation.md
+      - "SFU (Special Function Unit)":
+          - "SFU 硬件设计与实现": GPU/SFU/sfu_design_and_implementation.md
       - "CUDA":
           - GPU/CUDA/cuda_example.md
           - GPU/CUDA/cuda_prgm_efficiency.md
       - "TinyGPU":
           - GPU/TinyGPU/index.md
+  - Numerical Computing:
+      - Numerical_Computing/index.md
+      - "超越函数实现":
+          - "Power 函数库实现深度解析": Numerical_Computing/power_function_implementation.md
+          - "SLEEF RVV 指数函数实现解析": Numerical_Computing/sleef_rvv_exp_implementation.md
+      - "多项式逼近技术":
+          - "多项式逼近与求值方法论": Numerical_Computing/polynomial_approximation_methods.md
   - Chiplet:
       - Chiplet/index.md
       - "Basics":
