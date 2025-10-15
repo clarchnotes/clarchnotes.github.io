@@ -9,6 +9,7 @@ SLEEF (SIMD Library for Evaluating Elementary Functions) 是一个开源的高�
 ### 1.1 SLEEF 项目简介
 
 **SLEEF** 是由 Naoki Shibata 开发的跨平台 SIMD 数学库，支持：
+
 - x86/x64: SSE2, AVX, AVX2, AVX512
 - ARM: NEON, SVE
 - RISC-V: RVV (Vector Extension)
@@ -20,6 +21,7 @@ SLEEF (SIMD Library for Evaluating Elementary Functions) 是一个开源的高�
 ### 1.2 RISC-V Vector Extension 特点
 
 RVV 的核心特性：
+
 - **向量长度无关 (VLA)**: 支持可变向量长度，通过 `vl` 参数动态调整
 - **LMUL (Length Multiplier)**: 寄存器分组机制，m1/m2/m4/m8
 - **灵活的元素宽度 (SEW)**: 8/16/32/64 位
@@ -336,6 +338,7 @@ q = round(3.606737602222409) = 4
 **1.2 计算 r**
 
 使用双段表示：
+
 ```
 LN2U = 0.69314718055966295651160180568695068359375
 LN2L = 2.8235290563031577122588448175013436025525412068e-13
@@ -529,6 +532,7 @@ vfloat64m4_t Sleef_expd_u10rvvm4(vfloat64m4_t x, size_t vl);
 ### 6.2 性能基准测试（理论估算）
 
 假设 RISC-V 处理器规格：
+
 - 频率：2 GHz
 - 向量单元：双发射 FMA
 - VLEN：256 bits
@@ -599,12 +603,14 @@ SLEEF RVV m1 用时 ≈ 1M / 460M ≈ 2.17 ms
 ### 8.1 Estrin 多项式求值
 
 传统 Horner 方法：
+
 ```
 P(x) = ((((c₄x + c₃)x + c₂)x + c₁)x + c₀
 依赖链长度 = 4
 ```
 
 Estrin 方法：
+
 ```
 P(x) = (c₄x⁴ + c₃x³) + (c₂x² + c₁x) + c₀
      = x²(c₄x² + c₃x) + x²(c₂x + c₁) + c₀
@@ -616,11 +622,13 @@ RVV 可以并行计算多个子表达式。
 ### 8.2 FMA 指令利用
 
 FMA (Fused Multiply-Add) 的优势：
+
 1. **减少舍入**：`a*b+c` 只舍入一次
 2. **提高精度**：保留中间结果的全精度
 3. **节省指令**：一条指令完成两个操作
 
 示例：
+
 ```c
 // 不使用 FMA（2 条指令，2 次舍入）
 temp = dq * (-LN2U);  // 乘法 + 舍入
@@ -633,6 +641,7 @@ s = vfma_vd_vd_vd_vd(dq, vcast_vd_d(-LN2U), x);  // 一步完成
 ### 8.3 早期特殊情况检测
 
 将特殊情况检测移到算法末尾的好处：
+
 1. **避免分支预测失败**：特殊情况罕见，正常路径更可预测
 2. **向量化友好**：使用掩码选择而非标量分支
 3. **减少代码路径**：只维护一条主计算路径
@@ -813,12 +822,14 @@ void verify_single_value(double x) {
 ### 11.3 常见问题排查
 
 **问题 1**：结果全为 NaN
+
 ```c
 // 检查向量长度设置
 size_t vl = __riscv_vsetvl_e64m1(n);  // 必须设置 vl！
 ```
 
 **问题 2**：性能不如预期
+
 ```c
 // 检查编译优化选项
 // 必须使用 -O2 或 -O3
@@ -826,6 +837,7 @@ size_t vl = __riscv_vsetvl_e64m1(n);  // 必须设置 vl！
 ```
 
 **问题 3**：链接错误
+
 ```bash
 # 确保链接了正确的 SLEEF 库
 -lsleef -lm
@@ -836,6 +848,7 @@ size_t vl = __riscv_vsetvl_e64m1(n);  // 必须设置 vl！
 ### 12.1 硬件加速指令
 
 未来的 RISC-V 扩展可能包含：
+
 - 专用超越函数指令（如 `vfexp.vv`）
 - 更高精度的 FMA 变体
 - 硬件查表支持
@@ -843,6 +856,7 @@ size_t vl = __riscv_vsetvl_e64m1(n);  // 必须设置 vl！
 ### 12.2 算法改进
 
 可能的优化：
+
 1. **自适应多项式阶数**：根据输入范围动态选择
 2. **混合精度计算**：中间计算使用更高精度
 3. **并行预取**：优化内存访问模式
@@ -850,6 +864,7 @@ size_t vl = __riscv_vsetvl_e64m1(n);  // 必须设置 vl！
 ### 12.3 AI/ML 特化版本
 
 针对深度学习的优化：
+
 - 降低精度版本（BF16, FP16）
 - 融合算子（exp-softmax, exp-reduce）
 - 稀疏向量优化
@@ -905,11 +920,3 @@ SLEEF RVV 支持的函数：
 | 幂函数 | powd, cbrtd, sqrtd | powf, cbrtf, sqrtf | u10 |
 
 完整 API 参考：[SLEEF 官方文档](https://sleef.org/doc/)
-
----
-
-**文档版本**: 1.0  
-**最后更新**: 2025-01-15  
-**作者**: Clarch Notes  
-**许可**: 本文档基于 SLEEF 项目 (BSL-1.0 License) 的代码分析编写
-

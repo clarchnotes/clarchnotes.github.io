@@ -9,11 +9,13 @@
 ### 1.1 为什么使用多项式？
 
 **超越函数的挑战**：
+
 - $e^x$, $\ln(x)$, $\sin(x)$ 等函数无法用有限次加减乘除精确计算
 - 泰勒级数虽然精确，但收敛速度慢，计算量大
 - 需要在精度和性能之间找到平衡
 
 **多项式的优势**：
+
 1. **计算简单**：只需要加法和乘法
 2. **易于优化**：现代处理器对多项式运算有良好支持
 3. **可控误差**：通过选择合适的阶数和系数，精确控制逼近误差
@@ -48,10 +50,12 @@ $$\max_{x \in [a,b]} |f(x) - P_n(x)| < \epsilon$$
 $$f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^3 + \cdots$$
 
 **优点**：
+
 - 理论简单，易于推导
 - 在 $x$ 接近 $a$ 时收敛快
 
 **缺点**：
+
 - 远离展开点时误差增大
 - 可能需要很高的阶数
 - 不是最优逼近
@@ -63,6 +67,7 @@ $$f(x) = f(a) + f'(a)(x-a) + \frac{f''(a)}{2!}(x-a)^2 + \frac{f'''(a)}{3!}(x-a)^
 $$T_n(x) = \cos(n \arccos(x))$$
 
 **性质**：
+
 - 在 $[-1, 1]$ 上有 $n+1$ 个极值点
 - 最大偏差被均匀分布
 - 逼近效果优于泰勒级数
@@ -109,7 +114,7 @@ flowchart TD
 **详细步骤**：
 
 1. **初始化**：选择 $n+2$ 个参考点 $x_0, x_1, \ldots, x_{n+1}$
-   
+
 2. **求解线性系统**：对于未知的 $c_0, \ldots, c_n$ 和误差 $E$，求解：
    $$\begin{cases}
    f(x_0) - P_n(x_0) = (-1)^0 E \\
@@ -205,6 +210,7 @@ print(f"平均误差: {np.mean(error):.2e}")
 ```
 
 **输出**：
+
 ```
 最大误差: 3.47e-08
 平均误差: 1.23e-08
@@ -228,6 +234,7 @@ print(f"平均误差: {np.mean(error):.2e}")
 $$P_n(x) = c_0 + c_1 x + c_2 x^2 + c_3 x^3 + \cdots + c_n x^n$$
 
 **伪代码**：
+
 ```c
 double naive_poly(double x, double c[], int n) {
     double result = c[0];
@@ -243,11 +250,13 @@ double naive_poly(double x, double c[], int n) {
 ```
 
 **复杂度分析**：
+
 - 乘法次数：$1 + 2 + 3 + \cdots + n = \frac{n(n+1)}{2}$
 - 加法次数：$n$
 - **总计**：$O(n^2)$ 乘法，$O(n)$ 加法
 
 **缺点**：
+
 1. 计算量大（平方复杂度）
 2. 数值不稳定（$x^n$ 可能溢出或下溢）
 3. 不适合硬件优化
@@ -271,6 +280,7 @@ $$P_5(x) = c_0 + x(c_1 + x(c_2 + x(c_3 + x(c_4 + xc_5))))$$
 #### 3.2.2 实现代码
 
 **标准实现（无FMA）**：
+
 ```c
 double horner_no_fma(double x, double c[], int n) {
     double result = c[n];  // 从最高次项开始
@@ -284,6 +294,7 @@ double horner_no_fma(double x, double c[], int n) {
 ```
 
 **FMA 优化实现** ⭐：
+
 ```c
 double horner_fma(double x, double c[], int n) {
     double result = c[n];
@@ -297,6 +308,7 @@ double horner_fma(double x, double c[], int n) {
 ```
 
 **关键优势**：
+
 - **性能提升**：每次迭代从 2 个浮点运算减少到 1 个 FMA
 - **精度提升**：每次迭代从 2 次舍入减少到 1 次舍入
 - **延迟降低**：FMA 延迟通常等于单独乘法延迟
@@ -325,11 +337,13 @@ double horner_fma(double x, double c[], int n) {
 **关键问题**：每次迭代都依赖于前一次的结果
 
 **无FMA实现**：
+
 ```c
 result = result * x + c[i];  // 必须等待上一次 result 计算完成
 ```
 
 **FMA实现**：
+
 ```c
 result = fma(result, x, c[i]);  // 单个原子操作
 ```
@@ -362,12 +376,14 @@ flowchart LR
 ```
 
 **FMA带来的优势**：
+
 - ✅ **延迟减半**：每次迭代从 8 周期降到 4 周期
 - ✅ **吞吐量翻倍**：从 2 个运算/迭代 降到 1 个运算/迭代
 - ✅ **精度提升**：舍入误差减半
 - ❌ **仍然串行**：依然无法并行化（这是Estrin的优势）
 
 **性能瓶颈（即使有FMA）**：
+
 - 无法并行化（串行依赖）
 - 处理器的多个FMA单元无法同时工作
 - 对于高阶多项式，依赖链仍然很长
@@ -381,6 +397,7 @@ flowchart LR
 将多项式分成多个可并行计算的子表达式，每个子表达式使用FMA指令。
 
 **为什么Estrin + FMA是黄金组合？**
+
 1. **Estrin打破串行依赖** → 多个FMA单元可同时工作
 2. **FMA减少每个节点延迟** → 整体延迟大幅降低
 3. **两者结合** → 吞吐量和延迟双重优化
@@ -424,20 +441,20 @@ double estrin_no_fma(double x, double c[], int n) {
     // 第 1 阶段：预计算幂次
     double x2 = x * x;      // MUL
     double x4 = x2 * x2;    // MUL
-    
+
     // 第 2 阶段：两两分组（可并行，但每个需要 MUL + ADD）
     double p0 = c[0] + c[1] * x;  // MUL + ADD
     double p1 = c[2] + c[3] * x;  // MUL + ADD
     double p2 = c[4] + c[5] * x;  // MUL + ADD
     double p3 = c[6] + c[7] * x;  // MUL + ADD
-    
+
     // 第 3 阶段：合并（可并行）
     double q0 = p0 + p1 * x2;     // MUL + ADD
     double q1 = p2 + p3 * x2;     // MUL + ADD
-    
+
     // 第 4 阶段：最终合并
     double result = q0 + q1 * x4; // MUL + ADD
-    
+
     return result;
 }
 ```
@@ -448,20 +465,20 @@ double estrin_fma(double x, double c[], int n) {
     // 第 1 阶段：预计算幂次（无法用FMA优化）
     double x2 = x * x;      // MUL
     double x4 = x2 * x2;    // MUL
-    
+
     // 第 2 阶段：两两分组（4个FMA并行执行）
     double p0 = fma(c[1], x, c[0]);  // FMA: c₁×x+c₀
     double p1 = fma(c[3], x, c[2]);  // FMA: c₃×x+c₂
     double p2 = fma(c[5], x, c[4]);  // FMA: c₅×x+c₄
     double p3 = fma(c[7], x, c[6]);  // FMA: c₇×x+c₆
-    
+
     // 第 3 阶段：合并（2个FMA并行执行）
     double q0 = fma(p1, x2, p0);     // FMA: p₁×x²+p₀
     double q1 = fma(p3, x2, p2);     // FMA: p₃×x²+p₂
-    
+
     // 第 4 阶段：最终合并（1个FMA）
     double result = fma(q1, x4, q0); // FMA: q₁×x⁴+q₀
-    
+
     return result;
 }
 ```
@@ -483,30 +500,30 @@ flowchart TB
         X[x] --> X2[x²]
         X2 --> X4[x⁴]
     end
-    
+
     subgraph "Level 1: 两两分组 (并行)"
         P0[p₀ = c₀ + c₁x]
         P1[p₁ = c₂ + c₃x]
         P2[p₂ = c₄ + c₅x]
         P3[p₃ = c₆ + c₇x]
     end
-    
+
     subgraph "Level 2: 合并 (并行)"
         P0 --> Q0[q₀ = p₀ + p₁x²]
         P1 --> Q0
         X2 --> Q0
-        
+
         P2 --> Q1[q₁ = p₂ + p₃x²]
         P3 --> Q1
         X2 --> Q1
     end
-    
+
     subgraph "Level 3: 最终结果"
         Q0 --> Result[result = q₀ + q₁x⁴]
         Q1 --> Result
         X4 --> Result
     end
-    
+
     style X fill:#e1f5e1
     style Result fill:#e1ffe1
 ```
@@ -518,36 +535,36 @@ graph TD
     Result["P₇(x)<br/>result = q₀ + q₁x⁴<br/>🎯 FMA 7"] --> Q0["q₀ = p₀ + p₁x²<br/>⚡ FMA 5"]
     Result --> Q1["q₁ = p₂ + p₃x²<br/>⚡ FMA 6"]
     Result --> X4["x⁴<br/>📐 MUL 2"]
-    
+
     Q0 --> P0["p₀ = c₀ + c₁x<br/>⚡ FMA 1"]
     Q0 --> P1["p₁ = c₂ + c₃x<br/>⚡ FMA 2"]
     Q0 --> X2A["x²<br/>📐 MUL 1"]
-    
+
     Q1 --> P2["p₂ = c₄ + c₅x<br/>⚡ FMA 3"]
     Q1 --> P3["p₃ = c₆ + c₇x<br/>⚡ FMA 4"]
     Q1 --> X2B["x²<br/>📐 MUL 1"]
-    
+
     X4 --> X2C["x²<br/>📐 MUL 1"]
     X2A --> X["x<br/>🌿 输入"]
     X2B --> X
     X2C --> X2A
-    
+
     P0 --> C0["c₀<br/>📊 系数"]
     P0 --> C1["c₁<br/>📊 系数"]
     P0 --> XP0["x<br/>🌿 输入"]
-    
+
     P1 --> C2["c₂<br/>📊 系数"]
     P1 --> C3["c₃<br/>📊 系数"]
     P1 --> XP1["x<br/>🌿 输入"]
-    
+
     P2 --> C4["c₄<br/>📊 系数"]
     P2 --> C5["c₅<br/>📊 系数"]
     P2 --> XP2["x<br/>🌿 输入"]
-    
+
     P3 --> C6["c₆<br/>📊 系数"]
     P3 --> C7["c₇<br/>📊 系数"]
     P3 --> XP3["x<br/>🌿 输入"]
-    
+
     style Result fill:#ff9999,stroke:#cc0000,stroke-width:3px
     style Q0 fill:#ffcc99,stroke:#ff6600,stroke-width:2px
     style Q1 fill:#ffcc99,stroke:#ff6600,stroke-width:2px
@@ -607,6 +624,7 @@ graph TD
 #### 3.3.5 性能优势：FMA的关键作用
 
 **硬件假设**：
+
 - 现代处理器有 **2 个 FMA 单元**（如 Intel Skylake, AMD Zen, ARM Neoverse）
 - FMA 延迟：4 周期，吞吐量：2 FMA/周期
 
@@ -644,6 +662,7 @@ graph TD
 | **Estrin + FMA** | **24 周期** | **87.5%** | **2.67x** | **低 (7次舍入)** |
 
 **关键洞察**：
+
 1. **Horner + FMA**：延迟减半，但无法利用多FMA单元
 2. **Estrin + FMA**：延迟最低 + FMA利用率最高 = **最佳性能**
 3. **精度额外收益**：FMA减少舍入误差，对数值稳定性至关重要
@@ -659,6 +678,7 @@ graph TD
 $$\text{FMA}_{\text{Horner}}(n) = n$$
 
 **解释**：
+
 - n 次迭代，每次 1 个 FMA
 - 无需预计算幂次
 - 总延迟：$n \times L_{\text{FMA}}$（串行执行）
@@ -679,8 +699,8 @@ $$\text{MUL}_{\text{power}}(2^k) = k = \log_2(n)$$
 ...
 第 k 层（最终）  ：1 个 FMA
 
-总FMA数 = 2^(k-1) + 2^(k-2) + ... + 2 + 1 
-        = 2^k - 1 
+总FMA数 = 2^(k-1) + 2^(k-2) + ... + 2 + 1
+        = 2^k - 1
         = n - 1
 ```
 
@@ -708,6 +728,7 @@ $$\text{MUL}_{\text{power}}(n) = \lceil \log_2(n+1) \rceil$$
 | 32 | 32 | 63 | 5 | 68 | $6 L_{\text{FMA}} + 5L_{\text{MUL}}$ |
 
 **关键发现**：
+
 1. **Horner**：操作数 = n，延迟 = $n \times L_{\text{FMA}}$
 2. **Estrin**：操作数 ≈ 2n，延迟 = $O(\log n) \times L_{\text{FMA}}$
 3. **Estrin优势**：延迟远小于Horner（对数 vs 线性）
@@ -763,22 +784,22 @@ def analyze_polynomial(n):
     print(f"\n{'='*60}")
     print(f"多项式阶数: {n}")
     print(f"{'='*60}")
-    
+
     # Horner 分析
     h_fma = horner_fma_count(n)
     h_latency = h_fma * 4  # 假设 FMA 延迟 4 周期
-    
+
     print(f"\nHorner + FMA:")
     print(f"  FMA 操作数: {h_fma}")
     print(f"  总延迟:     {h_latency} 周期")
     print(f"  并行度:     1")
-    
+
     # Estrin 分析
     e_fma = estrin_fma_count(n)
     e_mul = estrin_mul_count(n)
     e_depth = estrin_depth(n)
     e_latency = (e_depth * 4) + (e_mul * 4)  # 关键路径
-    
+
     print(f"\nEstrin + FMA:")
     print(f"  FMA 操作数: {e_fma}")
     print(f"  MUL 操作数: {e_mul}")
@@ -786,13 +807,13 @@ def analyze_polynomial(n):
     print(f"  依赖链深度: {e_depth} 层")
     print(f"  总延迟:     {e_latency} 周期")
     print(f"  并行度:     {(e_fma + e_mul) // e_depth}")
-    
+
     # 对比
     speedup = h_latency / e_latency
     print(f"\n性能对比:")
     print(f"  延迟加速比: {speedup:.2f}x")
     print(f"  操作数比:   {(e_fma + e_mul) / h_fma:.2f}x")
-    
+
 # 示例使用
 for n in [4, 8, 16, 32]:
     analyze_polynomial(n)
@@ -829,15 +850,15 @@ flowchart TD
     Start{多项式阶数 n} --> Check1{n ≤ 3?}
     Check1 -->|是| UseHorner[使用 Horner<br/>简单高效]
     Check1 -->|否| Check2{n ≤ 8?}
-    
+
     Check2 -->|是| CheckFMA{有多个FMA单元?}
     CheckFMA -->|是| UseEstrin1[使用 Estrin<br/>充分并行]
     CheckFMA -->|否| UseHorner2[使用 Horner<br/>单元利用率高]
-    
+
     Check2 -->|否| Check3{n ≤ 16?}
     Check3 -->|是| AlwaysEstrin[强烈推荐 Estrin<br/>加速比 > 1.5x]
     Check3 -->|否| Hybrid[考虑混合策略<br/>Horner-Estrin]
-    
+
     style Start fill:#e1f5e1
     style AlwaysEstrin fill:#e1ffe1
     style UseEstrin1 fill:#fff4e1
@@ -857,23 +878,24 @@ double hybrid_eval_16(double x, double c[]) {
     double x2 = x * x;      // MUL
     double x4 = x2 * x2;    // MUL
     double x8 = x4 * x4;    // MUL
-    
+
     // 每 4 项用 Horner + FMA（4个子组并行）
     double g0 = fma(x, fma(x, fma(x, c[3], c[2]), c[1]), c[0]);
     double g1 = fma(x, fma(x, fma(x, c[7], c[6]), c[5]), c[4]);
     double g2 = fma(x, fma(x, fma(x, c[11], c[10]), c[9]), c[8]);
     double g3 = fma(x, fma(x, fma(x, c[15], c[14]), c[13]), c[12]);
-    
+
     // 用 Estrin 合并（2个FMA并行）
     double h0 = fma(g1, x4, g0);
     double h1 = fma(g3, x4, g2);
-    
+
     // 最终合并（1个FMA）
     return fma(h1, x8, h0);
 }
 ```
 
 **混合策略分析**：
+
 - **FMA数**：4×3（Horner部分）+ 3（Estrin部分）= 15 FMA
 - **MUL数**：3（幂次预计算）
 - **依赖链深度**：3（Horner）+ 2（Estrin合并）= 5 层
@@ -887,7 +909,7 @@ double hybrid_eval_16(double x, double c[]) {
 #### 4.1.1 完整实现示例
 
 ```c
-#include <riscv_vector.h>
+# include <riscv_vector.h>
 
 // 向量化 Estrin 多项式求值（8 阶）
 vfloat64m1_t estrin_vec_8(vfloat64m1_t x, double c[], size_t vl) {
@@ -895,27 +917,27 @@ vfloat64m1_t estrin_vec_8(vfloat64m1_t x, double c[], size_t vl) {
     vfloat64m1_t x2 = vfmul_vv_f64m1(x, x, vl);           // x²
     vfloat64m1_t x4 = vfmul_vv_f64m1(x2, x2, vl);         // x⁴
     vfloat64m1_t x8 = vfmul_vv_f64m1(x4, x4, vl);         // x⁸
-    
+
     // 第 2 阶段：两两分组（4 对并行）
     vfloat64m1_t p0 = vfmacc_vf_f64m1(
         vfmv_v_f_f64m1(c[0], vl), x, c[1], vl);          // c₀ + c₁x
-    
+
     vfloat64m1_t p1 = vfmacc_vf_f64m1(
         vfmv_v_f_f64m1(c[2], vl), x, c[3], vl);          // c₂ + c₃x
-    
+
     vfloat64m1_t p2 = vfmacc_vf_f64m1(
         vfmv_v_f_f64m1(c[4], vl), x, c[5], vl);          // c₄ + c₅x
-    
+
     vfloat64m1_t p3 = vfmacc_vf_f64m1(
         vfmv_v_f_f64m1(c[6], vl), x, c[7], vl);          // c₆ + c₇x
-    
+
     // 第 3 阶段：合并为 2 对（并行）
     vfloat64m1_t q0 = vfmacc_vv_f64m1(p0, p1, x2, vl);   // p₀ + p₁x²
     vfloat64m1_t q1 = vfmacc_vv_f64m1(p2, p3, x2, vl);   // p₂ + p₃x²
-    
+
     // 第 4 阶段：最终合并
     vfloat64m1_t result = vfmacc_vv_f64m1(q0, q1, x4, vl); // q₀ + q₁x⁴
-    
+
     return result;
 }
 ```
@@ -933,6 +955,7 @@ vfloat64m1_t estrin_vec_8(vfloat64m1_t x, double c[], size_t vl) {
 | **总计** | **10 次浮点运算** | | **2.5 cycles** |
 
 **加速比**：
+
 - 每个向量 4 个元素
 - 标量 Horner 需要 8 cycles/element = 32 cycles
 - 向量 Estrin 需要 2.5 cycles / 4 elements = 0.625 cycles/element
@@ -948,6 +971,7 @@ vfloat64m1_t estrin_vec_8(vfloat64m1_t x, double c[], size_t vl) {
 $$\text{FMA}(a, b, c) = a \times b + c$$
 
 **硬件实现**：
+
 1. **内部精度**：乘法结果保持完整精度（2n位），不进行中间舍入
 2. **单次舍入**：只在最终加法后舍入到 n 位
 3. **延迟优化**：FMA延迟 ≈ 单独乘法延迟（通常4周期）
@@ -986,7 +1010,9 @@ $$\begin{align}
 $$\text{result} = (a \times b + c)(1 + \delta), \quad |\delta| \leq \epsilon$$
 $$\text{误差} \leq \epsilon|a \times b + c|$$
 
-**对比**：FMA 误差可以比传统方法小 **2倍以上**
+**对比**：
+
+FMA 误差可以比传统方法小 **2倍以上**
 
 #### 5.1.3 实际案例：多项式求值误差累积
 
@@ -994,9 +1020,9 @@ $$\text{误差} \leq \epsilon|a \times b + c|$$
 
 **测试代码**：
 ```c
-#include <stdio.h>
-#include <math.h>
-#include <fenv.h>
+# include <stdio.h>
+# include <math.h>
+# include <fenv.h>
 
 double horner_no_fma(double x, double c[], int n) {
     #pragma STDC FP_CONTRACT OFF  // 强制禁用FMA
@@ -1016,22 +1042,22 @@ double horner_with_fma(double x, double c[], int n) {
 }
 
 int main() {
-    double c[] = {1.0, 1.0, 0.5, 0.166667, 0.041667, 
+    double c[] = {1.0, 1.0, 0.5, 0.166667, 0.041667,
                   0.008333, 0.001389, 0.000198, 0.0000248};
     double x = 0.5;
-    
+
     // 高精度参考值（用Kahan求和计算）
     double reference = 1.6487212707;
-    
+
     double result_no_fma = horner_no_fma(x, c, 8);
     double result_fma = horner_with_fma(x, c, 8);
-    
+
     printf("参考值:    %.16f\n", reference);
-    printf("无FMA:     %.16f (误差: %.2e)\n", 
+    printf("无FMA:     %.16f (误差: %.2e)\n",
            result_no_fma, fabs(result_no_fma - reference));
-    printf("有FMA:     %.16f (误差: %.2e)\n", 
+    printf("有FMA:     %.16f (误差: %.2e)\n",
            result_fma, fabs(result_fma - reference));
-    
+
     return 0;
 }
 ```
@@ -1064,6 +1090,7 @@ vfnmsac.vv vd, vs1, vs2  # vd = -(vd - vs1 * vs2)
 ```
 
 **关键启示**：
+
 - 现代RISC-V处理器配备 **2-4 个FMA单元**
 - **不使用FMA = 浪费50-75%的计算能力**
 - **Estrin + FMA** 可以充分利用所有FMA单元
@@ -1114,6 +1141,7 @@ vfmacc.vv v8, v9, v2            # result = p0 + p1*x²
 ```
 
 **性能提示**：
+
 - 使用 `-march=rv64gcv` 启用完整的Vector扩展
 - `-ftree-vectorize` 让编译器自动向量化循环
 - 使用 `vfmacc` 系列指令可以减少寄存器压力（累加到目标寄存器）
@@ -1129,7 +1157,7 @@ double kahan_poly(double x, double c[], int n) {
     double sum = c[0];
     double compensation = 0.0;
     double x_power = x;
-    
+
     for (int i = 1; i <= n; i++) {
         double term = c[i] * x_power;
         double y = term - compensation;
@@ -1138,7 +1166,7 @@ double kahan_poly(double x, double c[], int n) {
         sum = t;
         x_power *= x;
     }
-    
+
     return sum;
 }
 ```
@@ -1163,6 +1191,7 @@ double piecewise_poly(double x) {
 ```
 
 **优势**：
+
 - 每个子区间可以用更低阶的多项式
 - 提高精度的同时保持性能
 - 常见于 libm 实现
@@ -1180,7 +1209,7 @@ flowchart TD
     Special -->|正常| Result([输出结果])
     Special -->|溢出| Inf([+∞])
     Special -->|下溢| Zero([0])
-    
+
     style Start fill:#e1f5e1
     style Result fill:#e1ffe1
     style PolyApprox fill:#fff4e1
@@ -1189,13 +1218,13 @@ flowchart TD
 ### 6.2 实现代码
 
 ```c
-#include <math.h>
-#include <riscv_vector.h>
+# include <math.h>
+# include <riscv_vector.h>
 
 // 常数定义
-#define LN2_HI  0.69314718055994530942
-#define LN2_LO  2.3190468138462996e-17
-#define INV_LN2 1.4426950408889634074
+# define LN2_HI  0.69314718055994530942
+# define LN2_LO  2.3190468138462996e-17
+# define INV_LN2 1.4426950408889634074
 
 // RVV 向量化 exp 实现
 vfloat64m1_t vec_exp(vfloat64m1_t x, size_t vl) {
@@ -1203,12 +1232,12 @@ vfloat64m1_t vec_exp(vfloat64m1_t x, size_t vl) {
     // k = round(x / ln(2))
     vfloat64m1_t t = vfmul_vf_f64m1(x, INV_LN2, vl);
     vint64m1_t k = vfcvt_x_f_v_i64m1(t, vl);
-    
+
     // r = x - k * ln(2)，使用双段表示提高精度
     vfloat64m1_t dk = vfcvt_f_x_v_f64m1(k, vl);
     vfloat64m1_t r = vfnmsac_vf_f64m1(x, dk, LN2_HI, vl);  // x - k*LN2_HI
     r = vfnmsac_vf_f64m1(r, dk, LN2_LO, vl);               // r - k*LN2_LO
-    
+
     // ===== 步骤 2: Estrin 多项式逼近 exp(r) =====
     // 系数（Remez 优化）
     const double c[] = {
@@ -1222,11 +1251,11 @@ vfloat64m1_t vec_exp(vfloat64m1_t x, size_t vl) {
         0.000198412698412698413,
         0.0000248015873015873016
     };
-    
+
     vfloat64m1_t r2 = vfmul_vv_f64m1(r, r, vl);
     vfloat64m1_t r4 = vfmul_vv_f64m1(r2, r2, vl);
     vfloat64m1_t r8 = vfmul_vv_f64m1(r4, r4, vl);
-    
+
     // 第 1 层：两两分组
     vfloat64m1_t p0 = vfmacc_vf_f64m1(
         vfmv_v_f_f64m1(c[0], vl), r, c[1], vl);
@@ -1236,14 +1265,14 @@ vfloat64m1_t vec_exp(vfloat64m1_t x, size_t vl) {
         vfmv_v_f_f64m1(c[4], vl), r, c[5], vl);
     vfloat64m1_t p3 = vfmacc_vf_f64m1(
         vfmv_v_f_f64m1(c[6], vl), r, c[7], vl);
-    
+
     // 第 2 层：合并
     vfloat64m1_t q0 = vfmacc_vv_f64m1(p0, p1, r2, vl);
     vfloat64m1_t q1 = vfmacc_vv_f64m1(p2, p3, r2, vl);
-    
+
     // 第 3 层：最终多项式值
     vfloat64m1_t poly = vfmacc_vv_f64m1(q0, q1, r4, vl);
-    
+
     // ===== 步骤 3: 结果重构 2^k * poly =====
     // 通过操作指数位构造 2^k
     vint64m1_t exp_bits = vsll_vx_i64m1(
@@ -1251,20 +1280,20 @@ vfloat64m1_t vec_exp(vfloat64m1_t x, size_t vl) {
         52, vl                        // 移到指数位
     );
     vfloat64m1_t scale = vreinterpret_v_i64m1_f64m1(exp_bits);
-    
+
     vfloat64m1_t result = vfmul_vv_f64m1(poly, scale, vl);
-    
+
     // ===== 步骤 4: 特殊值处理 =====
     // 溢出
     vbool64_t overflow = vfgt_vf_f64m1_b64(x, 709.78, vl);
-    result = vmerge_vvm_f64m1(overflow, result, 
+    result = vmerge_vvm_f64m1(overflow, result,
                               vfmv_v_f_f64m1(INFINITY, vl), vl);
-    
+
     // 下溢
     vbool64_t underflow = vflt_vf_f64m1_b64(x, -745.13, vl);
-    result = vmerge_vvm_f64m1(underflow, result, 
+    result = vmerge_vvm_f64m1(underflow, result,
                               vfmv_v_f_f64m1(0.0, vl), vl);
-    
+
     return result;
 }
 ```
@@ -1272,14 +1301,14 @@ vfloat64m1_t vec_exp(vfloat64m1_t x, size_t vl) {
 ### 6.3 精度验证
 
 ```c
-#include <mpfr.h>
+# include <mpfr.h>
 
 void validate_exp(double x) {
     // SLEEF 实现
     vfloat64m1_t vx = vfmv_v_f_f64m1(x, 1);
     vfloat64m1_t vy = vec_exp(vx, 1);
     double result = vfmv_f_s_f64m1_f64(vy);
-    
+
     // MPFR 参考（200 位精度）
     mpfr_t mx, my;
     mpfr_init2(mx, 200);
@@ -1287,16 +1316,16 @@ void validate_exp(double x) {
     mpfr_set_d(mx, x, MPFR_RNDN);
     mpfr_exp(my, mx, MPFR_RNDN);
     double reference = mpfr_get_d(my, MPFR_RNDN);
-    
+
     // ULP 误差
-    double ulp = fabs(result - reference) / 
+    double ulp = fabs(result - reference) /
                  (nextafter(reference, INFINITY) - reference);
-    
+
     printf("x = %.17g\n", x);
     printf("实现值: %.17g\n", result);
     printf("参考值: %.17g\n", reference);
     printf("ULP 误差: %.3f\n", ulp);
-    
+
     mpfr_clear(mx);
     mpfr_clear(my);
 }
@@ -1343,15 +1372,15 @@ flowchart TD
     Start{多项式阶数?} --> Low{< 4 阶}
     Low -->|是| SimpleHorner[使用 Horner<br/>代码简单]
     Low -->|否| High{需要向量化?}
-    
+
     High -->|是| Parallel{处理器支持<br/>多发射?}
     Parallel -->|是| Estrin[使用 Estrin<br/>最大化 ILP]
     Parallel -->|否| HornerVec[使用向量化 Horner<br/>SIMD 加速]
-    
+
     High -->|否| Precision{需要极高精度?}
     Precision -->|是| Compensated[Kahan/DD 算术]
     Precision -->|否| StandardHorner[标准 Horner]
-    
+
     style Start fill:#e1f5e1
     style Estrin fill:#e1ffe1
     style SimpleHorner fill:#fff4e1
@@ -1360,18 +1389,21 @@ flowchart TD
 ### 7.3 性能优化清单
 
 **编译时**：
+
 - ✅ 使用 `-O3 -ffast-math` 优化标志
 - ✅ 启用 RISC-V Vector + FMA：`-march=rv64gcv`
 - ✅ 使用 profile-guided optimization (PGO)
 - ✅ 启用自动向量化：`-ftree-vectorize`
 
 **算法层面**：
+
 - ✅ 参数归约缩小输入范围
 - ✅ Remez 系数替代泰勒系数
 - ✅ Estrin 代替 Horner（高阶多项式）
 - ✅ 向量化内循环
 
 **精度保证**：
+
 - ✅ 使用双段常数表示（如 ln(2) = L1 + L2）
 - ✅ FMA 指令减少舍入
 - ✅ 验证工具（MPFR）测试极端情况
@@ -1382,4 +1414,3 @@ flowchart TD
 **最后更新**: 2025-01-15  
 **作者**: Clarch Notes  
 **参考**: 基于现代数值分析理论和工业实践编写
-
