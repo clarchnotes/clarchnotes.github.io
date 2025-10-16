@@ -500,9 +500,3 @@ GhostWrite漏洞凸显了对强大、开源的架构验证套件的迫切需求�
 6. T-Head C920 Architecture Analysis
 7. GhostWrite Vulnerability Report
 
----
-
-**文档版本**: 1.0  
-**最后更新**: 2025-01-16  
-**作者**: Clarch Notes  
-**类别**: RISC-V 向量扩展 / 内存系统 / 安全分析

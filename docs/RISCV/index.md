@@ -26,6 +26,9 @@ RISC-V 向量扩展提供灵活且高效的向量计算能力。
   - [归约运算](RVV/ISA/reduction.md) - 向量到标量的归约操作
   - [RVV 内建函数](RVV/ISA/rvv_intrinsics.md) - 编译器内建函数接口
 
+- **系统级集成与安全**
+  - [向量内存访问与PMP/PMA交互](RVV/vector_memory_pmp_pma.md) - 向量处理器的内存保护机制与性能分析
+
 ### Spike 模拟器
 RISC-V 的官方指令集模拟器。
 
