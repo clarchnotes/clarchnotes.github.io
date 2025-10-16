@@ -157,6 +157,7 @@ nav:
               - RISCV/RVV/ISA/int_arith.md
               - RISCV/RVV/ISA/fp_arith.md
               - RISCV/RVV/ISA/mask_arith.md
+          - "向量内存访问与PMP/PMA交互深度解析": RISCV/RVV/vector_memory_pmp_pma.md
   - GPU:
       - GPU/index.md
       - "Basics":
