@@ -9,16 +9,19 @@ Chiplets are small, modular semiconductor dies that can be combined together usi
 ## Key Concepts
 
 ### Modular Design
+
 - Individual functional blocks as separate dies
 - Mix and match different process nodes
 - Improved yield and cost efficiency
 
 ### Interconnect Technologies
+
 - Die-to-die interfaces
 - Package-level interconnects
 - Standardized protocols (UCIe, etc.)
 
 ### Heterogeneous Integration
+
 - Combining different technologies
 - CPU, GPU, memory, I/O on separate chiplets
 - Optimized manufacturing for each function
@@ -30,6 +33,3 @@ Chiplets are small, modular semiconductor dies that can be combined together usi
 - **Flexibility**: Mix different process technologies
 - **Time-to-Market**: Parallel development of chiplets
 - **Scalability**: Add/remove chiplets based on requirements
-
-
-

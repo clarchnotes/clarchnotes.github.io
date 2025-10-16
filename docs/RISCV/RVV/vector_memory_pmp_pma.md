@@ -499,4 +499,3 @@ GhostWrite漏洞凸显了对强大、开源的架构验证套件的迫切需求�
 5. Andes AX45MPV Product Manual
 6. T-Head C920 Architecture Analysis
 7. GhostWrite Vulnerability Report
-

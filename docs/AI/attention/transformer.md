@@ -128,6 +128,7 @@ Transformer 采用经典的编码器-解码器(Encoder-Decoder)架构：
 ### **3.2 关键组件一览**
 
 **核心组件清单**：
+
 1. **输入嵌入 (Input Embedding)**：将词转换为向量
 2. **位置编码 (Positional Encoding)**：添加位置信息
 3. **多头自注意力 (Multi-Head Self-Attention)**：核心计算单元
@@ -170,6 +171,7 @@ $$\text{Embedding}(x_i) = E_{x_i} \in \mathbb{R}^d$$
 由于注意力机制本身没有位置概念，需要显式添加位置信息：
 
 **问题说明**：
+
 ```text
 句子1："AI loves me"  
 句子2："me loves AI"
@@ -185,11 +187,13 @@ $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)$$
 $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)$$
 
 其中：
+
 - $pos$：位置索引 (0, 1, 2, ...)
 - $i$：维度索引 (0, 1, 2, ..., d/2-1)
 - $d$：嵌入维度
 
 **直观理解**：
+
 ```text
 位置编码就像给每个位置一个"身份证号码"：
 
@@ -213,6 +217,7 @@ $$\text{Input} = \text{Embedding} + \text{Positional Encoding}$$
 #### **从单头到多头的动机**
 
 **单头注意力的局限**：
+
 ```text
 问题：单个注意力头只能捕获一种关系
 
@@ -227,6 +232,7 @@ $$\text{Input} = \text{Embedding} + \text{Positional Encoding}$$
 ```
 
 **多头注意力的解决方案**：
+
 ```text
 核心思想：用多个"专家"头分别捕获不同类型的关系
 
@@ -249,6 +255,7 @@ $$\text{Input} = \text{Embedding} + \text{Positional Encoding}$$
 $$Q^{(h)} = XW_Q^{(h)}, \quad K^{(h)} = XW_K^{(h)}, \quad V^{(h)} = XW_V^{(h)}$$
 
 其中：
+
 - $X \in \mathbb{R}^{n \times d}$：输入序列
 - $W_Q^{(h)}, W_K^{(h)}, W_V^{(h)} \in \mathbb{R}^{d \times d_k}$：第 $h$ 个头的投影矩阵
 - $d_k = d / h$：每个头的维度（通常 $d=512, h=8, d_k=64$）
@@ -355,6 +362,7 @@ FFN(x) = max(0, xW₁ + b₁)W₂ + b₂
 ```
 
 **具体参数**：
+
 - 输入维度：$d_{model} = 512$
 - 隐藏层维度：$d_{ff} = 2048$（通常是输入的4倍）
 - 输出维度：$d_{model} = 512$
@@ -449,6 +457,7 @@ output = SubLayer(x) + x
 $$\text{LayerNorm}(x) = \frac{x - \mu}{\sigma} \odot \gamma + \beta$$
 
 其中：
+
 - $\mu = \frac{1}{d}\sum_{i=1}^{d} x_i$：均值
 - $\sigma = \sqrt{\frac{1}{d}\sum_{i=1}^{d} (x_i - \mu)^2}$：标准差  
 - $\gamma, \beta$：可学习的缩放和偏移参数
@@ -1389,4 +1398,3 @@ PagedAttention (内存管理)
 Transformer 架构的出现标志着人工智能进入了一个新时代。它不仅改变了我们处理序列数据的方式，更重要的是，它为我们展示了通过简单而优雅的设计实现复杂智能行为的可能性。
 
 随着技术的不断发展，我们有理由相信，基于 Transformer 的模型将继续推动人工智能的边界，为人类社会带来更多的可能性和机遇。
-

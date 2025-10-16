@@ -17,10 +17,12 @@
 ### 中断控制寄存器
 
 **Hypervisor中断寄存器：**
+
 - **`hie` (Hypervisor Interrupt Enable):** Hypervisor自己的中断使能寄存器
 - **`hip` (Hypervisor Interrupt Pending):** Hypervisor自己的中断挂起寄存器
 
 **Guest虚拟中断寄存器：**
+
 - **`vsie` (Virtual Supervisor Interrupt Enable):** Guest OS的虚拟中断使能寄存器
 - **`vsip` (Virtual Supervisor Interrupt Pending):** Guest OS的虚拟中断挂起寄存器
 
@@ -39,12 +41,14 @@
 ### 委托 vs 非委托的区别
 
 **委托的中断 (hideleg相应位=1):**
+
 ```
 物理中断发生 → 直接路由到Guest VS-mode
               (Hypervisor完全不感知)
 ```
 
 **非委托的中断 (hideleg相应位=0):**
+
 ```
 物理中断发生 → 陷入Hypervisor HS-mode
               ↓
@@ -58,6 +62,7 @@
 ### 完整的中断注入过程
 
 1. **物理中断发生**
+
    ```c
    // 物理定时器中断发生，陷入HS-mode
    void physical_timer_interrupt() {
@@ -66,6 +71,7 @@
    ```
 
 2. **Hypervisor处理中断**
+
    ```c
    void hypervisor_timer_handler() {
        // 确定哪个Guest应该接收这个中断
@@ -80,6 +86,7 @@
    ```
 
 3. **虚拟中断注入**
+
    ```c
    void inject_virtual_interrupt(guest_id_t guest, int interrupt_type) {
        // 切换到目标Guest的上下文
@@ -101,6 +108,7 @@
    ```
 
 4. **Guest中断处理**
+
    ```c
    // 当切换回Guest执行时：
    // 1. 硬件检查 vsip & vsie
@@ -173,6 +181,7 @@ void inject_external_interrupt(guest_id_t guest, int irq_number) {
 ### 中断虚拟化的性能优化
 
 1. **中断聚合 (Interrupt Coalescing)**
+
    ```c
    // 将多个物理中断聚合为单个虚拟中断
    void coalesce_interrupts() {
@@ -184,6 +193,7 @@ void inject_external_interrupt(guest_id_t guest, int irq_number) {
    ```
 
 2. **中断负载均衡**
+
    ```c
    // 在多个Guest之间均衡中断负载
    guest_id_t select_interrupt_target() {
@@ -192,6 +202,7 @@ void inject_external_interrupt(guest_id_t guest, int irq_number) {
    ```
 
 3. **延迟中断注入**
+
    ```c
    // 延迟注入中断直到Guest实际需要时
    void lazy_interrupt_injection() {
@@ -235,4 +246,3 @@ void guest_network_interrupt_handler() {
 ```
 
 这种精细的中断虚拟化机制确保了Guest OS能够高效地处理各种中断，同时为Hypervisor提供了完整的中断管理和控制能力。
-

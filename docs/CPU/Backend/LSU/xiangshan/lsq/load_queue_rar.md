@@ -195,6 +195,7 @@ deqPtrExt := deqPtrExt + deqNum
 ### 场景设置
 
 假设有两个核心，在当前核心有以下load指令序列：
+
 1. `LD x1, [0x1000]` (robIdx=10, 较老的指令)
 2. `LD x2, [0x1000]` (robIdx=20, 较新的指令)
 
@@ -203,6 +204,7 @@ deqPtrExt := deqPtrExt + deqNum
 ### 第1步：指令2先执行
 
 1. 指令2在流水线s2阶段查询RAR依赖：
+
    ```
    io.query(0).req.valid = true
    io.query(0).req.bits.paddr = 0x1000
@@ -211,11 +213,13 @@ deqPtrExt := deqPtrExt + deqNum
    ```
 
 2. 此时LoadQueueRAR没有相关条目，没有检测到违例：
+
    ```
    io.query(0).resp.bits.conflict = false
    ```
 
 3. 指令2被记录到LoadQueueRAR：
+
    ```
    idx = 分配的条目索引
    allocated(idx) = true
@@ -232,12 +236,14 @@ deqPtrExt := deqPtrExt + deqNum
 1. L2 cache向当前核心发送Probe请求
 2. DCache接收到请求，释放包含0x1000的缓存行
 3. DCache通知LoadQueueRAR：
+
    ```
    io.release.valid = true
    io.release.bits.paddr = 0x1000所在的缓存行地址
    ```
 
 4. LoadQueueRAR标记相关条目为released：
+
    ```
    // 对于包含指令2的条目idx
    val addrMatch = (paddr(idx) & ~(lineBytesOffset.U)) === (releaseAddr & ~(lineBytesOffset.U))
@@ -249,6 +255,7 @@ deqPtrExt := deqPtrExt + deqNum
 ### 第3步：指令1后执行
 
 1. 指令1在流水线s2阶段查询RAR依赖：
+
    ```
    io.query(0).req.valid = true
    io.query(0).req.bits.paddr = 0x1000
@@ -257,6 +264,7 @@ deqPtrExt := deqPtrExt + deqNum
    ```
 
 2. LoadQueueRAR检查队列中的条目：
+
    ```
    // 对于包含指令2的条目idx
    val validEntry = allocated(idx)  // true
@@ -272,6 +280,7 @@ deqPtrExt := deqPtrExt + deqNum
    ```
 
 3. 检测到违例并生成响应：
+
    ```
    io.query(0).resp.bits.conflict = true
    io.query(0).resp.bits.conflictAddr = 0x1000

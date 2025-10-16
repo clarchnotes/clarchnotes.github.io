@@ -44,6 +44,7 @@ val bufferState = RegInit(s_idle)
 - **s_wb**: 将结果写回
 
 该模块设计为单例架构（只能同时处理一个非对齐请求），设置了以下关键参数：
+
 - `enqPortNum = LoadPipelineWidth`: 入队端口数量
 - `maxSplitNum = 2`: 最大分割数量，固定为2
 
@@ -388,6 +389,7 @@ highResultWidth    := BYTE1  // 取1字节
 ### 7.3 发送低地址请求 (s_req)
 
 发送第一个分割请求：
+
 - 地址：0x1000
 - 类型：LW (4字节读取)
 - 掩码：0xf (4字节全部有效)
@@ -395,6 +397,7 @@ highResultWidth    := BYTE1  // 取1字节
 ### 7.4 接收低地址响应 (s_resp)
 
 接收第一个响应：
+
 - 数据：0xDDCCBBAA（小端表示）
 - 处理：保存到splitLoadResp(0)
 - 更新状态：unSentLoads = 0b01 (第二个请求未发送)
@@ -402,6 +405,7 @@ highResultWidth    := BYTE1  // 取1字节
 ### 7.5 发送高地址请求 (s_req)
 
 发送第二个分割请求：
+
 - 地址：0x1004
 - 类型：LB (1字节读取)
 - 掩码：0x1 (仅最低字节有效)
@@ -409,6 +413,7 @@ highResultWidth    := BYTE1  // 取1字节
 ### 7.6 接收高地址响应 (s_resp)
 
 接收第二个响应：
+
 - 数据：0x000000EE（只有低字节有效）
 - 处理：保存到splitLoadResp(1)
 - 更新状态：unSentLoads = 0b00 (所有请求已完成)
@@ -417,6 +422,7 @@ highResultWidth    := BYTE1  // 取1字节
 ### 7.7 合并结果 (s_comb_wakeup_rep)
 
 假设内存小端序中的数据布局（以字节为单位）：
+
 ```
 地址: 0x1000 0x1001 0x1002 0x1003 | 0x1004
 数据:   AA     BB     CC     DD   |   EE
@@ -473,6 +479,7 @@ XSPerfAccumulate("flush_non_idle",         flush && (bufferState =/= s_idle))
 ```
 
 这些监控点帮助诊断和优化非对齐访问的性能问题，提供以下指标：
+
 - 非对齐请求分配次数
 - 请求被刷新的次数
 - 不同状态下的刷新情况
@@ -486,6 +493,7 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
 1. **检测与转发**：
    - LoadUnit在执行阶段(S2/S3)检测到非对齐访问且跨越16字节边界时，会将请求转发给LoadMisalignBuffer
    - 转发通过`io.misalign_enq.req`接口进行，这是在LoadUnit中的s3阶段进行的：
+
    ```scala
    val toMisalignBufferValid = s3_can_enter_lsq_valid && s3_mis_align && !s3_frm_mabuf
    io.misalign_enq.req.valid := toMisalignBufferValid && s3_misalign_can_go
@@ -495,6 +503,7 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
 2. **分割请求处理**：
    - LoadMisalignBuffer将非对齐请求分割后，通过`io.splitLoadReq`接口将分割请求发回给LoadUnit
    - LoadUnit通过专门的接口处理来自LoadMisalignBuffer的请求：
+
    ```scala
    // misalignBuffer issue path
    val misalign_ldin = Flipped(Decoupled(new LsPipelineBundle))
@@ -510,19 +519,23 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
 LoadMisalignBuffer的处理结果通过两个不同路径返回，取决于请求类型：
 
 1. **标量load指令结果传递**：
+
    ```scala
    io.writeBack.valid := req_valid && (bufferState === s_wb) && 
                        (io.splitLoadResp.valid && io.splitLoadResp.bits.misalignNeedWakeUp || 
                        globalUncache || globalException) && !io.loadOutValid && !req.isvec
    ```
+
    - 通过`io.writeBack`接口将结果直接返回给处理器后端
    - 结果包含处理后的数据、异常信息和调试信息
    - 目标是LSQ和ROB，完成执行阶段处理
 
 2. **向量load指令结果传递**：
+
    ```scala
    io.vecWriteBack.valid := req_valid && (bufferState === s_wb) && !io.loadVecOutValid && req.isvec
    ```
+
    - 通过`io.vecWriteBack`接口将结果返回给向量处理单元
    - 包含处理后的向量数据、掩码和元素索引等信息
 
@@ -558,6 +571,7 @@ LoadMisalignBuffer与LoadUnit的职责划分：
    - LoadMisalignBuffer根据响应中的miss信息决定后续处理
 
 3. **replay机制**：
+
    ```scala
    when (io.splitLoadResp.valid) {
      ...
@@ -567,6 +581,7 @@ LoadMisalignBuffer与LoadUnit的职责划分：
      }
    }
    ```
+
    - 当需要replay时，LoadMisalignBuffer回到`s_req`状态重新发送请求
    - LoadUnit实际负责与缓存缺失处理逻辑交互(如MSHR)
    - LoadMisalignBuffer不直接与缓存交互，而是通过LoadUnit间接处理Miss
@@ -574,6 +589,7 @@ LoadMisalignBuffer与LoadUnit的职责划分：
 ### 10.5 异常和特殊情况处理
 
 1. **非缓存访问**：
+
    ```scala
    when (isUncache) {
      unSentLoads := 0.U
@@ -581,10 +597,12 @@ LoadMisalignBuffer与LoadUnit的职责划分：
      exceptionVec(loadAddrMisaligned) := true.B
    }
    ```
+
    - 检测到非缓存访问时，中止处理并引发loadAddrMisaligned异常
    - 交由软件处理非对齐的非缓存访问
 
 2. **跨页异常处理**：
+
    ```scala
    val shouldOverwrite = req_valid && globalException
    val overwriteExpBuf = GatedValidRegNext(shouldOverwrite)
@@ -595,6 +613,7 @@ LoadMisalignBuffer与LoadUnit的职责划分：
        splitLoadResp(curPtr).fullva),
      shouldOverwrite)
    ```
+
    - 当非对齐访问跨页且第二页发生异常时
    - 使用第二页的地址作为异常地址，确保异常处理代码能找到正确的页面
 
@@ -651,6 +670,7 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
 ### 11.3 跨模块协作
 
 1. **重定向处理**：
+
    ```scala
    val flush = req_valid && req.uop.robIdx.needFlush(io.redirect)
    when (flush) {
@@ -659,14 +679,17 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
      // 重置状态
    }
    ```
+
    - 监听重定向信号，及时取消无效请求
    - 在投机执行中确保正确性
 
 2. **唤醒机制**：
+
    ```scala
    val needWakeUpWB = RegInit(false.B)
    val needWakeUpReqsWire = Wire(Bool())
    ```
+
    - 使用专用的唤醒信号，确保依赖于非对齐load的指令能够及时执行
 
 ## 12. 总结与应用

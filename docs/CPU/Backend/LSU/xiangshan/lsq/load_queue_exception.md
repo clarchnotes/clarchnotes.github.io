@@ -1,4 +1,4 @@
-# LqExceptionBuffer 
+# LqExceptionBuffer
 
 ## 1. 模块概述
 
@@ -51,6 +51,7 @@ val io = IO(new Bundle() {
 ```
 
 其中 `ExceptionAddrIO` 包含：
+
 - 异常指令的 ROB 索引
 - 异常指令的虚拟地址
 - 可能的物理地址

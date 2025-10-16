@@ -13,6 +13,3 @@ Chiplets represent a paradigm shift in semiconductor design, enabling modular, h
 - Design Methodologies
 - Performance Analysis
 - Industry Implementations
-
-
-

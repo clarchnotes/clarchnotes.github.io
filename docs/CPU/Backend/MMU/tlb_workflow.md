@@ -43,6 +43,7 @@ lookup_tag = Cat(io.ptw.ptbr.asid, io.req.bits.vpn)
 ```
 
 标签包含两个关键部分：
+
 - **ASID**: 来自 `satp.ASID` 字段
 - **VPN**: 虚拟页号，从虚拟地址中提取
 
@@ -104,6 +105,7 @@ val hit_way = OHToUInt(hits)
 #### 多命中检测
 
 正常情况下，最多只能有一个命中：
+
 ```chisel
 assert(PopCount(hits) <= 1.U, "Multiple TLB hits detected")
 ```
@@ -369,6 +371,7 @@ when(debug_enable) {
 ### 覆盖率监控
 
 跟踪不同场景的覆盖情况：
+
 - 不同页面大小的访问
 - 不同权限组合的检查
 - 不同特权级别的访问

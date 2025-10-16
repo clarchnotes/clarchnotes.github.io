@@ -28,10 +28,12 @@ H扩展引入了大量CSR来为Guest OS构建一个"虚拟的硬件环境"，同
 这两个寄存器在处理第二阶段地址翻译异常时至关重要：
 
 **htval (Hypervisor Trap Value):**
+
 - 当发生由第二阶段地址翻译引起的异常时，`htval`会保存导致错误的GPA
 - 为Hypervisor提供了精确的错误地址信息
 
 **htinst (Hypervisor Trap Instruction):**
+
 - 保存导致错误的指令本身或其部分信息
 - 帮助Hypervisor理解异常的上下文和处理方式
 
@@ -173,4 +175,3 @@ void hypervisor_timer_handler() {
 3. **缓存机制:** 将常用的CSR值缓存在处理器内部
 
 这种精心设计的CSR架构使得Guest OS可以无缝运行，同时为Hypervisor提供了完整的控制和监控能力。
-

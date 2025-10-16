@@ -49,6 +49,7 @@ uint16_t recycle_vmid() {
 ### VMID优化技术
 
 1. **延迟VMID分配**
+
    ```c
    // 只在实际需要时分配VMID
    void lazy_vmid_allocation(struct guest_vm *guest) {
@@ -60,6 +61,7 @@ uint16_t recycle_vmid() {
    ```
 
 2. **VMID预测回收**
+
    ```c
    // 基于使用频率预测哪些VMID可以回收
    void predictive_vmid_reclaim() {
@@ -386,4 +388,3 @@ void adaptive_performance_tuning() {
 ```
 
 这些优化技术的组合使用可以显著提高H扩展虚拟化的性能，使Guest OS能够以接近裸机的效率运行。
-

@@ -4,6 +4,7 @@
 
 AMD Ryzen处理器是Chiplet设计理念在商业化应用中的典型代表。它通过"功能分解"与"异构集成"的设计方法，实现了成本优化、良率提升和产品迭代加速的目标。
 ![](attachments/Pasted%20image%2020250913230813.png)
+
 ### 技术架构分析
 
 AMD的桌面级Ryzen处理器（以Zen 2/3/4架构为代表）采用由两类功能不同的Chiplet构成的架构：
@@ -40,6 +41,7 @@ IOD负责系统I/O与内存控制功能，内部集成了DDR内存控制器、PC
 
 Apple M1 Ultra展示了2.5D封装技术如何实现系统性能的翻倍，同时对软件生态保持透明性，是Chiplet技术在消费级产品中的应用实例。
 ![](attachments/Pasted%20image%2020250913230741.png)
+
 ### 技术架构分析
 
 M1 Ultra的核心技术是苹果的 "UltraFusion" 互连架构。这是一种基于台积电CoWoS-S（硅中介层）技术的定制化2.5D封装解决方案。
@@ -76,6 +78,7 @@ UltraFusion技术的重要特点是软件透明性。开发者无需为这个双
 
 NVIDIA的数据中心GPU是当前AI计算的重要组成部分。H100 Tensor Core GPU的设计展示了先进封装技术在满足AI和HPC应用中高内存带宽需求方面的重要作用。
 ![](attachments/Pasted%20image%2020250913230758.png)
+
 ### 技术架构分析
 
 NVIDIA H100采用了台积电的CoWoS-S 2.5D封装技术：

@@ -302,6 +302,7 @@ for (i <- 0 until RawQueueSize) {
 ### 5.1 违例检测示例
 
 假设处理器中有以下指令序列：
+
 1. `ST [0x1000], x1` (ROB索引: 42)
 2. `LD x2, [0x1000]` (ROB索引: 43)
 
@@ -310,6 +311,7 @@ for (i <- 0 until RawQueueSize) {
 #### 第1步：load指令执行
 
 1. load指令在执行阶段发送查询请求：
+
    ```
    io.query(0).req.valid = true
    io.query(0).req.bits.addr = 0x1000
@@ -318,11 +320,13 @@ for (i <- 0 until RawQueueSize) {
    ```
 
 2. 此时store指令的地址尚未就绪，因此没有检测到冲突：
+
    ```
    io.query(0).resp.bits.conflict = false
    ```
 
 3. load指令被记录到队列中：
+
    ```
    uop(enqPtr) = load指令uop(robIdx=43)
    paddr(enqPtr) = 0x1000
@@ -336,6 +340,7 @@ for (i <- 0 until RawQueueSize) {
 稍后，store指令完成地址计算：
 
 1. store地址信息发送到LoadQueueRAW：
+
    ```
    io.storeIn(0).valid = true
    io.storeIn(0).bits.vaddr = 0x1000
@@ -344,6 +349,7 @@ for (i <- 0 until RawQueueSize) {
    ```
 
 2. 检查是否有load指令违反了与该store的依赖：
+
    ```
    // 对于队列中的每个条目
    val ldValid = allocated(j) && addrvalid(j)  // 条目有效
@@ -361,6 +367,7 @@ for (i <- 0 until RawQueueSize) {
    ```
 
 3. 发现违例并生成回滚请求：
+
    ```
    io.rollback(0).valid = true
    io.rollback(0).bits.robIdx = 43  // 违例load的ROB索引
@@ -374,6 +381,7 @@ for (i <- 0 until RawQueueSize) {
 #### 第1步：load指令执行和记录
 
 1. load指令执行并查询潜在冲突：
+
    ```
    io.query(0).req.valid = true
    io.query(0).req.bits.addr = 0x2000
@@ -382,11 +390,13 @@ for (i <- 0 until RawQueueSize) {
    ```
 
 2. 查询结果表明没有冲突：
+
    ```
    io.query(0).resp.bits.conflict = false
    ```
 
 3. load指令被记录到队列中：
+
    ```
    uop(enqPtr) = load指令uop(robIdx=50)
    paddr(enqPtr) = 0x2000
@@ -400,6 +410,7 @@ for (i <- 0 until RawQueueSize) {
 load指令最终在ROB中正常提交：
 
 1. ROB发送提交信号：
+
    ```
    io.rob.commits(0).valid = true
    io.rob.commits(0).bits.isLoad = true
@@ -407,6 +418,7 @@ load指令最终在ROB中正常提交：
    ```
 
 2. LoadQueueRAW识别匹配的条目：
+
    ```
    // 遍历队列寻找匹配条目
    for (j <- 0 until RawQueueSize) {
@@ -417,6 +429,7 @@ load指令最终在ROB中正常提交：
    ```
 
 3. 清理已提交的条目：
+
    ```
    // 假设匹配到索引为k的条目
    when (commitMask(k)) {
@@ -426,6 +439,7 @@ load指令最终在ROB中正常提交：
    ```
 
 4. 更新出队指针：
+
    ```
    deqPtrExt := deqPtrExt + 1
    ```
@@ -505,6 +519,7 @@ XSPerfAccumulate("max_age", Mux(validCount > 0.U,
 **挑战**：乱序执行使得load指令可能在其依赖的store地址就绪前就执行。
 
 **解决方案**：
+
 1. 记录所有已执行的load指令信息
 2. 当store地址就绪时回溯检查可能的违例
 3. 一旦发现违例立即触发回滚
@@ -515,6 +530,7 @@ XSPerfAccumulate("max_age", Mux(validCount > 0.U,
 **挑战**：需要高效store和查询大量load指令信息。
 
 **解决方案**：
+
 1. 使用适当大小的循环队列数据结构
 2. 通过标志位快速识别有效条目
 3. 利用优先级编码器快速定位违例条目
@@ -525,6 +541,7 @@ XSPerfAccumulate("max_age", Mux(validCount > 0.U,
 **挑战**：违例检测需要平衡及时性和误报率。
 
 **解决方案**：
+
 1. 确保地址比较的精确性，减少误报
 2. 对于地址部分重叠的访问进行精确的掩码比较
 3. 优先处理最早的违例，减少级联回滚
@@ -537,9 +554,9 @@ XSPerfAccumulate("max_age", Mux(validCount > 0.U,
 1. **入队**：执行阶段记录到队列中
 2. **冲突检查**：作为被查询对象参与后续store指令的违例检测
 3. **清理**：通过以下三种方式之一被清理
-	- **正常提交**：指令在ROB中提交时
-	- **重定向**：发生分支预测错误等重定向事件时
-	- **违例回滚**：由于该load自身违例而被回滚时
+ - **正常提交**：指令在ROB中提交时
+ - **重定向**：发生分支预测错误等重定向事件时
+ - **违例回滚**：由于该load自身违例而被回滚时
 
 即使没有发生任何冲突，load指令在正常执行完毕并提交后，也会通过监听ROB提交信号，被从LoadQueueRAW队列中正常清除，确保队列资源可以被新的load指令使用。
 

@@ -39,6 +39,7 @@ Store Sets 算法基于一个关键观察：**特定的 load 和 store 指令对
 
 Store Sets 算法需要两个主要的硬件表：
 ![](../attachments/Pasted%20image%2020250504000801.png)
+
 #### 2.3.1 Store Set ID Table (SSIT)
 
 - **功能**：将指令的 PC 映射到其 Store Set ID (SSID)

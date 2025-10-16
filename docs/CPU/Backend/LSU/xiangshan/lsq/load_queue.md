@@ -220,13 +220,14 @@ loadQueueReplay.io.rawFull          <> loadQueueRAW.io.lqFull
 
 1. load单元在S3阶段通过`ldin`接口向LoadQueue发送结果
 2. 结果同时分发给多个子模块：
-	- VirtualLoadQueue更新指令状态
-	- LoadQueueReplay处理可能的replay
-	- 异常缓冲器记录可能的异常
+ - VirtualLoadQueue更新指令状态
+ - LoadQueueReplay处理可能的replay
+ - 异常缓冲器记录可能的异常
 
 ### 5.5 load replay
 
 对于需要replay的load指令(如缓存未命中)：
+
 1. LoadQueueReplay记录replay信息
 2. 当条件满足时(如缓存行返回)，通过`replay`接口发送replay请求
 3. load单元重新执行这些指令
@@ -234,13 +235,13 @@ loadQueueReplay.io.rawFull          <> loadQueueRAW.io.lqFull
 ### 5.6 内存依赖冲突处理
 
 1. 如果检测到RAW冲突：
-	- LoadQueueRAW生成回滚信号
-	- 通过`nuke_rollback`接口发送到ROB
-	- 处理器从正确点恢复执行
+ - LoadQueueRAW生成回滚信号
+ - 通过`nuke_rollback`接口发送到ROB
+ - 处理器从正确点恢复执行
 
 2. 如果检测到RAR冲突：
-	- LoadQueueRAR生成适当的响应
-	- 可能导致指令重排序或replay
+ - LoadQueueRAR生成适当的响应
+ - 可能导致指令重排序或replay
 
 ## 6. uncache load处理
 
@@ -278,12 +279,14 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
 ### 第1步: 指令分发阶段
 
 1. 分发单元将指令发送到LoadQueue:
+
    ```
    io.enq.req(0).valid = true
    io.enq.req(0).bits = load指令信息
    ```
 
 2. VirtualLoadQueue分配一个条目:
+
    ```
    allocated(idx) = true
    robIdx(idx) = 指令的ROB索引
@@ -291,6 +294,7 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 3. 返回分配结果:
+
    ```
    io.enq.resp(0) = 分配的队列索引
    ```
@@ -298,6 +302,7 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
 ### 第2步: 地址生成和冲突检查
 
 1. load单元计算地址后查询依赖冲突:
+
    ```
    io.ldu.stld_nuke_query(0).req.valid = true
    io.ldu.stld_nuke_query(0).req.bits.addr = 0x1000
@@ -305,10 +310,11 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. LoadQueueRAW检查是否存在写后读冲突:
-	- 扫描地址重叠的store指令
-	- 检查这些store指令是否在当前load之前
+ - 扫描地址重叠的store指令
+ - 检查这些store指令是否在当前load之前
 
 3. load单元同时查询读后读冲突:
+
    ```
    io.ldu.ldld_nuke_query(0).req.valid = true
    io.ldu.ldld_nuke_query(0).req.bits = 同上
@@ -324,6 +330,7 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
 ### 第4步: load完成和状态更新
 
 1. load单元将结果发送给LoadQueue:
+
    ```
    io.ldu.ldin(0).valid = true
    io.ldu.ldin(0).bits.uop = 微操作信息
@@ -332,11 +339,12 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. 结果同时分发给各子模块:
-	- VirtualLoadQueue将条目标记为已提交: `committed(idx) = true`
-	- 异常缓冲器检查并记录可能的异常
-	- LoadQueueReplay判断不需要replay
+ - VirtualLoadQueue将条目标记为已提交: `committed(idx) = true`
+ - 异常缓冲器检查并记录可能的异常
+ - LoadQueueReplay判断不需要replay
 
 3. load结果通过LoadQueue的输出接口返回给处理器后端:
+
    ```
    io.ldout(0).valid = true
    io.ldout(0).bits.data = 处理后的load数据
@@ -354,6 +362,7 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
 ### store地址生成完成
 
 1. store单元将地址信息发送到LoadQueue:
+
    ```
    io.sta.storeAddrIn(0).valid = true
    io.sta.storeAddrIn(0).bits.addr = 0x2000
@@ -361,16 +370,18 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. LoadQueueRAW接收store地址:
+
    ```
    loadQueueRAW.io.storeIn <> io.sta.storeAddrIn
    ```
 
 3. LoadQueueRAW执行违例检查:
-	- 扫描所有已执行但未提交的load
-	- 检查地址是否与新store指令重叠
-	- 检查load是否应该在该store之后执行
+ - 扫描所有已执行但未提交的load
+ - 检查地址是否与新store指令重叠
+ - 检查load是否应该在该store之后执行
 
 4. 如果检测到违例，生成回滚信号:
+
    ```
    io.nuke_rollback(0).valid = true
    io.nuke_rollback(0).bits.robIdx = 违例load的ROB索引
@@ -383,6 +394,7 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
 ### 第1步: 标记为需要replay
 
 1. load单元在结果中标记replay需求:
+
    ```
    io.ldu.ldin(0).valid = true
    io.ldu.ldin(0).bits.rep_info.need_rep = true
@@ -390,30 +402,31 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. LoadQueueReplay记录replay信息:
-	- storeload指令的地址、掩码和其他必要信息
-	- 记录replay类型和原因
+ - storeload指令的地址、掩码和其他必要信息
+ - 记录replay类型和原因
 
 ### 第2步: 等待replay条件满足
 
 1. 对于缓存未命中导致的replay:
-	- 监听`tl_d_channel`接口的缓存行返回
-	- 检查返回的地址是否与等待replay的load匹配
+ - 监听`tl_d_channel`接口的缓存行返回
+ - 检查返回的地址是否与等待replay的load匹配
 
 2. 对于依赖store的replay:
-	- 监控相关store指令的状态
-	- 当store数据准备好时触发replay
+ - 监控相关store指令的状态
+ - 当store数据准备好时触发replay
 
 ### 第3步: 发起replay
 
 1. 条件满足时，LoadQueueReplay发送replay请求:
+
    ```
    io.replay(0).valid = true
    io.replay(0).bits = 原始load指令信息(可能包含转发数据)
    ```
 
 2. load单元重新执行该指令:
-	- 可能直接使用转发的数据
-	- 或重新访问现在已经在缓存中的数据
+ - 可能直接使用转发的数据
+ - 或重新访问现在已经在缓存中的数据
 
 ## 10. 性能监控与调试
 

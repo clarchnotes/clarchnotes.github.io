@@ -40,6 +40,7 @@ Load Queue 负责管理所有in-flight的load指令，其功能包括：
 4. 管理uncache访问和异常情况
 
 LQ子系统由多个专用模块组成，各自处理不同的功能需求：
+
 - **VirtualLoadQueue**: 负责指令状态跟踪和队列管理
 - **LoadQueueRAW**: 处理写后读(RAW)依赖违例
 - **LoadQueueRAR**: 处理读后读(RAR)顺序违例
@@ -56,6 +57,7 @@ Store Queue 负责管理所有in-flight的store指令，其功能包括：
 4. 协调store指令的安全提交
 
 SQ子系统的主要模块包括：
+
 - **StoreQueue**: 核心队列管理模块
 - **StoreQueueData**: 数据store结构
 - **StoreMisalignBuffer**: 处理非对齐store访问
@@ -65,21 +67,21 @@ SQ子系统的主要模块包括：
 ### 2.1 指令处理流程
 
 1. **分派阶段 (Dispatch)**
-	- 访存指令从分派阶段进入LSQ系统
-	- Load指令分配VirtualLoadQueue条目
-	- Store指令分配StoreQueue条目
+ - 访存指令从分派阶段进入LSQ系统
+ - Load指令分配VirtualLoadQueue条目
+ - Store指令分配StoreQueue条目
 
 2. **执行阶段 (Execute)**
-	- Load指令计算地址，检查依赖，从缓存或StoreQueue获取数据
-	- Store指令计算地址，准备数据，等待提交
+ - Load指令计算地址，检查依赖，从缓存或StoreQueue获取数据
+ - Store指令计算地址，准备数据，等待提交
 
 3. **提交阶段 (Commit)**
-	- Load指令检查违例，确认无误后提交
-	- Store指令等待ROB允许后提交，将数据写入store层次
+ - Load指令检查违例，确认无误后提交
+ - Store指令等待ROB允许后提交，将数据写入store层次
 
 4. **违例恢复 (Violation Recovery)**
-	- 检测到RAW/RAR违例时触发流水线重启
-	- 使用LoadQueueReplay replay被错误执行的load指令
+ - 检测到RAW/RAR违例时触发流水线重启
+ - 使用LoadQueueReplay replay被错误执行的load指令
 
 ### 2.2 关键交互路径
 
@@ -173,4 +175,4 @@ LSQ 系统中的 LQ 和 SQ 模块紧密协作，共同确保内存操作的正�
 
 XiangShan LSQ 系统采用模块化设计，通过精心设计的队列结构和控制逻辑，高效处理内存访问指令的乱序执行、内存依赖检测和违例恢复，是整个处理器实现高性能乱序执行的关键组成部分。其分离式结构和专门的功能模块使系统既灵活又高效，能够满足现代高性能处理器对内存访问的严格要求。
 
-Load Queue和Store Queue作为LSQ的两大核心子系统，通过紧密协作确保内存操作的正确性和高性能。Load Queue负责管理load指令的执行和内存依赖检测，而Store Queue则处理store指令的执行和数据转发，二者共同构成了一个完整的内存访问管理系统。 
+Load Queue和Store Queue作为LSQ的两大核心子系统，通过紧密协作确保内存操作的正确性和高性能。Load Queue负责管理load指令的执行和内存依赖检测，而Store Queue则处理store指令的执行和数据转发，二者共同构成了一个完整的内存访问管理系统。
