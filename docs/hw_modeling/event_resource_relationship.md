@@ -670,179 +670,202 @@ Event到达 → 检查资源 → 决策:
 
 ---
 
-#### 11.11 特殊情况：不知道资源何时可用 {#unknown-resource-time}
+#### 11.11 Waiting Queue的真正用途 {#waiting-queue-purpose}
 
-**重要追问：如果你不知道资源什么时候可用呢？**
+**核心澄清：Waiting Queue不是因为"不知道时间"！**
 
-这种情况确实存在！让我们分析所有可能的场景和解决方案。
+让我们彻底澄清一个常见误解。
+
+---
+
+##### 误解 vs 正确理解
+
+**❌ 常见误解：**
+```python
+# 错误理解
+"因为不知道资源何时可用，所以需要waiting queue"
+
+# 这是错的！
+# 实际上，resource.busy_until 应该总是已知的
+```
+
+**✅ 正确理解：**
+```python
+# Waiting Queue的真正用途
+"因为需要优先级调度，所以需要waiting queue"
+
+# 两种场景对比：
+场景1（FIFO，90%）：
+  - resource.busy_until = 300  # 已知！
+  - 下一个操作：直接创建 Event@300
+  - 不需要 waiting queue
+
+场景2（优先级调度，10%）：
+  - resource.busy_until = 300  # 同样已知！
+  - 多个操作等待：Op1(低优), Op2(高优), Op3(中优)
+  - 需要 waiting queue 来保存所有等待者
+  - 资源@300释放时，从queue中选择Op2(高优)
+```
 
 ---
 
 ##### 场景分析
 
-**场景1: 资源被其他操作占用，但不知道何时完成**
+**场景1: FIFO调度（简单，推荐）- 不需要waiting queue**
 
 ```python
-问题:
-  资源X正被操作A使用
-  但操作A的完成时间未知（例如：依赖外部输入）
-  
-现状:
-  resource.busy_until = ???  # 不知道！
-  resource.current_user = "操作A"
+# 资源被操作A占用
+resource.busy_until = 300  # 时间已知！
+resource.current_user = "操作A"
 
-我的操作5需要资源X，怎么办？
+# 操作5需要资源X
+def try_schedule_op5():
+    if current_time >= resource.busy_until:
+        # 可用，立即开始
+        resource.acquire(op5, current_time, duration=50)
+    else:
+        # 不可用，创建Event@已知时间
+        event = Event(time=resource.busy_until,  # 直接用300！
+                     type=RETRY,
+                     op_id=5)
+        event_queue.add(event)
+        # ✓ 不需要waiting queue
+        # ✓ 时间是已知的（300）
+
+# 关键：busy_until总是已知的！
 ```
 
-**场景2: 资源状态复杂，无法简单预测**
+**场景2: 优先级调度（复杂）- 需要waiting queue**
 
 ```python
-问题:
-  多个操作竞争同一资源
-  资源分配由调度器动态决定
-  无法提前知道何时轮到我
+# 同样的情况：资源被占用到时间300
+resource.busy_until = 300  # 同样已知！
 
-例如:
-  4个操作等待1个端口
-  端口采用优先级调度
-  我的优先级是第3，但不知道前面的操作何时完成
+# 但是：有多个操作等待，需要优先级调度
+waiting_ops = [
+    Op1(priority=1, low),
+    Op2(priority=10, high),
+    Op3(priority=5, medium)
+]
+
+# 为什么需要waiting queue？
+# 不是因为"不知道时间"（时间是300，已知！）
+# 而是因为：需要从多个等待者中选择最高优先级
+
+def on_resource_release_at_300():
+    # 资源在300释放（时间一直都是已知的）
+    # 问题：给谁？
+    next_op = select_highest_priority(waiting_queue)  # Op2
+    event = Event(time=300, op=next_op)
+    event_queue.add(event)
+    
+# ✓ 需要waiting queue
+# ✓ 用途：保存所有等待者，以便选择
+# ✓ 时间仍然是已知的（300）
 ```
 
 ---
 
-##### 解决方案1: 使用等待队列（推荐）✓
+##### 完整实现：优先级调度的Waiting Queue
 
-**核心思想：不创建Event，而是加入等待队列，等待资源释放时被通知**
+**核心思想：保存所有等待者，资源释放时从中选择最优的**
 
 ```python
-class Resource:
-    """支持等待队列的资源"""
+class ResourceWithPriorityScheduling:
+    """支持优先级调度的资源"""
     def __init__(self, name):
         self.name = name
-        self.busy_until = 0
+        self.busy_until = 0  # 总是已知的释放时间
         self.current_user = None
-        self.waiting_queue = []  # ← 等待这个资源的操作队列
+        self.waiting_queue = []  # 等待这个资源的所有操作
     
-    def is_available(self):
+    def is_available(self, at_time=None):
         """资源是否可用"""
-        return self.current_user is None
+        if at_time is None:
+            at_time = current_time
+        return at_time >= self.busy_until
     
-    def add_waiter(self, operation_id):
+    def add_waiter(self, operation):
         """
         操作加入等待队列
         
-        关键：不需要知道资源何时可用！
+        关键：用于优先级调度，不是因为"不知道时间"
+        busy_until 是已知的！
         """
-        if operation_id not in self.waiting_queue:
-            self.waiting_queue.append(operation_id)
-            print(f"  [{self.name}] 操作{operation_id}加入等待队列")
+        if operation not in self.waiting_queue:
+            self.waiting_queue.append(operation)
+            # 按优先级排序
+            self.waiting_queue.sort(key=lambda op: -op.priority)
+            print(f"  [{self.name}] 操作{operation.id}加入等待队列")
     
     def release(self):
         """
-        释放资源，主动通知所有等待者
+        释放资源，从waiting queue中选择下一个操作
         
-        关键：资源释放时，等待者自动被通知！
+        关键：优先级调度的核心逻辑
         """
         print(f"  [{self.name}] 释放 @ 时间{current_time}")
         self.current_user = None
         self.busy_until = current_time
         
-        # 主动通知所有等待者
+        # 从waiting queue中选择最高优先级的操作
         if self.waiting_queue:
-            print(f"  [{self.name}] 通知{len(self.waiting_queue)}个等待者")
+            # 选择优先级最高的（队列已排序）
+            next_op = self.waiting_queue.pop(0)
+            print(f"  [{self.name}] 选择下一个操作：{next_op.id} (优先级{next_op.priority})")
             
-            for op_id in self.waiting_queue:
-                # 创建立即调度尝试event
-                notify_event = Event(
-                    time=current_time,  # 立即！
-                    type=EventType.SCHEDULE_ATTEMPT,
-                    operation_id=op_id
-                )
-                event_queue.enqueue(notify_event)
-                print(f"    → 通知操作{op_id}")
-            
-            # 清空队列
-            self.waiting_queue.clear()
+            # 创建Event通知被选中的操作
+            notify_event = Event(
+                time=current_time,
+                type=EventType.SCHEDULE_ATTEMPT,
+                operation_id=next_op.id
+            )
+            event_queue.enqueue(notify_event)
+            print(f"    → 创建Event@{current_time} for Op{next_op.id}")
 
-def try_schedule_operation_with_waiting(op):
-    """
-    尝试调度操作（使用等待队列方式）
-    """
-    print(f"\n尝试调度操作{op.id}")
-    
-    # 检查所有资源
-    resources_available = True
-    for resource_name in op.required_resources:
-        resource = resources[resource_name]
-        
-        if not resource.is_available():
-            # 资源不可用
-            resources_available = False
-            
-            # 关键：加入等待队列，不创建Event！
-            resource.add_waiter(op.id)
-            print(f"  资源{resource_name}不可用，加入等待队列")
-    
-    if resources_available:
-        # 所有资源可用，立即开始
-        start_operation(op)
-        print(f"  操作{op.id}立即开始")
-    else:
-        # 已加入等待队列，等待通知
-        print(f"  操作{op.id}等待资源释放...")
-        # 不创建任何Event！
-
-# 完整示例
+# 对比示例：FIFO vs 优先级调度
 print("="*60)
-print("场景：不知道资源何时可用")
+print("对比：FIFO调度 vs 优先级调度")
 print("="*60)
 
-# 初始化
-resource_x = Resource("X")
-resource_x.current_user = "操作A"  # 被占用
-# 注意：没有设置busy_until，因为不知道何时释放！
+# 方案A：FIFO调度（简单，不需要waiting queue）
+class SimpleFIFO:
+    def try_schedule(op, resource):
+        if resource.is_available():
+            resource.acquire(op, current_time, duration)
+        else:
+            # 直接创建Event@已知时间
+            event = Event(time=resource.busy_until, op=op)
+            event_queue.add(event)
+            # ✓ 简单高效
+            # ✓ 不需要waiting queue
 
-# 操作5需要资源X
-op5 = Operation(id=5)
-op5.required_resources = ["X"]
+# 方案B：优先级调度（复杂，需要waiting queue）
+class PriorityScheduling:
+    def try_schedule(op, resource):
+        if resource.is_available():
+            resource.acquire(op, current_time, duration)
+        else:
+            # 加入waiting queue
+            resource.add_waiter(op)
+            # ✓ 支持优先级选择
+            # ✓ 需要waiting queue
 
-# 时间100：尝试调度操作5
-current_time = 100
-try_schedule_operation_with_waiting(op5)
-# 输出:
-# 尝试调度操作5
-#   资源X不可用，加入等待队列
-#   [X] 操作5加入等待队列
-#   操作5等待资源释放...
-
-# 此时不知道资源X何时可用，但没关系！
-# 操作5已经在等待队列中
-
-# 时间???：操作A完成（时间不确定）
-# 假设是时间250
-current_time = 250
-print(f"\n时间{current_time}：操作A完成")
-resource_x.release()
-# 输出:
-#   [X] 释放 @ 时间250
-#   [X] 通知1个等待者
-#     → 通知操作5
-
-# 资源释放后，操作5自动被通知！
-# Event@250(SCHEDULE_ATTEMPT for 操作5)被创建
-# 操作5会在时间250重新尝试调度
+print("\n结论：")
+print("- FIFO（90%场景）：直接用Event@busy_until，简单高效")
+print("- 优先级（10%场景）：需要waiting queue来选择最优操作")
 ```
 
-**关键优势：**
+**关键理解：**
 
-1. ✓  **不需要知道资源何时可用** 
-2. ✓  **资源释放时自动通知** 
-3. ✓  **无需轮询** 
-4. ✓  **适用于不可预测的场景** 
+1. ✓ **busy_until 总是已知的** 
+2. ✓ **FIFO：直接创建Event@busy_until** 
+3. ✓ **优先级：需要waiting queue来选择** 
+4. ✓ **选择不是因为"不知道时间"，而是"需要决策"** 
 
 ---
 
-##### 解决方案2: 保守估计 + 重试
+##### 总结：两种建模方式的选择
 
 **核心思想：估计一个安全的时间，到时再检查**
 
@@ -1250,54 +1273,57 @@ class RealWorldResourceManager:
 
 ---
 
-##### 关键总结
+##### 关键总结：正确理解Waiting Queue
 
 ```python
 ┌────────────────────────────────────────────────────────────┐
-│ 不知道资源何时可用？没关系！                                │
+│ Waiting Queue ≠ "不知道资源何时可用"                        │
+│ Waiting Queue = "需要优先级调度"                            │
 └────────────────────────────────────────────────────────────┘
 
 核心理解:
-  Event-driven建模不要求你"预知未来"
-  它提供了处理不确定性的机制
+  ✓ resource.busy_until 总是已知的
+  ✓ 90%的场景用FIFO调度：直接创建Event@busy_until
+  ✓ 10%的场景用优先级调度：需要waiting queue来选择
 
-三种武器:
-  1. 等待队列 → 资源释放时自动notify
-  2. 保守估计 → 估计一个时间，定期重试
-  3. 混合策略 → 根据情况灵活选择
+两种建模方式:
 
-推荐方案:
-  ✓ 资源时间已知 → 创建Event @ 已知时间
-  ✓ 资源时间未知 → 加入等待队列
-  ✓ 混合场景 → 使用混合策略
+方式1: FIFO调度（简单，推荐）
+  - 不需要waiting queue
+  - 直接创建 Event@resource.busy_until
+  - 适用于大多数硬件资源
 
-最重要的原则:
-  不要轮询！
-  要么创建Event（如果知道时间）
-  要么等待notify（如果不知道时间）
-  绝不要每个cycle都检查
+方式2: 优先级调度（复杂）
+  - 需要waiting queue保存所有等待者
+  - 资源释放时，从queue中选择最高优先级
+  - 适用于需要QoS保证的场景
 
-伪代码模板:
-  if resource.is_available():
-      start_now()
-  elif resource_available_time_is_known():
-      create_event_at(resource.busy_until)
+选择原则:
+  1. 默认使用FIFO（方式1）
+  2. 只在明确需要优先级时才用waiting queue
+  3. busy_until总是已知的，不是"未知"
+
+伪代码模板（FIFO）:
+  if resource.is_available(current_time):
+      resource.acquire(op, current_time, duration)
   else:
-      add_to_waiting_queue()
-      # 资源释放时会自动notify
+      # 直接创建Event@已知时间
+      event = Event(time=resource.busy_until, op=op)
+      event_queue.add(event)
+      # ✓ 简单高效
 ```
 
 ---
 
-*第11.11节完成，解答了"不知道资源何时可用"的情况*
+*第11.11节完成，澄清了Waiting Queue的真正用途*
 
 ---
 
 #### 11.12 等待队列的必要性分析 {#waiting-queue-necessity}
 
-**关键问题：每个资源都需要创建等待队列吗？**
+**核心问题：每个资源都需要创建等待队列吗？**
 
-答案： **不一定！**  这取决于资源的特性和使用场景。
+答案： **不需要！大部分资源不需要waiting queue。** 
 
 ---
 
@@ -1308,50 +1334,60 @@ class RealWorldResourceManager:
 │ 资源是否需要等待队列？决策树                                  │
 └─────────────────────────────────────────────────────────────┘
 
-问题1: 资源释放时间是否总是已知？
-  ├─ YES（总是已知）→ 不需要等待队列 ✓
-  │   理由: 可以直接创建Event@已知时间
-  │   
-  └─ NO（有时未知）→ 问题2
+唯一关键问题: 是否需要优先级调度？
 
-问题2: 是否有多个操作竞争同一资源？
-  ├─ NO（独占使用）→ 不一定需要
-  │   理由: 如果只有一个操作用，简化处理即可
+  ├─ NO（FIFO先到先得）→ ✗ 不需要等待队列
+  │   理由: resource.busy_until 是已知的
+  │         直接创建 Event@busy_until 即可
   │   
-  └─ YES（多操作竞争）→ 问题3
+  │   示例:
+  │   - GDMA Channel: FIFO调度
+  │   - Memory Port: FIFO调度  
+  │   - Compute Unit: FIFO调度
+  │   
+  │   实现:
+  │   if resource.is_available():
+  │       resource.acquire(op)
+  │   else:
+  │       create_event_at(resource.busy_until)
+  │       # ✓ 不需要waiting queue
+  │   
+  └─ YES（需要优先级）→ ✓ 需要等待队列
+      理由: 需要保存所有等待者，在释放时选择最高优先级
+      
+      示例:
+      - QoS保证的网络端口
+      - 需要抢占的共享资源
+      
+      实现:
+      if resource.is_available():
+          resource.acquire(op)
+      else:
+          resource.waiting_queue.add(op)  # 加入队列
+          # 资源释放时会从queue中选择
 
-问题3: 资源分配策略是否复杂？
-  ├─ NO（简单FCFS）→ 可以用简化方式
-  │   理由: 先到先得，直接记录下一个等待者
-  │   
-  └─ YES（优先级/复杂调度）→ 需要等待队列 ✓
-      理由: 需要排序、选择最优操作
-
-问题4: 是否需要通知机制（notify）？
-  ├─ NO（可以轮询/重试）→ 不需要等待队列
-  │   理由: 保守估计+重试即可
-  │   
-  └─ YES（需要立即响应）→ 需要等待队列 ✓
-      理由: 资源释放时要立即通知等待者
+简化的记忆:
+  FIFO调度（90%） → 不需要waiting queue
+  优先级调度（10%） → 需要waiting queue
 ```
 
 ---
 
 ##### 场景分类与建议
 
-**场景1: 资源释放时间总是已知 → ✗ 不需要等待队列**
+**场景1: FIFO调度（推荐，90%） → ✗ 不需要等待队列**
 
 ```python
-例子: GDMA Channel
+例子: GDMA Channel（FIFO先到先得）
   - 操作A开始使用Channel @ 时间100，持续50周期
-  - 可以立即计算：Channel在时间150释放
-  - 所以 Channel.busy_until = 150
+  - 立即计算：Channel.busy_until = 150
+  - 操作B需要Channel，直接创建Event@150
 
 处理方式:
-class Channel:
+class BasicChannel:
     def __init__(self):
-        self.busy_until = 0  # 已知释放时间
-        # 不需要 waiting_queue ✓
+        self.busy_until = 0  # 总是已知
+        # ✓ 不需要 waiting_queue
     
     def acquire(self, start_time, duration):
         self.busy_until = start_time + duration
@@ -1364,50 +1400,16 @@ def try_schedule_transfer(transfer):
     else:
         # 找最早可用的channel
         earliest_channel = min(channels, key=lambda c: c.busy_until)
-        earliest_time = earliest_channel.busy_until
-        
-        # 创建Event @ 已知时间
-        event = Event(time=earliest_time, ...)
-        event_queue.enqueue(event)
-        
-        # 不需要等待队列！✓
+        # 直接创建Event @ 已知时间
+        event = Event(time=earliest_channel.busy_until, op=transfer)
+        event_queue.add(event)
+        # ✓ 不需要waiting queue
+        # ✓ busy_until是已知的
 
-结论: 时间已知 → 直接用Event → 不需要等待队列
+结论: FIFO调度 → 直接用Event@busy_until → 不需要等待队列
 ```
 
-**场景2: 多个相同资源，先到先得 → ✗ 可以不用队列**
-
-```python
-例子: 4个相同的处理器
-  - 操作1,2,3,4需要处理器
-  - 谁先可用给谁（FCFS）
-
-简化方式（不用等待队列）:
-class ProcessorPool:
-    def __init__(self, num_processors):
-        self.processors = [Processor(i) for i in range(num_processors)]
-    
-    def get_earliest_available_time(self):
-        """找最早可用的处理器"""
-        return min(p.busy_until for p in self.processors)
-    
-    def try_allocate(self, op):
-        # 找可用的处理器
-        available = [p for p in self.processors if p.is_available()]
-        if available:
-            # 有可用的，立即分配
-            available[0].acquire(op)
-            return True
-        else:
-            # 都不可用，创建Event @ 最早释放时间
-            earliest_time = self.get_earliest_available_time()
-            create_event_at(earliest_time, op)
-            return False
-
-结论: 简单分配策略 → 直接追踪时间 → 不需要等待队列
-```
-
-**场景3: 复杂调度策略 → ✓ 需要等待队列**
+**场景2: 优先级调度（复杂，10%） → ✓ 需要等待队列**
 
 ```python
 例子: 端口需要优先级调度

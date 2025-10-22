@@ -978,15 +978,40 @@ def debug_time_advance(old_time, new_time):
 
 #### 10.7 资源等待问题：如何避免轮询 {#resource-waiting}
 
-**核心问题：** 如果需要等待一个资源释放，但不知道资源什么时候释放，如何设定event的cycle？难道需要每个cycle去探测吗？
+**核心问题：** 如果资源被占用，如何设定event的时间？难道需要每个cycle去探测吗？
 
-**答案：绝对不需要！有3种高效的方法。**
+**答案：绝对不需要！资源的释放时间（busy_until）总是已知的！**
 
 ---
 
-##### 方法1：查询资源状态，直接获取释放时间 (推荐) ✓
+##### 核心原则：busy_until 总是已知的
 
-**核心思想：** 资源状态中已经记录了 `busy_until`，直接读取即可！
+**关键理解：** 在正确的event-driven建模中，`resource.busy_until` 总是已知的！
+
+```python
+# 当操作获取资源时，立即计算busy_until
+def acquire_resource(resource, op, start_time, duration):
+    resource.busy_until = start_time + duration  # 立即已知！
+    resource.current_user = op.id
+
+# 所以，后续操作总是可以查询到busy_until
+def try_schedule_next_op(op, resource):
+    if current_time >= resource.busy_until:
+        # 可用
+        acquire_resource(resource, op, current_time, op.duration)
+    else:
+        # 不可用，但busy_until是已知的！
+        event = Event(time=resource.busy_until, op=op)
+        event_queue.add(event)
+        # ✓ 直接用已知的时间
+        # ✓ 不需要轮询
+```
+
+---
+
+##### 方法1：直接查询 busy_until (推荐) ✓
+
+**核心思想：** 资源状态中总是记录着 `busy_until`，直接读取即可！
 
 ```python
 class Resource:
