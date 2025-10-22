@@ -28,8 +28,8 @@ Chiplets are small, modular semiconductor dies that can be combined together usi
 
 ## Benefits
 
-- **Cost Reduction**： Better yield, reusable IP blocks
-- **Performance**： Shorter interconnects within chiplets
-- **Flexibility**： Mix different process technologies
-- **Time-to-Market**： Parallel development of chiplets
-- **Scalability**： Add/remove chiplets based on requirements
+-  **Cost Reduction**  ： Better yield, reusable IP blocks
+-  **Performance**  ： Shorter interconnects within chiplets
+-  **Flexibility**  ： Mix different process technologies
+-  **Time-to-Market**  ： Parallel development of chiplets
+-  **Scalability**  ： Add/remove chiplets based on requirements

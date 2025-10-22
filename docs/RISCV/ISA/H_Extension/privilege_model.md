@@ -6,9 +6,9 @@ H扩展引入了一个关键概念：当`V=1`时，系统处于虚拟化模式�
 
 ### 特权级定义
 
-* **HS-mode (Hypervisor-extended Supervisor mode):** Hypervisor运行的模式。在这里，`V=0`。
-* **VS-mode (Virtual Supervisor mode):** Guest OS内核运行的模式。在这里，`V=1`。
-* **VU-mode (Virtual User mode):** Guest OS用户程序运行的模式。在这里，`V=1`。
+*  **HS-mode (Hypervisor-extended Supervisor mode):**  Hypervisor运行的模式。在这里，`V=0`。
+*  **VS-mode (Virtual Supervisor mode):**  Guest OS内核运行的模式。在这里，`V=1`。
+*  **VU-mode (Virtual User mode):**  Guest OS用户程序运行的模式。在这里，`V=1`。
 
 当CPU在VS或VU模式下运行时，所有特权操作，如访问CSR、执行`SRET`等，都会受到Hypervisor的控制。
 
@@ -30,24 +30,24 @@ VU-mode (V=1, Guest用户)
 
 当在`V=1`模式下（即在Guest内部）发生异常或中断时，硬件需要决定这个陷阱应该由Guest OS（在VS-mode）处理，还是需要退出到Hypervisor（在HS-mode）处理。这个决策过程由以下CSR控制：
 
-1. **`hedeleg` (Hypervisor Exception Delegation):** 决定哪些**同步异常**（如缺页、非法指令）可以被委托给Guest OS自己处理，而无需Hypervisor介入。
-2. **`hideleg` (Hypervisor Interrupt Delegation):** 决定哪些**中断**可以被委托给Guest OS自己处理。
-3. **`hgatp` (Hypervisor Guest Address Translation and Protection):** 第二阶段地址翻译失败（Guest Page Fault）总是会陷入到Hypervisor。
+1.  **`hedeleg` (Hypervisor Exception Delegation):**  决定哪些 **同步异常** （如缺页、非法指令）可以被委托给Guest OS自己处理，而无需Hypervisor介入。
+2.  **`hideleg` (Hypervisor Interrupt Delegation):**  决定哪些 **中断** 可以被委托给Guest OS自己处理。
+3.  **`hgatp` (Hypervisor Guest Address Translation and Protection):**  第二阶段地址翻译失败（Guest Page Fault）总是会陷入到Hypervisor。
 
 ### 陷阱处理流程
 
 **流程示例：**
 假设一个运行在VU-mode的程序发生了缺页异常（Store page fault）。
 
-1. **硬件检查`hedeleg`寄存器**中对应"Store page fault"的比特位。
+1.  **硬件检查`hedeleg`寄存器** 中对应"Store page fault"的比特位。
 
-2. **如果该位为1（委托）：**
+2.  **如果该位为1（委托）：** 
    * 陷阱被路由到Guest OS的VS-mode
    * 硬件会自动更新`vscause`, `vsepc`, `vstvec`等VS-mode的CSRs
    * 跳转到Guest OS的异常处理程序
-   * 整个过程Hypervisor**完全不感知**
+   * 整个过程Hypervisor **完全不感知** 
 
-3. **如果该位为0（不委托）：**
+3.  **如果该位为0（不委托）：** 
    * 陷阱被路由到Hypervisor的HS-mode
    * 硬件会更新`scause`, `sepc`等HS-mode的CSRs
    * 跳转到Hypervisor的异常处理程序
@@ -111,10 +111,10 @@ hideleg = (1 << 1) |   // Supervisor software interrupt
 
 ### 不可委托的异常
 
-某些异常**永远不会被委托**，总是陷入到Hypervisor：
+某些异常 **永远不会被委托**  ，总是陷入到Hypervisor：
 
-1. **第二阶段地址翻译失败** - 因为只有Hypervisor管理第二阶段页表
-2. **Guest尝试访问Hypervisor专用CSR** - 安全隔离要求
-3. **Hypervisor自身的异常** - 当`V=0`时发生的所有异常
+1.  **第二阶段地址翻译失败**  - 因为只有Hypervisor管理第二阶段页表
+2.  **Guest尝试访问Hypervisor专用CSR**  - 安全隔离要求
+3.  **Hypervisor自身的异常**  - 当`V=0`时发生的所有异常
 
 这种精细的控制机制确保了虚拟化的安全性和性能的平衡。

@@ -113,10 +113,10 @@ for (i <- 0 until LoadPipelineWidth) {
 
 LoadQueueRAR中的load指令被标记为release有四种情况：
 
-1. **missQueue模块的replace_req**：在mainpipe流水线的s3栈发起release释放dcache块
-2. **probeQueue模块的probe_req**：在mainpipe流水线的s3栈发起release释放dcache块
-3. **atomicsUnit模块的请求**：在mainpipe流水线的s3栈发生miss时需要释放dcache块
-4. **非缓存(nc)指令**：如果入队请求是nc指令，在入队时就被标记为release
+1.  **missQueue模块的replace_req**  ：在mainpipe流水线的s3栈发起release释放dcache块
+2.  **probeQueue模块的probe_req**  ：在mainpipe流水线的s3栈发起release释放dcache块
+3.  **atomicsUnit模块的请求**  ：在mainpipe流水线的s3栈发生miss时需要释放dcache块
+4.  **非缓存(nc)指令**  ：如果入队请求是nc指令，在入队时就被标记为release
 
 ```scala
 // 处理缓存释放事件
@@ -326,9 +326,9 @@ QueuePerf(RarQueueSize, validCount, !allowEnqueue)
 
 LoadQueueRAR模块实现了XiangShan处理器中多核环境下内存顺序一致性保障的关键机制：
 
-1. **多核RAR违例检测**：识别不同核心间交互导致的load-load顺序违例
-2. **缓存一致性支持**：处理缓存一致性事件对已执行load指令的影响
-3. **精确恢复机制**：在检测到违例时提供精确的回滚信息
-4. **高效实现**：通过压缩地址和优化的检测算法实现高性能
+1.  **多核RAR违例检测**  ：识别不同核心间交互导致的load-load顺序违例
+2.  **缓存一致性支持**  ：处理缓存一致性事件对已执行load指令的影响
+3.  **精确恢复机制**  ：在检测到违例时提供精确的回滚信息
+4.  **高效实现**  ：通过压缩地址和优化的检测算法实现高性能
 
 在现代多核处理器中，LoadQueueRAR是确保内存一致性的关键组件，它与LoadQueueRAW共同构成了完整的内存依赖检测系统，在保证程序正确性的同时尽可能提供高性能。

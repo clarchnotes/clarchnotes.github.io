@@ -35,12 +35,12 @@ val s_idle :: s_split :: s_req :: s_resp :: s_wb :: s_block :: Nil = Enum(6)
 val bufferState = RegInit(s_idle)
 ```
 
-- **s_idle**： 空闲状态，等待新请求
-- **s_split**： 分割非对齐store，确定分割方案
-- **s_req**： 发送分割后的请求
-- **s_resp**： 接收分割请求的响应
-- **s_wb**： 执行写回操作
-- **s_block**： 等待指令到达ROB头部（针对跨页边界store）
+-  **s_idle**  ： 空闲状态，等待新请求
+-  **s_split**  ： 分割非对齐store，确定分割方案
+-  **s_req**  ： 发送分割后的请求
+-  **s_resp**  ： 接收分割请求的响应
+-  **s_wb**  ： 执行写回操作
+-  **s_block**  ： 等待指令到达ROB头部（针对跨页边界store）
 
 该模块设计为单例架构（只能同时处理一个非对齐请求），设置了以下关键参数：
 
@@ -81,7 +81,7 @@ val io = IO(new Bundle() {
 
 ### 3.2 关键数据类型和接口
 
-1. **MisalignBufferEnqIO**：用于非对齐store请求的入队
+1.  **MisalignBufferEnqIO**  ：用于非对齐store请求的入队
 
    ```scala
    class MisalignBufferEnqIO extends XSBundle {
@@ -90,7 +90,7 @@ val io = IO(new Bundle() {
    }
    ```
 
-2. **StoreMaBufToSqControlIO**：与StoreQueue交互的控制接口
+2.  **StoreMaBufToSqControlIO**  ：与StoreQueue交互的控制接口
 
    ```scala
    class StoreMaBufToSqControlIO extends XSBundle {
@@ -108,7 +108,7 @@ val io = IO(new Bundle() {
    }
    ```
 
-3. **StoreMaBufToVecStoreMergeBufferIO**：与向量store合并缓冲区的接口
+3.  **StoreMaBufToVecStoreMergeBufferIO**  ：与向量store合并缓冲区的接口
 
    ```scala
    class StoreMaBufToVecStoreMergeBufferIO extends XSBundle {
@@ -558,12 +558,12 @@ highResultWidth    := BYTE1  // 取1字节
 
 非对齐store写回分为两种情况：
 
-1. **非跨页情况**：
+1.  **非跨页情况**  ：
 
 - 立即写回，更新ROB信息
 - 直接回到s_idle状态
 
-2. **跨页情况**：
+2.  **跨页情况**  ：
 
 - 写回后进入s_block状态
 - 等待StoreQueue发出doDeq信号后再释放资源
@@ -572,18 +572,18 @@ highResultWidth    := BYTE1  // 取1字节
 
 StoreMisalignBuffer支持多种非对齐访问模式，每种模式有特定的分割策略：
 
-1. **非对齐半字(SH)**：
+1.  **非对齐半字(SH)**  ：
 
 - 分割为两个字节store(SB+SB)
 - 例如：地址0x1001分割为0x1001和0x1002
 
-2. **非对齐字(SW)**：根据地址低2位不同有三种情况：
+2.  **非对齐字(SW)**  ：根据地址低2位不同有三种情况：
 
 - 01：分割为(SW+SB)，前向对齐store3字节+后向store1字节
 - 10：分割为(SH+SH)，前向store2字节+后向store2字节
 - 11：分割为(SB+SW)，前向store1字节+后向对齐store3字节
 
-3. **非对齐双字(SD)**：根据地址低3位不同有七种情况：
+3.  **非对齐双字(SD)**  ：根据地址低3位不同有七种情况：
 
 - 001：分割为(SD+SB)，前向对齐store7字节+后向store1字节
 - 010：分割为(SD+SH)，前向对齐store6字节+后向store2字节
@@ -637,7 +637,7 @@ io.toVecStoreMergeBuffer.zipWithIndex.map{
 
 StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐store的关键：
 
-1. **跨页store管理**：
+1.  **跨页store管理**  ：
 
    ```scala
    // 提供跨页状态信息
@@ -651,7 +651,7 @@ StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐store�
    }
    ```
 
-2. **物理地址传递**：
+2.  **物理地址传递**  ：
 
    ```scala
    io.sqControl.toStoreQueue.paddr := Cat(splitStoreResp(1).paddr(splitStoreResp(1).paddr.getWidth - 1, 3), 0.U(3.W))
@@ -659,26 +659,26 @@ StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐store�
 
 ### 11.2 数据流路径
 
-1. **非对齐store检测**：
+1.  **非对齐store检测**  ：
 
 - StoreUnit 检测到非对齐store且跨16字节边界/4KB页边界
 - 转发请求到 StoreMisalignBuffer
 
-2. **分割请求流程**：
+2.  **分割请求流程**  ：
 
 - StoreMisalignBuffer 分割请求
 - 通过 `io.splitStoreReq` 发送回 StoreUnit
 - StoreUnit 执行实际store操作
 - 结果通过 `io.splitStoreResp` 返回
 
-3. **结果写回**：
+3.  **结果写回**  ：
 
 - 对于标量store：通过 `io.writeBack` 写回
 - 对于向量store：通过 `io.vecWriteBack` 写回
 
 ### 11.3 异常和特殊情况处理
 
-1. **跨页异常**：
+1.  **跨页异常**  ：
 
    ```scala
    // 处理跨页异常
@@ -690,7 +690,7 @@ StoreMisalignBuffer 与 StoreQueue 之间的紧密协作是处理非对齐store�
    // 其他异常信息...
    ```
 
-2. **MMIO和非缓存访问**：
+2.  **MMIO和非缓存访问**  ：
 
    ```scala
    when (isUncache) {
@@ -735,19 +735,19 @@ sequenceDiagram
 
 ### 12.1 流水线效率
 
-1. **单例设计**：
+1.  **单例设计**  ：
 
 - 由于非对齐store在实际程序中相对罕见，使用单个实例处理
 - 减少了硬件开销，同时保持高效处理
 
-2. **跨页特殊处理**：
+2.  **跨页特殊处理**  ：
 
 - 为跨页store设计专用的处理路径
 - 确保处理器状态保持一致，同时不阻塞处理流水线
 
 ### 12.2 异常处理优化
 
-1. **延迟处理**：
+1.  **延迟处理**  ：
 
    ```scala
    val needDelay = WireInit(false.B)
@@ -758,14 +758,14 @@ sequenceDiagram
 
 - 使用延迟处理配合RAW冲突检测，确保正确的指令执行顺序
 
-2. **精确异常处理**：
+2.  **精确异常处理**  ：
 
 - 对于跨页异常，使用准确的异常地址
 - 支持向量store的异常传播机制
 
 ### 12.3 与store队列协作
 
-1. **跨页管理**：
+1.  **跨页管理**  ：
 
    ```scala
    // 到StoreQueue的接口
@@ -775,7 +775,7 @@ sequenceDiagram
 - 与StoreQueue紧密协作，确保跨页store正确管理
 - 防止跨页store在未就绪时提交
 
-2. **优化流水线控制**：
+2.  **优化流水线控制**  ：
 
    ```scala
    val needFlushPipe = RegInit(false.B)
@@ -805,10 +805,10 @@ XSPerfAccumulate("flush_non_idle", flush && (bufferState =/= s_idle))
 
 StoreMisalignBuffer 作为 XiangShan 处理器 LSQ 系统的专用组件，具有以下核心特性：
 
-1. **精确分割机制**：根据指令类型和地址精确计算分割方案
-2. **跨页store支持**：处理跨页store的特殊情况
-3. **向量store支持**：提供向量store特殊处理机制
-4. **完备的异常处理**：处理各种异常情况
-5. **与StoreQueue协作**：紧密协调确保正确的store顺序
+1.  **精确分割机制**  ：根据指令类型和地址精确计算分割方案
+2.  **跨页store支持**  ：处理跨页store的特殊情况
+3.  **向量store支持**  ：提供向量store特殊处理机制
+4.  **完备的异常处理**  ：处理各种异常情况
+5.  **与StoreQueue协作**  ：紧密协调确保正确的store顺序
 
 在乱序处理器中，StoreMisalignBuffer 解决了非对齐内存store的挑战，提高了处理器对不同内存访问模式的适应性。它将复杂的非对齐store问题转化为可管理的对齐store，在保证功能正确性的同时最小化性能影响。

@@ -90,9 +90,9 @@
 
 ## Load-Store Queue Implementation Details
 
-- **Physical Structure**： Typically implemented as circular buffers or CAMs (Content Addressable Memory)
-- **Capacity**： 32-64 entries in modern processors
-- **Tracking Fields**：
+-  **Physical Structure**  ： Typically implemented as circular buffers or CAMs (Content Addressable Memory)
+-  **Capacity**  ： 32-64 entries in modern processors
+-  **Tracking Fields**  ：
   - PC value
   - Memory address (virtual and physical)
   - Data size (byte, half-word, word)
@@ -115,9 +115,9 @@ Solution: Speculate lack of RAW hazard
 
 ## Address Prediction Techniques
 
-- **Last Value Prediction**： Use the previous address for the same load instruction
-- **Stride Prediction**： Predict based on patterns in address changes
-- **Context-based Prediction**： Use history of recent addresses to predict next one
+-  **Last Value Prediction**  ： Use the previous address for the same load instruction
+-  **Stride Prediction**  ： Predict based on patterns in address changes
+-  **Context-based Prediction**  ： Use history of recent addresses to predict next one
 
 # Speculative Load Issuing
 
@@ -148,9 +148,9 @@ Record all speculatively issued loads in a buffer, to match with stores
 
 ## Replay vs. Squash Recovery
 
-- **Replay**： Discard just the violating load and re-execute it (lightweight)
-- **Squash**： Cancel the load and all dependent instructions (heavyweight but necessary for ordering)
-- **Hybrid Approach**： Use replay for certain violations and squash for others
+-  **Replay**  ： Discard just the violating load and re-execute it (lightweight)
+-  **Squash**  ： Cancel the load and all dependent instructions (heavyweight but necessary for ordering)
+-  **Hybrid Approach**  ： Use replay for certain violations and squash for others
 
 # References
 

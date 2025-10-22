@@ -36,12 +36,12 @@ val s_idle :: s_split :: s_req :: s_resp :: s_comb_wakeup_rep :: s_wb :: Nil = E
 val bufferState = RegInit(s_idle)
 ```
 
-- **s_idle**： 空闲状态，等待新请求
-- **s_split**： 分割非对齐load，确定分割方案
-- **s_req**： 发送分割后的请求
-- **s_resp**： 接收分割请求的响应
-- **s_comb_wakeup_rep**： 合并分割结果数据
-- **s_wb**： 将结果写回
+-  **s_idle**  ： 空闲状态，等待新请求
+-  **s_split**  ： 分割非对齐load，确定分割方案
+-  **s_req**  ： 发送分割后的请求
+-  **s_resp**  ： 接收分割请求的响应
+-  **s_comb_wakeup_rep**  ： 合并分割结果数据
+-  **s_wb**  ： 将结果写回
 
 该模块设计为单例架构（只能同时处理一个非对齐请求），设置了以下关键参数：
 
@@ -452,16 +452,16 @@ highResultWidth    := BYTE1  // 取1字节
 
 LoadMisalignBuffer支持多种非对齐访问模式，每种模式有特定的分割策略：
 
-1. **非对齐半字(LH)**：
+1.  **非对齐半字(LH)**  ：
    - 分割为两个字节访问(LB+LB)
    - 例如：地址0x1001分割为0x1001和0x1002
 
-2. **非对齐字(LW)**：根据地址低2位不同有三种情况：
+2.  **非对齐字(LW)**  ：根据地址低2位不同有三种情况：
    - 01：分割为(LW+LB)，前向对齐访问3字节+后向访问1字节
    - 10：分割为(LH+LH)，前向访问2字节+后向访问2字节
    - 11：分割为(LB+LW)，前向访问1字节+后向对齐访问3字节
 
-3. **非对齐双字(LD)**：根据地址低3位不同有七种情况：
+3.  **非对齐双字(LD)**  ：根据地址低3位不同有七种情况：
    - 001：分割为(LD+LB)，前向对齐访问7字节+后向访问1字节
    - 010：分割为(LD+LH)，前向对齐访问6字节+后向访问2字节
    - ...
@@ -490,7 +490,7 @@ XSPerfAccumulate("flush_non_idle",         flush && (bufferState =/= s_idle))
 
 LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
 
-1. **检测与转发**：
+1.  **检测与转发**  ：
    - LoadUnit在执行阶段(S2/S3)检测到非对齐访问且跨越16字节边界时，会将请求转发给LoadMisalignBuffer
    - 转发通过`io.misalign_enq.req`接口进行，这是在LoadUnit中的s3阶段进行的：
 
@@ -500,7 +500,7 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
    io.misalign_enq.req.bits  := s3_in
    ```
 
-2. **分割请求处理**：
+2.  **分割请求处理**  ：
    - LoadMisalignBuffer将非对齐请求分割后，通过`io.splitLoadReq`接口将分割请求发回给LoadUnit
    - LoadUnit通过专门的接口处理来自LoadMisalignBuffer的请求：
 
@@ -510,7 +510,7 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
    val misalign_ldout = Valid(new LqWriteBundle)
    ```
 
-3. **执行流路径**：
+3.  **执行流路径**  ：
    - 非对齐load指令的执行路径为：LoadUnit → LoadMisalignBuffer → LoadUnit → Cache/Memory → LoadUnit → LoadMisalignBuffer → 处理器后端
    - LoadUnit仍然负责实际访问缓存/内存，LoadMisalignBuffer只负责分割和合并
 
@@ -518,7 +518,7 @@ LoadUnit、LoadMisalignBuffer和Load Pipeline的交互关系如下：
 
 LoadMisalignBuffer的处理结果通过两个不同路径返回，取决于请求类型：
 
-1. **标量load指令结果传递**：
+1.  **标量load指令结果传递**  ：
 
    ```scala
    io.writeBack.valid := req_valid && (bufferState === s_wb) && 
@@ -530,7 +530,7 @@ LoadMisalignBuffer的处理结果通过两个不同路径返回，取决于请�
    - 结果包含处理后的数据、异常信息和调试信息
    - 目标是LSQ和ROB，完成执行阶段处理
 
-2. **向量load指令结果传递**：
+2.  **向量load指令结果传递**  ：
 
    ```scala
    io.vecWriteBack.valid := req_valid && (bufferState === s_wb) && !io.loadVecOutValid && req.isvec
@@ -543,13 +543,13 @@ LoadMisalignBuffer的处理结果通过两个不同路径返回，取决于请�
 
 LoadMisalignBuffer与LoadUnit的职责划分：
 
-1. **LoadUnit负责**：
+1.  **LoadUnit负责**  ：
    - 检测非对齐访问且跨越16字节边界
    - 将非对齐请求转发给LoadMisalignBuffer
    - 处理分割后的对齐内存访问请求
    - 将分割请求的响应结果返回给LoadMisalignBuffer
 
-2. **LoadMisalignBuffer负责**：
+2.  **LoadMisalignBuffer负责**  ：
    - 分析非对齐访问类型和地址模式
    - 制定分割策略，生成最多两个对齐访问请求
    - 发送分割请求给LoadUnit处理
@@ -561,16 +561,16 @@ LoadMisalignBuffer与LoadUnit的职责划分：
 
 当分割后的请求遇到Cache Miss时，处理流程如下：
 
-1. **请求分发**：
+1.  **请求分发**  ：
    - LoadMisalignBuffer分割后的请求通过`io.splitLoadReq`发送给LoadUnit
    - LoadUnit通过`io.misalign_ldin`接收并将请求转发到Dcache
 
-2. **Miss检测和处理**：
+2.  **Miss检测和处理**  ：
    - 当LoadUnit检测到Cache Miss时，会设置相应的标志
    - 将响应信息通过`io.misalign_ldout`返回给LoadMisalignBuffer
    - LoadMisalignBuffer根据响应中的miss信息决定后续处理
 
-3. **replay机制**：
+3.  **replay机制**  ：
 
    ```scala
    when (io.splitLoadResp.valid) {
@@ -588,7 +588,7 @@ LoadMisalignBuffer与LoadUnit的职责划分：
 
 ### 10.5 异常和特殊情况处理
 
-1. **非缓存访问**：
+1.  **非缓存访问**  ：
 
    ```scala
    when (isUncache) {
@@ -601,7 +601,7 @@ LoadMisalignBuffer与LoadUnit的职责划分：
    - 检测到非缓存访问时，中止处理并引发loadAddrMisaligned异常
    - 交由软件处理非对齐的非缓存访问
 
-2. **跨页异常处理**：
+2.  **跨页异常处理**  ：
 
    ```scala
    val shouldOverwrite = req_valid && globalException
@@ -649,27 +649,27 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
 
 ### 11.1 流水线效率
 
-1. **状态机设计**：
+1.  **状态机设计**  ：
    - 使用状态机处理非对齐访问，允许后续请求流水线不被阻塞
    - 当LoadMisalignBuffer繁忙时，后续非对齐请求等待处理
 
-2. **单示例设计**：
+2.  **单示例设计**  ：
    - 由于非对齐访问在实际程序中相对罕见，使用单个实例处理
    - 减少了硬件开销，同时不显著影响整体性能
 
 ### 11.2 特殊情况优化
 
-1. **向量指令支持**：
+1.  **向量指令支持**  ：
    - 对向量非对齐load进行特殊处理
    - 包括掩码和元素索引的管理
 
-2. **MMIO和非缓存访问**：
+2.  **MMIO和非缓存访问**  ：
    - 对MMIO访问和非缓存访问采取安全处理策略
    - 将这些复杂情况交由软件处理，简化硬件设计
 
 ### 11.3 跨模块协作
 
-1. **重定向处理**：
+1.  **重定向处理**  ：
 
    ```scala
    val flush = req_valid && req.uop.robIdx.needFlush(io.redirect)
@@ -683,7 +683,7 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
    - 监听重定向信号，及时取消无效请求
    - 在投机执行中确保正确性
 
-2. **唤醒机制**：
+2.  **唤醒机制**  ：
 
    ```scala
    val needWakeUpWB = RegInit(false.B)
@@ -696,10 +696,10 @@ LoadMisalignBuffer在设计上考虑了多项性能优化：
 
 LoadMisalignBuffer 作为 XiangShan 处理器 LSQ 系统的专用组件，具有以下核心特性：
 
-1. **精确分割机制**：根据指令类型和地址精确计算分割方案
-2. **高效数据合并**：字节级精细合并确保正确结果
-3. **完备的异常处理**：处理各种异常情况，特别是跨页异常
-4. **统一接口**：支持向量和标量非对齐load指令
-5. **流水线交互**：与load流水线无缝衔接
+1.  **精确分割机制**  ：根据指令类型和地址精确计算分割方案
+2.  **高效数据合并**  ：字节级精细合并确保正确结果
+3.  **完备的异常处理**  ：处理各种异常情况，特别是跨页异常
+4.  **统一接口**  ：支持向量和标量非对齐load指令
+5.  **流水线交互**  ：与load流水线无缝衔接
 
 在乱序处理器中，LoadMisalignBuffer 解决了非对齐内存访问的挑战，提高了处理器对不同内存访问模式的适应性。它将复杂的非对齐访问问题转化为可管理的对齐访问，在保证功能正确性的同时最小化性能影响。

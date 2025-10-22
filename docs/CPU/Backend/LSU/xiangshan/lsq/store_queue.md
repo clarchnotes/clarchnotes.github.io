@@ -31,14 +31,14 @@ class StoreQueue(implicit p: Parameters) extends XSModule
 
 根据官方文档，StoreQueue具有以下七大核心特性：
 
-1. **数据前递**：实现高效的store-load转发机制，确保数据依赖的正确性
-2. **非对齐store指令**：支持处理非对齐的store访问，包括跨16字节边界和跨页访问
-3. **向量Store指令**：支持处理RISC-V向量扩展中的向量store指令
-4. **CMO指令**：实现缓存维护操作，用于管理缓存内容
-5. **CBO指令**：支持缓存块操作，特别是CBO.ZERO清零操作
-6. **MMIO与NonCacheable Store指令**：通过UnCache接口处理设备访问和非缓存store
-7. **store指令提交与SBuffer写入**：采用提前提交策略，高效地将store数据写入SBuffer
-8. **强制刷新Sbuffer**：使用双阈值控制策略管理SBuffer的刷新
+1.  **数据前递**  ：实现高效的store-load转发机制，确保数据依赖的正确性
+2.  **非对齐store指令**  ：支持处理非对齐的store访问，包括跨16字节边界和跨页访问
+3.  **向量Store指令**  ：支持处理RISC-V向量扩展中的向量store指令
+4.  **CMO指令**  ：实现缓存维护操作，用于管理缓存内容
+5.  **CBO指令**  ：支持缓存块操作，特别是CBO.ZERO清零操作
+6.  **MMIO与NonCacheable Store指令**  ：通过UnCache接口处理设备访问和非缓存store
+7.  **store指令提交与SBuffer写入**  ：采用提前提交策略，高效地将store数据写入SBuffer
+8.  **强制刷新Sbuffer**  ：使用双阈值控制策略管理SBuffer的刷新
 
 ## 2. 系统架构
 
@@ -57,28 +57,28 @@ StoreQueue是XiangShan处理器乱序执行引擎中的关键组件，位于Load
 
 StoreQueue采用环形队列设计，具有以下主要特性：
 
-1. **单发射多提交架构**：
+1.  **单发射多提交架构**  ：
 
 - 每周期可以接收最多`LSQEnqWidth`个新的store指令
 - 每周期可以提交最多`CommitWidth`个经ROB确认提交的store指令
 - 每周期可以向下层store子系统发射最多`EnsbufferWidth`个已提交的store指令
 
-2. **分离的地址和数据处理**：
+2.  **分离的地址和数据处理**  ：
 
 - 地址和数据分别通过不同的端口写入，支持地址和数据在不同时间到达
 - 通过`addrvalid`和`datavalid`标志跟踪每条指令的状态
 
-3. **模块化数据store**：
+3.  **模块化数据store**  ：
 
 - 使用专用的`SQDataModule`和`SQAddrModule`模块管理数据和地址
 - 支持高效的CAM (Content Addressable Memory) 操作用于地址匹配
 
-4. **优化的转发逻辑**：
+4.  **优化的转发逻辑**  ：
 
 - 使用分段的转发路径实现低延迟转发
 - 支持部分转发（Partial Forwarding）和精确的掩码匹配
 
-5. **特殊状态机**：
+5.  **特殊状态机**  ：
 
 - 为MMIO、非缓存访问和CMO操作提供专用的状态机处理
 - 支持非对齐store和跨页store的特殊处理
@@ -149,7 +149,7 @@ val io = IO(new Bundle {
 
 StoreQueue实现了多个专用的数据store模块，用于高效管理store指令的数据、地址和状态：
 
-1. **SQDataModule**：管理store数据，支持读取、写入和转发操作
+1.  **SQDataModule**  ：管理store数据，支持读取、写入和转发操作
 
    ```scala
    val dataModule = Module(new SQDataModule(
@@ -160,7 +160,7 @@ StoreQueue实现了多个专用的数据store模块，用于高效管理store指
    ))
    ```
 
-2. **SQAddrModule**：管理物理和虚拟地址，支持CAM操作用于地址匹配
+2.  **SQAddrModule**  ：管理物理和虚拟地址，支持CAM操作用于地址匹配
 
    ```scala
    val paddrModule = Module(new SQAddrModule(
@@ -172,12 +172,12 @@ StoreQueue实现了多个专用的数据store模块，用于高效管理store指
    ))
    ```
 
-3. **DatamoduleResultBuffer**：用于缓存写回SBuffer的数据
-4. **StoreExceptionBuffer**：store异常信息
+3.  **DatamoduleResultBuffer**  ：用于缓存写回SBuffer的数据
+4.  **StoreExceptionBuffer**  ：store异常信息
 
 ### 3.3 重要的数据类型
 
-1. **SqPtr**：store队列指针，用于环形队列索引
+1.  **SqPtr**  ：store队列指针，用于环形队列索引
 
    ```scala
    class SqPtr(implicit p: Parameters) extends CircularQueuePtr[SqPtr](
@@ -185,7 +185,7 @@ StoreQueue实现了多个专用的数据store模块，用于高效管理store指
    )
    ```
 
-2. **DataBufferEntry**：数据缓冲条目，包含地址、数据和控制信息
+2.  **DataBufferEntry**  ：数据缓冲条目，包含地址、数据和控制信息
 
    ```scala
    class DataBufferEntry(implicit p: Parameters) extends DCacheBundle {
@@ -201,7 +201,7 @@ StoreQueue实现了多个专用的数据store模块，用于高效管理store指
    }
    ```
 
-3. **SQDataEntry**：store队列数据条目
+3.  **SQDataEntry**  ：store队列数据条目
 
    ```scala
    class SQDataEntry(implicit p: Parameters) extends XSBundle {
@@ -334,7 +334,7 @@ val validVStoreFlow = vStoreFlow.zipWithIndex.map{case (vStoreFlowNumItem, index
 
 入队后，store指令的地址和数据通过不同的路径写入StoreQueue：
 
-1. **地址写入流程**：
+1.  **地址写入流程**  ：
 
    ```scala
    // 地址写入示例
@@ -356,7 +356,7 @@ val validVStoreFlow = vStoreFlow.zipWithIndex.map{case (vStoreFlowNumItem, index
    }
    ```
 
-2. **数据写入流程**：
+2.  **数据写入流程**  ：
 
    ```scala
    // 数据写入示例
@@ -437,7 +437,7 @@ io.sbuffer(i).bits.addr := dataBuffer.io.deq(i).bits.addr
 
 StoreQueue使用专用的状态机处理MMIO和非缓存store指令：
 
-1. **MMIO处理流程**：
+1.  **MMIO处理流程**  ：
 
    ```scala
    // MMIO状态机
@@ -455,7 +455,7 @@ StoreQueue使用专用的状态机处理MMIO和非缓存store指令：
    }
    ```
 
-2. **非缓存store处理流程**：
+2.  **非缓存store处理流程**  ：
 
    ```scala
    // 非缓存状态机
@@ -513,8 +513,8 @@ val forward = Vec(LoadPipelineWidth, Flipped(new PipeLoadForwardQueryIO))
 
 StoreQueue提供两种时序的转发响应：
 
-1. **快速响应(Fast)**： 在请求周期中生成，用于load流水线的快速检查
-2. **完整响应**： 在请求后1个周期生成，包含详细的数据和控制信息
+1.  **快速响应(Fast)**  ： 在请求周期中生成，用于load流水线的快速检查
+2.  **完整响应**  ： 在请求后1个周期生成，包含详细的数据和控制信息
 
 ### 6.2 地址匹配逻辑
 
@@ -628,22 +628,22 @@ when (RegEnable(io.forward(i).uop.loadWaitStrict, io.forward(i).valid)) {
 
 XiangShan的store-load转发机制采用了多项优化措施来提高性能并确保正确性：
 
-1. **两级转发响应**：
+1.  **两级转发响应**  ：
 
 - 快速响应在请求周期生成，用于加速执行正常情况
 - 完整响应在下一周期提供，包含更详细的信息和处理边缘情况
 
-2. **并行CAM操作**：
+2.  **并行CAM操作**  ：
 
 - 同时进行虚拟地址和物理地址匹配
 - 使用并行优先级逻辑快速找到最相关的匹配
 
-3. **部分转发检测**：
+3.  **部分转发检测**  ：
 
 - 提前检测无法完成转发的情况，减少replay
 - 支持部分字节转发，只转发所需的数据
 
-4. **安全保障措施**：
+4.  **安全保障措施**  ：
 
 - 虚拟地址和物理地址匹配结果比较，避免别名问题
 - 未对齐store指令特殊处理，避免不完整转发
@@ -739,9 +739,9 @@ MMIO请求具有更高优先级，非缓存请求只在没有MMIO请求时才能
 
 缓存操作指令是一类特殊的MMIO指令，用于管理缓存的内容。在XiangShan中，有两种主要的CMO处理机制：
 
-1. **通用CMO处理**：通过专用接口发送操作请求，等待操作完成
+1.  **通用CMO处理**  ：通过专用接口发送操作请求，等待操作完成
 
-2. **CBO.ZERO特殊处理**：需要等待SBuffer刷新，然后执行特殊的零化操作
+2.  **CBO.ZERO特殊处理**  ：需要等待SBuffer刷新，然后执行特殊的零化操作
 
 CMO操作通常用于维护缓存一致性，尤其是在多核系统中，需要特殊的处理机制。
 
@@ -753,28 +753,28 @@ StoreQueue在处理过程中需要处理多种不同类型的异常。为了确�
 
 StoreQueue处理的主要异常类型包括：
 
-1. **store地址不对齐(Store Address Misaligned)**：
+1.  **store地址不对齐(Store Address Misaligned)**  ：
 
 - store指令的地址未按照其访问大小对齐
 - 例如：半字store地址不是2字节对齐，字store地址不是4字节对齐
 
-2. **store访问错误(Store Access Fault)**：
+2.  **store访问错误(Store Access Fault)**  ：
 
 - 物理地址无效或不允许写入
 - PMP/PMA权限不允许当前请求访问
 
-3. **页错误(Page Fault)**：
+3.  **页错误(Page Fault)**  ：
 
 - 虚拟地址转换过程中出现的页错误
 - 包括缺页、权限不足、保护错误等
 
-4. **硬件错误(Hardware Error)**：
+4.  **硬件错误(Hardware Error)**  ：
 
 - 设备或总线错误
 - ECC错误
 - 系统错误
 
-5. **非法指令(Illegal Instruction)**：
+5.  **非法指令(Illegal Instruction)**  ：
 
 - 不支持的store指令或格式
 
@@ -834,11 +834,11 @@ StoreExceptionBuffer接收来自多个端口的异常信息，选择最旧的异
 
 异常的处理流程遵循以下步骤：
 
-1. **检测异常**：在store地址计算阶段检测异常
-2. **跟踪异常**：将带有异常标记的store指令正常流过store队列
-3. **更新StoreExceptionBuffer**：将异常信息写入专用的异常缓冲区
-4. **提供精确异常信息**：当ROB处理异常时，提供精确的虚拟地址和异常信息
-5. **特殊情况处理**：处理MMIO硬件错误和向量store异常
+1.  **检测异常**  ：在store地址计算阶段检测异常
+2.  **跟踪异常**  ：将带有异常标记的store指令正常流过store队列
+3.  **更新StoreExceptionBuffer**  ：将异常信息写入专用的异常缓冲区
+4.  **提供精确异常信息**  ：当ROB处理异常时，提供精确的虚拟地址和异常信息
+5.  **特殊情况处理**  ：处理MMIO硬件错误和向量store异常
 
 ### 8.5 向量store异常的特殊处理
 
@@ -1017,7 +1017,7 @@ StoreQueue是XiangShan处理器内存系统的核心组件，与多个其他模�
 
 ### 10.1 与LoadQueue和LoadUnit的交互
 
-1. **store-load转发**：
+1.  **store-load转发**  ：
 
 - 接收LoadUnit的转发查询
 - 提供数据和依赖信息
@@ -1028,14 +1028,14 @@ StoreQueue是XiangShan处理器内存系统的核心组件，与多个其他模�
    val forward = Vec(LoadPipelineWidth, Flipped(new PipeLoadForwardQueryIO))
    ```
 
-2. **内存排序检查**：
+2.  **内存排序检查**  ：
 
 - 协助LoadQueue进行内存排序违规检查
 - 提供store地址信息用于比较
 
 ### 10.2 与ROB的交互
 
-1. **提交控制**：
+1.  **提交控制**  ：
 
 - 接收ROB的提交信号
 - 根据ROB指示提交store指令
@@ -1046,19 +1046,19 @@ StoreQueue是XiangShan处理器内存系统的核心组件，与多个其他模�
    val rob = Flipped(new RobLsqIO)
    ```
 
-2. **异常处理**：
+2.  **异常处理**  ：
 
 - 向ROB报告store异常
 - 提供精确的异常地址和类型
 
-3. **完成通知**：
+3.  **完成通知**  ：
 
 - 通知ROBstore指令完成
 - 允许ROB释放相关资源
 
 ### 10.3 与SBuffer的交互
 
-1. **数据传递**：
+1.  **数据传递**  ：
 
 - 将已提交的store数据发送到SBuffer
 - 设置相应的控制标志（如整行写入、预取等）
@@ -1068,19 +1068,19 @@ StoreQueue是XiangShan处理器内存系统的核心组件，与多个其他模�
    val sbuffer = Vec(EnsbufferWidth, Decoupled(new DCacheWordReqWithVaddrAndPfFlag))
    ```
 
-2. **状态同步**：
+2.  **状态同步**  ：
 
 - 监控SBuffer状态
 - 处理特殊情况（如CBO.ZERO需要等待SBuffer刷新）
 
 ### 10.4 与UnCache模块的交互
 
-1. **MMIO请求**：
+1.  **MMIO请求**  ：
 
 - 发送MMIOstore请求
 - 接收响应和处理错误
 
-2. **非缓存请求**：
+2.  **非缓存请求**  ：
 
 - 发送非缓存store请求
 - 管理请求-响应周期
@@ -1092,19 +1092,19 @@ StoreQueue是XiangShan处理器内存系统的核心组件，与多个其他模�
 
 ### 10.5 与StoreMisalignBuffer的交互
 
-1. **非对齐store处理**：
+1.  **非对齐store处理**  ：
 
 - 检测非对齐store
 - 与StoreMisalignBuffer协作完成非对齐访问
 
-2. **跨页store处理**：
+2.  **跨页store处理**  ：
 
 - 识别跨页store
 - 协调跨页访问的特殊处理
 
 ### 10.6 与分支预测单元的交互
 
-1. **重定向处理**：
+1.  **重定向处理**  ：
 
 - 接收分支重定向信号
 - 取消错误路径上的store指令
@@ -1144,12 +1144,12 @@ io.enq.req(0).bits.robIdx = 76
 io.enq.req(0).bits.sqIdx = 5 (由分配得到)
 ```
 
-1. **空间检查**：
+1.  **空间检查**  ：
 
 - `validCount = enqPtr - deqPtr = 5 - 2 = 3`，小于队列大小
 - 判定`allowEnqueue = true`，可以接收新指令
 
-2. **入队处理**：
+2.  **入队处理**  ：
 
 - 条目5被分配给该指令
 - 设置状态标志:
@@ -1164,7 +1164,7 @@ io.enq.req(0).bits.sqIdx = 5 (由分配得到)
 
 - 更新微操作信息: `uop(5) = 包含store指令微操作信息`
 
-3. **入队指针更新**：
+3.  **入队指针更新**  ：
 
 - `enqPtr = 5 + 1 = 6` (更新为下一个位置)
 
@@ -1180,13 +1180,13 @@ io.storeAddrIn(0).bits.vaddr = 0x80001000  // 简化示例，物理地址等于�
 io.storeAddrIn(0).bits.mask = 0b1111      // 4字节掩码
 ```
 
-1. **地址写入处理**：
+1.  **地址写入处理**  ：
 
 - 地址计算未发生缓存缺失，因此`addrvalid(5) = true`
 - 不是MMIO/NC访问: `mmio(5) = false`, `nc(5) = false`
 - 不是非对齐访问: `unaligned(5) = false`
 
-2. **地址模块更新**：
+2.  **地址模块更新**  ：
 
 - 物理地址模块: `paddrModule.wdata(0) = 0x80001000`
 - 虚拟地址模块: `vaddrModule.wdata(0) = 0x80001000`
@@ -1202,12 +1202,12 @@ io.storeDataIn(0).bits.uop.sqIdx = 5
 io.storeDataIn(0).bits.data = 0x12345678
 ```
 
-1. **数据写入处理**：
+1.  **数据写入处理**  ：
 
 - 更新数据模块: `dataModule.wdata(0) = 0x12345678`
 - 设置数据就绪标志: `datavalid(5) = true`
 
-2. **状态更新**：
+2.  **状态更新**  ：
 
 - 此时条目5的状态为:
 
@@ -1230,7 +1230,7 @@ io.rob.scommit(1) = false         // 无提交store指令1
 io.rob.pendingPtr = 76            // 当前ROB头部指令的索引
 ```
 
-1. **提交处理**：
+1.  **提交处理**  ：
 
 - 条件:
   - `allocated(5) = true`
@@ -1238,7 +1238,7 @@ io.rob.pendingPtr = 76            // 当前ROB头部指令的索引
   - 指令未被取消，S2阶段已完成
 - 设置提交标志: `committed(5) = true`
 
-2. **提交指针更新**：
+2.  **提交指针更新**  ：
 
 - `cmtPtr = 3 + 1 = 4` (提交1条指令)
 
@@ -1246,7 +1246,7 @@ io.rob.pendingPtr = 76            // 当前ROB头部指令的索引
 
 指令完成所有准备，准备写入到SBuffer:
 
-1. **数据缓冲区准备**：
+1.  **数据缓冲区准备**  ：
 
 - 检查条件:
 
@@ -1267,7 +1267,7 @@ io.rob.pendingPtr = 76            // 当前ROB头部指令的索引
      dataBuffer.enq(0).bits.mask = 0b1111
      ```
 
-2. **写入SBuffer**：
+2.  **写入SBuffer**  ：
 
 - SBuffer接受写入请求:
 
@@ -1286,7 +1286,7 @@ io.rob.pendingPtr = 76            // 当前ROB头部指令的索引
 
 指令完全执行完毕，需要从队列移除:
 
-1. **完成检查**：
+1.  **完成检查**  ：
 
 - 条目5状态:
 
@@ -1295,11 +1295,11 @@ io.rob.pendingPtr = 76            // 当前ROB头部指令的索引
      completed(5) = true  // 已完成写入SBuffer
      ```
 
-2. **出队处理**：
+2.  **出队处理**  ：
 
 - 队列出队数据: `deqPtr = 2 + 1 = 3` (假设队列中只有之前的一条指令被处理)
 
-3. **最终状态**：
+3.  **最终状态**  ：
 
 - 条目5将在后续被新指令覆盖
 - 队列状态:
@@ -1336,7 +1336,7 @@ io.storeAddrIn(0).bits.mask = 0b1111
 io.storeAddrIn(0).bits.mmio = true  // 关键区别，标记为MMIO
 ```
 
-1. **地址写入处理**：
+1.  **地址写入处理**  ：
 
 - 设置MMIO相关标志:
 
@@ -1346,7 +1346,7 @@ io.storeAddrIn(0).bits.mmio = true  // 关键区别，标记为MMIO
      pending(10) = true   // 设置为挂起状态
      ```
 
-2. **数据写入完成后**：
+2.  **数据写入完成后**  ：
 
 - 条目10状态:
 
@@ -1367,7 +1367,7 @@ io.rob.pendingst = true      // 存在暂挂store指令
 io.rob.pendingPtr = 42       // 当前暂挂指令的索引
 ```
 
-1. **MMIO状态机激活**：
+1.  **MMIO状态机激活**  ：
 
 - 检查条件:
 
@@ -1387,7 +1387,7 @@ io.rob.pendingPtr = 42       // 当前暂挂指令的索引
 
 MMIO状态机处理UnCache请求:
 
-1. **准备UnCache请求**：
+1.  **准备UnCache请求**  ：
 
    ```
    mmioReq.valid = true
@@ -1397,14 +1397,14 @@ MMIO状态机处理UnCache请求:
    mmioReq.bits.mask = 0b1111       // 4字节掩码
    ```
 
-2. **发送请求到UnCache接口**：
+2.  **发送请求到UnCache接口**  ：
 
    ```
    io.uncache.req.valid = true
    io.uncache.req.bits = mmioReq.bits
    ```
 
-3. **UnCache确认接收请求**：
+3.  **UnCache确认接收请求**  ：
 
 - `io.uncache.req.ready = true`
 - MMIO状态机转移: `mmioState: s_req -> s_resp`
@@ -1413,7 +1413,7 @@ MMIO状态机处理UnCache请求:
 
 MMIO状态机等待设备响应:
 
-1. **接收UnCache响应**：
+1.  **接收UnCache响应**  ：
 
    ```
    io.uncache.resp.valid = true
@@ -1421,7 +1421,7 @@ MMIO状态机等待设备响应:
    io.uncache.resp.bits.nderr = false  // 无硬件错误
    ```
 
-2. **状态机更新**：
+2.  **状态机更新**  ：
 
 - MMIO状态机转移: `mmioState: s_resp -> s_wb`
 
@@ -1429,7 +1429,7 @@ MMIO状态机等待设备响应:
 
 MMIO状态机将结果写回处理器:
 
-1. **准备写回信息**：
+1.  **准备写回信息**  ：
 
    ```
    io.mmioStout.valid = true
@@ -1438,7 +1438,7 @@ MMIO状态机将结果写回处理器:
    io.mmioStout.bits.debug.isMMIO = true
    ```
 
-2. **处理器确认写回**：
+2.  **处理器确认写回**  ：
 
 - `io.mmioStout.ready = true`
 - 标记MMIO指令完成: `completed(10) = true`
@@ -1448,13 +1448,13 @@ MMIO状态机将结果写回处理器:
 
 MMIO状态机等待最终提交确认:
 
-1. **ROB确认提交**：
+1.  **ROB确认提交**  ：
 
 - `io.rob.scommit > 0` (提交数量大于0)
 - MMIO状态机转移: `mmioState: s_wait -> s_idle`
 - MMIO状态机回到空闲状态，准备处理下一个MMIO请求
 
-2. **指令出队和完成**：
+2.  **指令出队和完成**  ：
 
 - 队列状态更新:
 
@@ -1483,7 +1483,7 @@ XiangShan处理器的StoreQueue实现了多种性能优化和特殊设计，以�
 
 ### 12.1 结构优化
 
-1. **模块化设计**：
+1.  **模块化设计**  ：
 
 - 使用专用模块管理数据、地址和异常
 - 提高设计清晰度和可维护性
@@ -1497,53 +1497,53 @@ XiangShan处理器的StoreQueue实现了多种性能优化和特殊设计，以�
    val exceptionBuffer = Module(new StoreExceptionBuffer)
    ```
 
-2. **环形队列架构**：
+2.  **环形队列架构**  ：
 
 - 高效的资源利用
 - 简化回收和分配逻辑
 
-3. **分离的地址和数据路径**：
+3.  **分离的地址和数据路径**  ：
 
 - 允许地址和数据在不同时间到达
 - 减少结构依赖
 
 ### 12.2 性能优化
 
-1. **并行查询和匹配**：
+1.  **并行查询和匹配**  ：
 
 - 并行CAM操作加速地址匹配
 - 优化的优先级编码器快速选择结果
 
-2. **提前就绪检测**：
+2.  **提前就绪检测**  ：
 
 - 跟踪地址和数据就绪状态
 - 减少不必要的依赖等待
 
-3. **并行提交和写回**：
+3.  **并行提交和写回**  ：
 
 - 每周期支持多条指令提交
 - 多端口SBuffer接口提高带宽
 
 ### 12.3 特殊情况处理
 
-1. **非对齐和跨页store**：
+1.  **非对齐和跨页store**  ：
 
 - 与StoreMisalignBuffer协作处理复杂情况
 - 保持高性能同时确保正确性
 
-2. **向量store优化**：
+2.  **向量store优化**  ：
 
 - 特殊流处理机制
 - 优化的向量元素处理
 
-3. **MMIO和非缓存访问专用路径**：
+3.  **MMIO和非缓存访问专用路径**  ：
 
 - 独立状态机减少主路径复杂度
 - 确保特殊访问的正确顺序
 
 ### 12.4 关键延迟优化
 
-1. **两级转发响应**：
+1.  **两级转发响应**  ：
 
 - 快速响应满足常见情况
 - 完整响应处理复杂情况
@@ -1554,34 +1554,34 @@ XiangShan处理器的StoreQueue实现了多种性能优化和特殊设计，以�
    io.forwardValid(i) := parallelFwdResult.valid          // 完整响应
    ```
 
-2. **提前数据准备**：
+2.  **提前数据准备**  ：
 
 - 在请求周期预先准备可能的转发数据
 - 减少关键路径延迟
 
-3. **流水线优化**：
+3.  **流水线优化**  ：
 
 - 精心设计的流水线阶段平衡
 - 关键路径延迟优化
 
 ### 12.5 可扩展性考量
 
-1. **参数化设计**：
+1.  **参数化设计**  ：
 
 - 队列大小和端口数量可配置
 - 适应不同处理器配置
 
-2. **可调优接口**：
+2.  **可调优接口**  ：
 
 - 运行时可调整的阈值和策略
 - 适应不同工作负载特性
 
-3. **模块化功能扩展**：
+3.  **模块化功能扩展**  ：
 
 - 支持添加新的store类型
 - 扩展为未来特性预留接口
 
-4. **强制刷新SBuffer机制**：
+4.  **强制刷新SBuffer机制**  ：
 
 - 采用双阈值控制策略
 - 当StoreQueue的有效项数超过上阈值时，强制刷新SBuffer

@@ -17,22 +17,22 @@
 
 StoreQueueData包含三个主要的子模块：
 
-1. **SQAddrModule**：管理store指令的地址信息，并提供CAM功能
-2. **SQData8Module**：处理8位(1字节)粒度的数据store和转发
-3. **SQDataModule**：作为SQData8Module的包装器，管理完整的数据条目
+1.  **SQAddrModule**  ：管理store指令的地址信息，并提供CAM功能
+2.  **SQData8Module**  ：处理8位(1字节)粒度的数据store和转发
+3.  **SQDataModule**  ：作为SQData8Module的包装器，管理完整的数据条目
 
 ### 1.3 与StoreQueue和LoadQueue的关系
 
 StoreQueueData在XiangShan的LSQ (Load-Store Queue) 系统中扮演着关键角色：
 
-1. **与StoreQueue的关系**：
+1.  **与StoreQueue的关系**  ：
 
 - 作为StoreQueue的核心数据store组件
 - 由StoreQueue实例化和管理
 - 接收来自StoreQueue的写入和转发控制信号
 - 提供数据给StoreQueue用于写回SBuffer和处理MMIO操作
 
-2. **与LoadQueue的关系**：
+2.  **与LoadQueue的关系**  ：
 
 - 通过StoreQueue提供load-store转发功能
 - 响应LoadQueue发起的地址匹配查询
@@ -248,8 +248,8 @@ io.forwardData(i) := parallelFwdResult.data           // 下一周期生成
 
 这个转发逻辑实现了两种时序的转发处理：
 
-1. **快速路径** (`forwardValidFast`)：在查询的同一周期生成，用于快速检查
-2. **标准路径** (`forwardValid` 和 `forwardData`)：在查询的下一周期生成，包含完整数据
+1.  **快速路径**  (`forwardValidFast`)：在查询的同一周期生成，用于快速检查
+2.  **标准路径**  (`forwardValid` 和 `forwardData`)：在查询的下一周期生成，包含完整数据
 
 ## 4. SQDataModule：数据模块包装器
 
@@ -359,19 +359,19 @@ for (i <- 0 until numForward) {
 
 以下是StoreQueueData在整个LSQ系统中的数据流概述：
 
-1. **store指令入队阶段**：
+1.  **store指令入队阶段**  ：
 
 - StoreQueue从后端接收store指令
 - 为指令分配队列条目
 - 初始化相关状态标志
 
-2. **地址和数据写入阶段**：
+2.  **地址和数据写入阶段**  ：
 
 - StoreQueue从执行单元接收计算好的store地址，写入SQAddrModule
 - StoreQueue从执行单元接收store数据，写入SQDataModule
 - 设置适当的状态标志指示地址和数据就绪
 
-3. **转发检查阶段**：
+3.  **转发检查阶段**  ：
 
 - LoadQueue通过StoreQueue向SQAddrModule发送地址查询请求
 - SQAddrModule执行CAM操作，生成地址匹配掩码
@@ -380,7 +380,7 @@ for (i <- 0 until numForward) {
 - SQDataModule产生转发结果，返回给StoreQueue
 - StoreQueue将转发数据提供给LoadQueue
 
-4. **store提交阶段**：
+4.  **store提交阶段**  ：
 
 - ROB通知StoreQueue某store指令可以提交
 - StoreQueue从SQDataModule读取完整的store数据
@@ -390,16 +390,16 @@ for (i <- 0 until numForward) {
 
 store-load转发是StoreQueueData最关键的功能之一，下面详细说明完整的转发流程：
 
-1. **load地址生成**：
+1.  **load地址生成**  ：
 
 - LoadUnit计算load指令的地址
 
-2. **转发查询初始化**：
+2.  **转发查询初始化**  ：
 
 - LoadQueue构造转发查询，包括地址、掩码和队列索引信息
 - 查询通过LoadQueue的`forward`接口发送到StoreQueue
 
-3. **StoreQueue转发处理**：
+3.  **StoreQueue转发处理**  ：
 
 - StoreQueue接收查询请求
 - 向SQAddrModule发送地址匹配查询
@@ -407,7 +407,7 @@ store-load转发是StoreQueueData最关键的功能之一，下面详细说明�
 - 应用年龄过滤和指针比较，生成最终需要检查的条目掩码
 - 将需要检查的条目掩码通过`needForward`信号发送给SQDataModule
 
-4. **SQDataModule数据转发**：
+4.  **SQDataModule数据转发**  ：
 
 - 针对每个字节，检查指定条目是否有效且需要转发
 - 使用优先级逻辑选择最新的匹配数据
@@ -415,12 +415,12 @@ store-load转发是StoreQueueData最关键的功能之一，下面详细说明�
 - `forwardValidFast`: 快速路径，当前周期有效
 - `forwardValid`和`forwardData`: 完整路径，下一周期有效
 
-5. **转发结果返回**：
+5.  **转发结果返回**  ：
 
 - StoreQueue接收SQDataModule的转发结果
 - 将结果通过`forward`接口返回给LoadQueue
 
-6. **LoadQueue处理转发结果**：
+6.  **LoadQueue处理转发结果**  ：
 
 - 接收转发结果(是否有匹配、转发数据)
 - 根据结果决定是否:
@@ -515,19 +515,19 @@ matchResultVec(j).valid := needCheck0Reg && data(j).valid
 
 StoreQueueData是整个LSQ系统的核心数据store组件，具有以下关键特性：
 
-1. **对StoreQueue提供服务**：
+1.  **对StoreQueue提供服务**  ：
 
 - store所有store指令的地址、数据和掩码
 - 支持StoreQueue对提交指令的数据读取
 - 辅助StoreQueue完成store指令的完整处理
 
-2. **与LoadQueue协同工作**：
+2.  **与LoadQueue协同工作**  ：
 
 - 通过StoreQueue向LoadQueue提供转发服务
 - 快速响应LoadQueue的地址匹配查询
 - 为LoadQueue提供精确的字节级转发数据
 
-3. **促进内存一致性维护**：
+3.  **促进内存一致性维护**  ：
 
 - 支持乱序执行中的数据依赖正确性
 - 减少因store-load依赖导致的流水线停顿
@@ -539,16 +539,16 @@ StoreQueueData是整个LSQ系统的核心数据store组件，具有以下关键�
 
 StoreQueueData实现了XiangShan处理器中store队列的数据store和转发机制，采用模块化设计和多项优化技术：
 
-1. **层次化设计**：使用SQAddrModule、SQData8Module和SQDataModule分层管理不同类型的数据
-2. **高效地址匹配**：实现并行CAM操作，快速识别匹配的store指令
-3. **精细数据转发**：支持字节粒度的数据转发，优化内存依赖处理
-4. **多级转发时序**：同时提供快速检查和完整数据路径，平衡性能和实现复杂度
-5. **多Bankstore设计**：通过多Bank结构提高访问并行度，减少结构冲突
+1.  **层次化设计**  ：使用SQAddrModule、SQData8Module和SQDataModule分层管理不同类型的数据
+2.  **高效地址匹配**  ：实现并行CAM操作，快速识别匹配的store指令
+3.  **精细数据转发**  ：支持字节粒度的数据转发，优化内存依赖处理
+4.  **多级转发时序**  ：同时提供快速检查和完整数据路径，平衡性能和实现复杂度
+5.  **多Bankstore设计**  ：通过多Bank结构提高访问并行度，减少结构冲突
 
 在LSQ系统中，StoreQueueData通过与StoreQueue和LoadQueue的紧密协作，实现了以下核心功能：
 
-1. **store指令数据管理**：为StoreQueue提供高效的数据store机制
-2. **store-load转发**：支持关键的数据依赖处理，维护程序语义
-3. **内存一致性支持**：协助维护在乱序执行中内存访问的一致性和正确性
+1.  **store指令数据管理**  ：为StoreQueue提供高效的数据store机制
+2.  **store-load转发**  ：支持关键的数据依赖处理，维护程序语义
+3.  **内存一致性支持**  ：协助维护在乱序执行中内存访问的一致性和正确性
 
 这些设计使StoreQueueData能够高效处理store数据并支持关键的store-load转发功能，是实现高性能乱序处理器的重要组件。

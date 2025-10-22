@@ -130,17 +130,17 @@ when (enq.valid && enq.bits.isLoadReplay) {
 
 LoadQueueReplay 采用三种选择调度方式[^1]：
 
-1. **根据入队年龄**：
+1.  **根据入队年龄**  ：
 
 - 使用3个年龄矩阵(每一个Bank对应一个年龄矩阵)记录入队时间
 - 从已准备好可重发的指令中选择入队时间最长的指令
 
-2. **根据Load指令的年龄**：
+2.  **根据Load指令的年龄**  ：
 
 - 根据LqPtr判断靠近最老的load指令进行重发
 - 判断宽度为OldestSelectStride=4
 
-3. **数据相关优先调度**：
+3.  **数据相关优先调度**  ：
 
 - 首先调度因L2 Hint唤醒的重发（L2 Cache回填前2-3拍提前给出唤醒信号）
 - 如不存在L2 Hint情况，将replay原因分为高低优先级：
@@ -207,14 +207,14 @@ when (enq.valid && enq.bits.isLoadReplay) {
 
 replay过程分为三个阶段[^1]：
 
-1. **S0阶段**：选择需要replay的条目
+1.  **S0阶段**  ：选择需要replay的条目
 
 - 优先处理L2 Hint唤醒的条目
 - 然后是高优先级原因（C_DM和C_FF）
 - 最后是其他原因的replay条目
 - 可能还会考虑入队年龄和指令年龄
 
-2. **S1阶段**：读取虚拟地址并标记调度状态
+2.  **S1阶段**  ：读取虚拟地址并标记调度状态
 
    ```scala
    for (i <- 0 until LoadPipelineWidth) {
@@ -229,7 +229,7 @@ replay过程分为三个阶段[^1]：
    }
    ```
 
-3. **S2阶段**：发送replay请求到load单元
+3.  **S2阶段**  ：发送replay请求到load单元
 
    ```scala
    replay_req(i).valid := s2_oldestSel(i).valid
@@ -258,13 +258,13 @@ when (lastReplay(i) && io.replay(i).fire) {
 
 LoadQueueReplay 与 LoadQueue 是相互配合但状态独立的两个模块：
 
-1. **独立的条目管理**：
+1.  **独立的条目管理**  ：
 
 - LoadQueueReplay 有自己独立的条目，不直接修改 LoadQueue 中的条目状态
 - 每个需要replay的load指令在 LoadQueueReplay 中有独立的追踪条目
 - LoadQueue 中的原始条目保持其状态，直到最终执行成功或被取消
 
-2. **数据流向**：
+2.  **数据流向**  ：
 
    ```
    LoadQueue -> load单元 -> [执行] -> 

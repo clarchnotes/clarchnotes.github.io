@@ -16,6 +16,7 @@ fix_markdown_issues() {
     sed -E \
         -e 's/\*\*([^*]+)\*\*:/\*\*\1\*\*：/g' \
         -e 's/\*\*([^*]+)\*\*\(/\*\*\1\*\* - /g' \
+        -e 's/\*\*([^*]+)\*\*([。，、；：！？])/\*\*\1\*\* \2/g' \
         "$file" > "$tmp_file"
     
     # Replace original file if changes were made
@@ -50,5 +51,5 @@ echo ""
 echo "🔍 Common issues fixed:"
 echo "   - **text**: → **text**：(English colon to Chinese colon)"
 echo "   - **text**(xxx) → **text** - xxx"
-echo "   - Improved list formatting"
+echo "   - **text**。 → **text** 。 (add space before Chinese punctuation)"
 

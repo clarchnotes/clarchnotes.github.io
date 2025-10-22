@@ -1,16 +1,16 @@
-# **Transformer 架构**
+#  **Transformer 架构** 
 
-## **1. 摘要 (Abstract)**
+##  **1. 摘要 (Abstract)** 
 
 Transformer 是现代深度学习最具影响力的架构之一，由 Google 在 2017 年的论文 "Attention Is All You Need" 中首次提出。它彻底改变了自然语言处理领域，成为 GPT、BERT、LLaMA 等主流大语言模型的核心架构。Transformer 的核心创新是完全基于注意力机制，摒弃了传统的循环神经网络(RNN)和卷积神经网络(CNN)，实现了高度并行化的序列建模。通过自注意力(Self-Attention)、多头注意力(Multi-Head Attention)、位置编码(Positional Encoding)等关键技术，Transformer 在保持长距离依赖建模能力的同时，大幅提升了训练效率和模型性能。
 
-## **2. 背景：为什么需要 Transformer？**
+##  **2. 背景：为什么需要 Transformer？** 
 
-### **2.1 传统序列模型的局限性**
+###  **2.1 传统序列模型的局限性** 
 
 在 Transformer 出现之前，处理序列数据主要依赖两种架构：
 
-#### **循环神经网络 (RNN) 的问题**
+####  **循环神经网络 (RNN) 的问题** 
 
 ```text
 问题场景：处理句子 "The cat that ate the fish was very happy"
@@ -35,7 +35,7 @@ RNN 处理方式：
 - "cat"的信息可能已经丢失
 ```
 
-#### **卷积神经网络 (CNN) 的局限**
+####  **卷积神经网络 (CNN) 的局限** 
 
 ```text
 CNN 处理序列：
@@ -59,7 +59,7 @@ CNN 处理序列：
 - 计算浪费
 ```
 
-### **2.2 注意力机制的启发**
+###  **2.2 注意力机制的启发** 
 
 还记得我们在前面文档中学到的注意力机制吗？它能让模型直接关注序列中的任意位置：
 
@@ -74,9 +74,9 @@ CNN 处理序列：
 如果注意力这么强大，为什么不构建一个完全基于注意力的模型？
 ```
 
-### **2.3 Transformer 的核心理念**
+###  **2.3 Transformer 的核心理念** 
 
-**大胆的设想**：
+**大胆的设想** ：
 
 ```text
 传统思路：
@@ -88,9 +88,9 @@ Transformer思路：
 核心信念："Attention Is All You Need"
 ```
 
-## **3. Transformer 架构概览**
+##  **3. Transformer 架构概览** 
 
-### **3.1 整体架构图**
+###  **3.1 整体架构图** 
 
 Transformer 采用经典的编码器-解码器(Encoder-Decoder)架构：
 
@@ -125,25 +125,25 @@ Transformer 采用经典的编码器-解码器(Encoder-Decoder)架构：
 └─────────────────────────────────────────────┘
 ```
 
-### **3.2 关键组件一览**
+###  **3.2 关键组件一览** 
 
-**核心组件清单**：
+**核心组件清单** ：
 
-1. **输入嵌入 (Input Embedding)**：将词转换为向量
-2. **位置编码 (Positional Encoding)**：添加位置信息
-3. **多头自注意力 (Multi-Head Self-Attention)**：核心计算单元
-4. **前馈网络 (Feed Forward Network)**：非线性变换
-5. **残差连接 (Residual Connection)**：梯度流动优化
-6. **层归一化 (Layer Normalization)**：训练稳定性
-7. **掩码机制 (Masking)**：控制信息流动
+1.  **输入嵌入 (Input Embedding)**  ：将词转换为向量
+2.  **位置编码 (Positional Encoding)**  ：添加位置信息
+3.  **多头自注意力 (Multi-Head Self-Attention)**  ：核心计算单元
+4.  **前馈网络 (Feed Forward Network)**  ：非线性变换
+5.  **残差连接 (Residual Connection)**  ：梯度流动优化
+6.  **层归一化 (Layer Normalization)**  ：训练稳定性
+7.  **掩码机制 (Masking)**  ：控制信息流动
 
 每个组件都有其独特的作用，我们将逐一详细解析。
 
-## **4. 核心组件详解**
+##  **4. 核心组件详解** 
 
-### **4.1 输入嵌入与位置编码**
+###  **4.1 输入嵌入与位置编码** 
 
-#### **词嵌入 (Word Embedding)**
+####  **词嵌入 (Word Embedding)** 
 
 将离散的词汇转换为连续的向量表示：
 
@@ -161,16 +161,16 @@ token_3 → embedding_3 ∈ ℝᵈ
 其中 d = 512 (标准Transformer)
 ```
 
-**数学表示**：
+**数学表示** ：
 $$\text{Embedding}(x_i) = E_{x_i} \in \mathbb{R}^d$$
 
 其中 $E \in \mathbb{R}^{V \times d}$ 是嵌入矩阵，$V$ 是词汇表大小。
 
-#### **位置编码 (Positional Encoding)**
+####  **位置编码 (Positional Encoding)** 
 
 由于注意力机制本身没有位置概念，需要显式添加位置信息：
 
-**问题说明**：
+**问题说明** ：
 
 ```text
 句子1："AI loves me"  
@@ -180,7 +180,7 @@ $$\text{Embedding}(x_i) = E_{x_i} \in \mathbb{R}^d$$
 需要位置信息来理解词序
 ```
 
-**Transformer 的位置编码公式**：
+**Transformer 的位置编码公式** ：
 
 $$PE_{(pos, 2i)} = \sin\left(\frac{pos}{10000^{2i/d}}\right)$$
 
@@ -192,7 +192,7 @@ $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)$$
 - $i$：维度索引 (0, 1, 2, ..., d/2-1)
 - $d$：嵌入维度
 
-**直观理解**：
+**直观理解** ：
 
 ```text
 位置编码就像给每个位置一个"身份证号码"：
@@ -207,16 +207,16 @@ $$PE_{(pos, 2i+1)} = \cos\left(\frac{pos}{10000^{2i/d}}\right)$$
 3. 可以处理任意长度的序列
 ```
 
-**最终输入表示**：
+**最终输入表示** ：
 $$\text{Input} = \text{Embedding} + \text{Positional Encoding}$$
 
-### **4.2 多头自注意力机制**
+###  **4.2 多头自注意力机制** 
 
 这是 Transformer 的核心组件，我们在之前的文档中已经详细介绍了注意力机制，这里重点讲解多头注意力的设计。
 
-#### **从单头到多头的动机**
+####  **从单头到多头的动机** 
 
-**单头注意力的局限**：
+**单头注意力的局限** ：
 
 ```text
 问题：单个注意力头只能捕获一种关系
@@ -231,7 +231,7 @@ $$\text{Input} = \text{Embedding} + \text{Positional Encoding}$$
 - 修饰关系："mat" ← "the" (限定关系)
 ```
 
-**多头注意力的解决方案**：
+**多头注意力的解决方案** ：
 
 ```text
 核心思想：用多个"专家"头分别捕获不同类型的关系
@@ -246,7 +246,7 @@ $$\text{Input} = \text{Embedding} + \text{Positional Encoding}$$
 最终融合所有头的信息
 ```
 
-#### **多头注意力的数学实现**
+####  **多头注意力的数学实现** 
 
 **步骤1：线性投影**
 
@@ -270,7 +270,7 @@ $$\text{MultiHead}(Q,K,V) = \text{Concat}(\text{head}^{(1)}, \ldots, \text{head}
 
 其中 $W^O \in \mathbb{R}^{d \times d}$ 是输出投影矩阵。
 
-#### **具体实现示例**
+####  **具体实现示例** 
 
 ```python
 import torch
@@ -347,11 +347,11 @@ print(f"输出形状: {output.shape}")
 print(f"注意力权重形状: {weights.shape}")
 ```
 
-### **4.3 前馈网络 (Feed Forward Network)**
+###  **4.3 前馈网络 (Feed Forward Network)** 
 
 每个 Transformer 层都包含一个位置级别的前馈网络：
 
-#### **网络结构**
+####  **网络结构** 
 
 ```text
 FFN 的简单结构：
@@ -361,13 +361,13 @@ FFN 的简单结构：
 FFN(x) = max(0, xW₁ + b₁)W₂ + b₂
 ```
 
-**具体参数**：
+**具体参数** ：
 
 - 输入维度：$d_{model} = 512$
 - 隐藏层维度：$d_{ff} = 2048$（通常是输入的4倍）
 - 输出维度：$d_{model} = 512$
 
-#### **作用分析**
+####  **作用分析** 
 
 ```text
 前馈网络的作用：
@@ -386,7 +386,7 @@ FFN(x) = max(0, xW₁ + b₁)W₂ + b₂
    - 类似"特征提取-特征选择"过程
 ```
 
-#### **代码实现**
+####  **代码实现** 
 
 ```python
 class FeedForward(nn.Module):
@@ -419,9 +419,9 @@ print(f"FFN输入形状: {input_tensor.shape}")
 print(f"FFN输出形状: {output.shape}")
 ```
 
-### **4.4 残差连接与层归一化**
+###  **4.4 残差连接与层归一化** 
 
-#### **残差连接的必要性**
+####  **残差连接的必要性** 
 
 ```text
 深度网络的问题：
@@ -439,7 +439,7 @@ output = SubLayer(x) + x
 3. 训练稳定：深层网络也能有效训练
 ```
 
-#### **层归一化 vs 批归一化**
+####  **层归一化 vs 批归一化** 
 
 ```text
 批归一化 (Batch Normalization)：
@@ -452,7 +452,7 @@ output = SubLayer(x) + x
 - 每个样本独立归一化
 ```
 
-**层归一化公式**：
+**层归一化公式** ：
 
 $$\text{LayerNorm}(x) = \frac{x - \mu}{\sigma} \odot \gamma + \beta$$
 
@@ -462,7 +462,7 @@ $$\text{LayerNorm}(x) = \frac{x - \mu}{\sigma} \odot \gamma + \beta$$
 - $\sigma = \sqrt{\frac{1}{d}\sum_{i=1}^{d} (x_i - \mu)^2}$：标准差  
 - $\gamma, \beta$：可学习的缩放和偏移参数
 
-#### **完整的子层结构**
+####  **完整的子层结构** 
 
 ```text
 标准的Transformer子层结构：
@@ -483,7 +483,7 @@ Dropout
 output = x + Dropout(SubLayer(LayerNorm(x)))
 ```
 
-**代码实现**：
+**代码实现** ：
 
 ```python
 class TransformerBlock(nn.Module):
@@ -517,9 +517,9 @@ class TransformerBlock(nn.Module):
         return x
 ```
 
-## **5. 编码器 (Encoder) 详解**
+##  **5. 编码器 (Encoder) 详解** 
 
-### **5.1 编码器架构**
+###  **5.1 编码器架构** 
 
 编码器将输入序列转换为丰富的上下文表示：
 
@@ -533,7 +533,7 @@ class TransformerBlock(nn.Module):
 3. 残差连接和层归一化
 ```
 
-#### **编码器的完整实现**
+####  **编码器的完整实现** 
 
 ```python
 class TransformerEncoder(nn.Module):
@@ -593,7 +593,7 @@ class PositionalEncoding(nn.Module):
         return self.dropout(x)
 ```
 
-### **5.2 编码器的工作过程**
+###  **5.2 编码器的工作过程** 
 
 让我们通过一个具体例子来理解编码器的工作：
 
@@ -626,9 +626,9 @@ class PositionalEncoding(nn.Module):
 每个H包含了丰富的上下文信息！
 ```
 
-## **6. 解码器 (Decoder) 详解**
+##  **6. 解码器 (Decoder) 详解** 
 
-### **6.1 解码器的特殊性**
+###  **6.1 解码器的特殊性** 
 
 解码器不同于编码器，它需要处理自回归生成任务：
 
@@ -642,7 +642,7 @@ class PositionalEncoding(nn.Module):
 如何在训练时高效处理，同时保持推理时的因果约束？
 ```
 
-#### **掩码自注意力 (Masked Self-Attention)**
+####  **掩码自注意力 (Masked Self-Attention)** 
 
 核心思想：在注意力计算中屏蔽未来位置
 
@@ -662,7 +662,7 @@ AI   1    1    1
 其中1表示可以看到，0表示被屏蔽
 ```
 
-**掩码实现**：
+**掩码实现** ：
 
 ```python
 def create_causal_mask(seq_len):
@@ -684,7 +684,7 @@ tensor([[1, 0, 0, 0],
 """
 ```
 
-### **6.2 编码器-解码器注意力**
+###  **6.2 编码器-解码器注意力** 
 
 除了自注意力，解码器还需要关注编码器的输出：
 
@@ -702,7 +702,7 @@ tensor([[1, 0, 0, 0],
 - 效果：解码器知道要翻译"love"这个词
 ```
 
-#### **解码器层的完整结构**
+####  **解码器层的完整结构** 
 
 ```python
 class TransformerDecoderBlock(nn.Module):
@@ -747,7 +747,7 @@ class TransformerDecoderBlock(nn.Module):
         return x
 ```
 
-### **6.3 完整的解码器实现**
+###  **6.3 完整的解码器实现** 
 
 ```python
 class TransformerDecoder(nn.Module):
@@ -787,9 +787,9 @@ class TransformerDecoder(nn.Module):
         return output
 ```
 
-## **7. 完整的 Transformer 模型**
+##  **7. 完整的 Transformer 模型** 
 
-### **7.1 整合编码器和解码器**
+###  **7.1 整合编码器和解码器** 
 
 ```python
 class Transformer(nn.Module):
@@ -840,9 +840,9 @@ model = Transformer(
 print(f"模型参数量: {sum(p.numel() for p in model.parameters()):,}")
 ```
 
-### **7.2 训练过程详解**
+###  **7.2 训练过程详解** 
 
-#### **教师强制 (Teacher Forcing)**
+####  **教师强制 (Teacher Forcing)** 
 
 ```text
 训练时的"作弊"技巧：
@@ -865,7 +865,7 @@ print(f"模型参数量: {sum(p.numel() for p in model.parameters()):,}")
 [<START>, 我, 爱, 人工智能] → 预测：<END>
 ```
 
-#### **训练代码示例**
+####  **训练代码示例** 
 
 ```python
 def train_step(model, src_batch, tgt_batch, optimizer, criterion):
@@ -910,11 +910,11 @@ def train_model(model, train_loader, num_epochs=10):
         print(f'Epoch {epoch} completed, Average Loss: {avg_loss:.4f}')
 ```
 
-## **8. Transformer 的关键创新与影响**
+##  **8. Transformer 的关键创新与影响** 
 
-### **8.1 核心创新总结**
+###  **8.1 核心创新总结** 
 
-#### **1. 完全基于注意力**
+####  **1. 完全基于注意力** 
 
 ```text
 革命性转变：
@@ -927,7 +927,7 @@ def train_model(model, train_loader, num_epochs=10):
 ✓ 扩展性：容易堆叠更多层
 ```
 
-#### **2. 多头注意力机制**
+####  **2. 多头注意力机制** 
 
 ```text
 关键洞察：
@@ -945,7 +945,7 @@ def train_model(model, train_loader, num_epochs=10):
 - 长距离依赖：跨句、跨段
 ```
 
-#### **3. 位置编码设计**
+####  **3. 位置编码设计** 
 
 ```text
 问题：注意力机制缺乏位置感知
@@ -959,7 +959,7 @@ def train_model(model, train_loader, num_epochs=10):
 后续研究提出了多种位置编码方法
 ```
 
-#### **4. 残差连接与层归一化**
+####  **4. 残差连接与层归一化** 
 
 ```text
 训练稳定性的保证：
@@ -971,9 +971,9 @@ def train_model(model, train_loader, num_epochs=10):
 能够训练很深的网络（GPT-3: 96层）
 ```
 
-### **8.2 对AI发展的深远影响**
+###  **8.2 对AI发展的深远影响** 
 
-#### **统一的架构框架**
+####  **统一的架构框架** 
 
 ```text
 Transformer之前：
@@ -990,7 +990,7 @@ Transformer之后：
 影响：统一的架构促进了跨领域知识迁移
 ```
 
-#### **大模型时代的基础**
+####  **大模型时代的基础** 
 
 ```text
 Transformer的可扩展性催生了大模型：
@@ -1005,7 +1005,7 @@ Transformer的可扩展性催生了大模型：
 "更大的Transformer = 更强的智能"
 ```
 
-#### **工程实践的标准化**
+####  **工程实践的标准化** 
 
 ```text
 Transformer确立了深度学习的最佳实践：
@@ -1028,9 +1028,9 @@ Transformer确立了深度学习的最佳实践：
 这些技术成为了现代深度学习的标准配置
 ```
 
-### **8.3 Transformer 的局限性与改进方向**
+###  **8.3 Transformer 的局限性与改进方向** 
 
-#### **计算复杂度问题**
+####  **计算复杂度问题** 
 
 ```text
 注意力机制的平方复杂度：
@@ -1048,7 +1048,7 @@ O(n²) 随序列长度快速增长
 - Flash Attention (我们之前讨论过)
 ```
 
-#### **位置编码的限制**
+####  **位置编码的限制** 
 
 ```text
 固定位置编码的问题：
@@ -1061,7 +1061,7 @@ O(n²) 随序列长度快速增长
 - ALiBi位置编码
 ```
 
-#### **参数效率问题**
+####  **参数效率问题** 
 
 ```text
 Transformer参数量巨大：
@@ -1074,11 +1074,11 @@ Transformer参数量巨大：
 - MoE: 混合专家模型
 ```
 
-## **9. 实战：构建一个完整的机器翻译系统**
+##  **9. 实战：构建一个完整的机器翻译系统** 
 
 让我们用Transformer构建一个简单的英中翻译系统：
 
-### **9.1 数据预处理**
+###  **9.1 数据预处理** 
 
 ```python
 import torch
@@ -1145,7 +1145,7 @@ def build_vocab(sentences, min_freq=2):
     return vocab
 ```
 
-### **9.2 训练脚本**
+###  **9.2 训练脚本** 
 
 ```python
 def train_translation_model():
@@ -1224,7 +1224,7 @@ def train_translation_model():
     return model, src_vocab, tgt_vocab
 ```
 
-### **9.3 推理实现**
+###  **9.3 推理实现** 
 
 ```python
 def translate_sentence(model, sentence, src_vocab, tgt_vocab, max_len=50):
@@ -1283,9 +1283,9 @@ if __name__ == "__main__":
         print("-" * 40)
 ```
 
-## **10. 总结与展望**
+##  **10. 总结与展望** 
 
-### **10.1 Transformer 的历史意义**
+###  **10.1 Transformer 的历史意义** 
 
 Transformer 不仅仅是一个新的神经网络架构，它代表了深度学习发展的一个重要转折点：
 
@@ -1303,7 +1303,7 @@ Transformer 不仅仅是一个新的神经网络架构，它代表了深度学�
 ✓ 预训练范式：先学习通用知识，再特化
 ```
 
-### **10.2 与相关技术的关系**
+###  **10.2 与相关技术的关系** 
 
 Transformer 与我们之前讨论的技术形成了完整的技术栈：
 
@@ -1327,9 +1327,9 @@ PagedAttention (内存管理)
 - PagedAttention: 提高内存利用率
 ```
 
-### **10.3 未来发展方向**
+###  **10.3 未来发展方向** 
 
-#### **架构改进**
+####  **架构改进** 
 
 ```text
 当前研究热点：
@@ -1350,7 +1350,7 @@ PagedAttention (内存管理)
    - Hybrid Architectures: 混合架构
 ```
 
-#### **应用拓展**
+####  **应用拓展** 
 
 ```text
 新兴应用领域：
@@ -1371,7 +1371,7 @@ PagedAttention (内存管理)
    - 游戏AI (Game AI)
 ```
 
-### **10.4 学习建议**
+###  **10.4 学习建议** 
 
 对于想要深入掌握 Transformer 的读者，建议以下学习路径：
 

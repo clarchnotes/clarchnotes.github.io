@@ -2,13 +2,13 @@
 
 ## 概述
 
-两阶段地址翻译是H扩展的**核心**。它将传统的 `虚拟地址 -> 物理地址` 翻译过程拆分为两个独立的阶段。
+两阶段地址翻译是H扩展的 **核心**  。它将传统的 `虚拟地址 -> 物理地址` 翻译过程拆分为两个独立的阶段。
 
 ### 地址类型定义
 
-* **GVA (Guest Virtual Address):** Guest程序中使用的虚拟地址
-* **GPA (Guest Physical Address):** Guest OS认为的"物理地址"
-* **HPA (Host Physical Address):** 真实的机器物理地址
+*  **GVA (Guest Virtual Address):**  Guest程序中使用的虚拟地址
+*  **GPA (Guest Physical Address):**  Guest OS认为的"物理地址"
+*  **HPA (Host Physical Address):**  真实的机器物理地址
 
 **翻译流程：** GVA $\rightarrow$ GPA $\rightarrow$ HPA
 
@@ -52,7 +52,7 @@ Guest物理地址 (GPA): 例如 0x8000_1000
 **异常处理：**
 
 * 如果在此阶段发生缺页，这是一个"Hypervisor Page Fault"
-* **总是会陷入到Hypervisor**
+*  **总是会陷入到Hypervisor** 
 * Hypervisor可以通过`htval`和`htinst` CSR来获取导致错误的GPA和指令信息
 
 ## hgatp寄存器详解
@@ -110,14 +110,14 @@ VM2的TLB条目: GPA=0x1000 → HPA=0x20000 (VMID=2)
 
 **关键位字段：**
 
-* **V (Valid):** 页表项有效位
-* **R (Read):** 读权限
-* **W (Write):** 写权限  
-* **X (Execute):** 执行权限
-* **U (User):** 用户访问权限
-* **G (Global):** 全局页面（不被VMID限制）
-* **A (Accessed):** 访问位
-* **D (Dirty):** 脏位
+*  **V (Valid):**  页表项有效位
+*  **R (Read):**  读权限
+*  **W (Write):**  写权限  
+*  **X (Execute):**  执行权限
+*  **U (User):**  用户访问权限
+*  **G (Global):**  全局页面（不被VMID限制）
+*  **A (Accessed):**  访问位
+*  **D (Dirty):**  脏位
 
 ## 地址翻译示例
 
@@ -162,20 +162,20 @@ TLB Entry:
 
 当发生TLB miss时，硬件需要执行完整的两阶段页表遍历：
 
-1. **遍历Guest页表** (vsatp指向的页表)
+1.  **遍历Guest页表**  (vsatp指向的页表)
    * 需要多次访问Guest的页表项
    * 每次访问Guest页表项本身也需要第二阶段翻译
 
-2. **遍历Hypervisor页表** (hgatp指向的页表)
+2.  **遍历Hypervisor页表**  (hgatp指向的页表)
    * 将每个GPA翻译为HPA
 
 这意味着一次TLB miss可能需要多达`4×4=16`次内存访问（对于Sv39x4）。
 
 ### 优化策略
 
-1. **大页支持：** 使用2MB或1GB大页减少页表级数
-2. **嵌套TLB：** 硬件可能实现专门的两阶段TLB
-3. **Page Walk Cache：** 缓存页表遍历的中间结果
-4. **VMID优化：** 精心管理VMID分配，减少TLB刷新
+1.  **大页支持：**  使用2MB或1GB大页减少页表级数
+2.  **嵌套TLB：**  硬件可能实现专门的两阶段TLB
+3.  **Page Walk Cache：**  缓存页表遍历的中间结果
+4.  **VMID优化：**  精心管理VMID分配，减少TLB刷新
 
 这种两阶段设计虽然增加了复杂性，但为虚拟化提供了完整的内存隔离和灵活的内存管理能力。

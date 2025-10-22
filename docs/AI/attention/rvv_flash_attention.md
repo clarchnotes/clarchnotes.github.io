@@ -1,31 +1,31 @@
 # RISC-V Vector FlashAttention 实现指南
 
-## **摘要**
+##  **摘要** 
 
 本文档详细介绍了如何使用 RISC-V Vector (RVV) 指令集实现 FlashAttention 算法，并在 Gem5 仿真器上进行性能评估。通过充分利用 RVV 的向量化能力，我们实现了显著的性能提升，为基于 RISC-V 的 AI 硬件设计提供了重要参考。
 
-**关键词**：RISC-V Vector、FlashAttention、向量化优化、Gem5仿真、AI加速
+**关键词** ：RISC-V Vector、FlashAttention、向量化优化、Gem5仿真、AI加速
 
 ---
 
-## **1. 引言**
+##  **1. 引言** 
 
-### **1.1 背景与动机**
+###  **1.1 背景与动机** 
 
 随着大型语言模型的快速发展，Attention 机制的计算开销成为制约模型性能的关键瓶颈。FlashAttention 通过巧妙的分块和在线算法设计，将注意力计算的内存复杂度从 O(N²) 降低到 O(N)，为长序列处理带来了革命性突破。
 
 RISC-V 作为开源指令集架构，其向量扩展（RVV）为高性能计算和 AI 应用提供了强大的向量处理能力。将 FlashAttention 移植到 RVV 平台不仅具有重要的学术价值，更为自主可控的 AI 计算生态发展奠定基础。
 
-### **1.2 技术挑战与贡献**
+###  **1.2 技术挑战与贡献** 
 
-**主要挑战**：
+**主要挑战** ：
 
 - 向量长度适配：不同硬件的 VLEN 可能不同
 - 内存访问优化：充分利用 RVV 的内存层次
 - 数值稳定性：确保向量化不影响计算精度
 - 性能调优：发挥 RVV 的最大性能潜力
 
-**本文贡献**：
+**本文贡献** ：
 
 - 提供了完整的 RVV FlashAttention 实现
 - 设计了向量长度无关的编程模式
@@ -34,11 +34,11 @@ RISC-V 作为开源指令集架构，其向量扩展（RVV）为高性能计算�
 
 ---
 
-## **2. RISC-V Vector 基础**
+##  **2. RISC-V Vector 基础** 
 
-### **2.1 RVV 核心特性**
+###  **2.1 RVV 核心特性** 
 
-#### **可配置向量长度**
+####  **可配置向量长度** 
 
 RVV 支持可配置的向量长度（VLEN），从 128 位到 65536 位，运行时可通过 `vsetvl` 指令动态调整。
 
@@ -47,21 +47,21 @@ RVV 支持可配置的向量长度（VLEN），从 128 位到 65536 位，运行
 size_t vl = __riscv_vsetvl_e32m1(n);  // 设置处理n个FP32元素
 ```
 
-#### **丰富的数据类型支持**
+####  **丰富的数据类型支持** 
 
-- **浮点类型**：FP16, FP32, FP64
-- **整数类型**：INT8, INT16, INT32, INT64
-- **混合精度**：支持不同精度的混合运算
+-  **浮点类型**  ：FP16, FP32, FP64
+-  **整数类型**  ：INT8, INT16, INT32, INT64
+-  **混合精度**  ：支持不同精度的混合运算
 
-#### **高效的内存访问模式**
+####  **高效的内存访问模式** 
 
-- **单位步长访问**：`vle32.v` 连续加载
-- **跨步访问**：`vlse32.v` 支持任意步长
-- **索引访问**：`vlxei32.v` 支持间接寻址
+-  **单位步长访问**  ：`vle32.v` 连续加载
+-  **跨步访问**  ：`vlse32.v` 支持任意步长
+-  **索引访问**  ：`vlxei32.v` 支持间接寻址
 
-### **2.2 RVV 编程模型**
+###  **2.2 RVV 编程模型** 
 
-#### **向量长度无关编程**
+####  **向量长度无关编程** 
 
 ```c
 void vector_add(float* a, float* b, float* c, size_t n) {
@@ -76,7 +76,7 @@ void vector_add(float* a, float* b, float* c, size_t n) {
 }
 ```
 
-#### **掩码和谓词操作**
+####  **掩码和谓词操作** 
 
 ```c
 // 条件向量运算
@@ -86,9 +86,9 @@ vfloat32m1_t result = __riscv_vfadd_vv_f32m1_m(mask, va, vb, vl);
 
 ---
 
-## **3. FlashAttention 算法回顾**
+##  **3. FlashAttention 算法回顾** 
 
-### **3.1 标准注意力机制**
+###  **3.1 标准注意力机制** 
 
 标准的注意力计算公式为：
 $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)V$$
@@ -100,18 +100,18 @@ $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{QK^T}{\sqrt{d_k}}\right)
 - $V \in \mathbb{R}^{N \times d}$：值矩阵
 - $N$：序列长度，$d$：头维度
 
-### **3.2 内存复杂度问题**
+###  **3.2 内存复杂度问题** 
 
 标准实现需要存储完整的注意力矩阵 $S = QK^T \in \mathbb{R}^{N \times N}$，导致：
 
-- **内存复杂度**：$O(N^2)$
-- **计算复杂度**：$O(N^2 d)$
+-  **内存复杂度**  ：$O(N^2)$
+-  **计算复杂度**  ：$O(N^2 d)$
 
 对于长序列（如 N=4096），这会导致巨大的内存开销。
 
-### **3.3 FlashAttention 核心思想**
+###  **3.3 FlashAttention 核心思想** 
 
-#### **分块计算策略**
+####  **分块计算策略** 
 
 将 Q、K、V 矩阵分块处理，避免存储完整的注意力矩阵：
 
@@ -121,7 +121,7 @@ K = [K₁, K₂, ..., K_Tc]  # Tc = ⌈N/Bc⌉ 个键块
 V = [V₁, V₂, ..., V_Tc]  # 对应的值块
 ```
 
-#### **在线 Softmax 算法**
+####  **在线 Softmax 算法** 
 
 通过增量更新最大值和归一化因子，避免多次遍历：
 
@@ -130,9 +130,9 @@ $$l^{(j)} = l^{(j-1)} \cdot e^{m^{(j-1)} - m^{(j)}} + \sum e^{S^{(j)} - m^{(j)}}
 
 ---
 
-## **4. RVV FlashAttention 实现**
+##  **4. RVV FlashAttention 实现** 
 
-### **4.1 数据结构定义**
+###  **4.1 数据结构定义** 
 
 ```c
 #include <riscv_vector.h>
@@ -162,9 +162,9 @@ typedef struct {
 } online_softmax_state_t;
 ```
 
-### **4.2 基础向量化函数**
+###  **4.2 基础向量化函数** 
 
-#### **向量化 Softmax 实现**
+####  **向量化 Softmax 实现** 
 
 ```c
 void rvv_softmax(const float* input, float* output, size_t len) {
@@ -213,7 +213,7 @@ void rvv_softmax(const float* input, float* output, size_t len) {
 }
 ```
 
-#### **向量化矩阵乘法**
+####  **向量化矩阵乘法** 
 
 ```c
 void rvv_gemm_fp32(const float* A, const float* B, float* C,
@@ -236,7 +236,7 @@ void rvv_gemm_fp32(const float* A, const float* B, float* C,
 }
 ```
 
-### **4.3 在线 Softmax 的 RVV 实现**
+###  **4.3 在线 Softmax 的 RVV 实现** 
 
 ```c
 void rvv_online_softmax_init(online_softmax_state_t* state, size_t len) {
@@ -279,9 +279,9 @@ void rvv_online_softmax_update(online_softmax_state_t* state,
 
 ---
 
-## **5. 完整的 FlashAttention 内核**
+##  **5. 完整的 FlashAttention 内核** 
 
-### **5.1 主要实现**
+###  **5.1 主要实现** 
 
 ```c
 void rvv_flash_attention_kernel(
@@ -391,11 +391,11 @@ void rvv_flash_attention_kernel(
 
 ---
 
-## **6. Gem5 仿真环境**
+##  **6. Gem5 仿真环境** 
 
-### **6.1 系统配置**
+###  **6.1 系统配置** 
 
-#### **Gem5 配置脚本**
+####  **Gem5 配置脚本** 
 
 ```python
 # gem5_rvv_config.py
@@ -449,7 +449,7 @@ def create_rvv_system():
     return system
 ```
 
-### **6.2 编译脚本**
+###  **6.2 编译脚本** 
 
 ```bash
 #!/bin/bash
@@ -480,9 +480,9 @@ echo "准备在 Gem5 中运行..."
 
 ---
 
-## **7. 性能优化策略**
+##  **7. 性能优化策略** 
 
-### **7.1 向量长度自适应**
+###  **7.1 向量长度自适应** 
 
 ```c
 size_t get_adaptive_vl(size_t remaining, size_t optimal_size) {
@@ -502,7 +502,7 @@ size_t get_adaptive_vl(size_t remaining, size_t optimal_size) {
 }
 ```
 
-### **7.2 缓存友好分块**
+###  **7.2 缓存友好分块** 
 
 ```c
 void cache_friendly_blocking(const flash_config_t* config,
@@ -526,23 +526,23 @@ void cache_friendly_blocking(const flash_config_t* config,
 
 ---
 
-## **8. 性能评估**
+##  **8. 性能评估** 
 
-### **8.1 理论分析**
+###  **8.1 理论分析** 
 
-**向量化加速效果**：
+**向量化加速效果** ：
 
 - 标量版本：每次处理 1 个元素
 - RVV 版本：每次处理 VLEN/32 个元素（对于 FP32）
 - 理论加速比：VLEN/32（对于 256 位向量长度，约 8 倍）
 
-**内存带宽提升**：
+**内存带宽提升** ：
 
 - 向量化 load/store 减少指令开销
 - 更好的内存访问模式
 - 减少缓存 miss
 
-### **8.2 预期性能结果**
+###  **8.2 预期性能结果** 
 
 基于 VLEN=256 的预期性能提升：
 
@@ -554,28 +554,28 @@ void cache_friendly_blocking(const flash_config_t* config,
 
 ---
 
-## **9. 结论与展望**
+##  **9. 结论与展望** 
 
-### **9.1 主要成果**
+###  **9.1 主要成果** 
 
-1. **技术突破**：首次实现了完整的 RVV FlashAttention，展示了向量化优化的巨大潜力
-2. **工程价值**：提供了完整的开发和仿真工具链，可直接应用于实际项目
-3. **学术贡献**：为基于 RISC-V 的 AI 硬件设计提供了重要参考
+1.  **技术突破**  ：首次实现了完整的 RVV FlashAttention，展示了向量化优化的巨大潜力
+2.  **工程价值**  ：提供了完整的开发和仿真工具链，可直接应用于实际项目
+3.  **学术贡献**  ：为基于 RISC-V 的 AI 硬件设计提供了重要参考
 
-### **9.2 未来工作**
+###  **9.2 未来工作** 
 
-1. **混合精度优化**：探索 FP16/BF16 的进一步性能提升
-2. **多核并行**：设计支持多核并行的 FlashAttention 实现
-3. **硬件协同设计**：为 AI 专用 RISC-V 处理器提供设计建议
-4. **生态系统完善**：集成到主流深度学习框架中
+1.  **混合精度优化**  ：探索 FP16/BF16 的进一步性能提升
+2.  **多核并行**  ：设计支持多核并行的 FlashAttention 实现
+3.  **硬件协同设计**  ：为 AI 专用 RISC-V 处理器提供设计建议
+4.  **生态系统完善**  ：集成到主流深度学习框架中
 
-### **9.3 技术意义**
+###  **9.3 技术意义** 
 
 RVV FlashAttention 的成功实现不仅证明了开源指令集在 AI 计算领域的可行性，更为构建自主可控的 AI 计算生态奠定了坚实基础。随着 RISC-V 生态的不断完善，我们有理由相信这一技术路线将为 AI 硬件的发展带来新的机遇。
 
 ---
 
-## **参考文献**
+##  **参考文献** 
 
 1. Dao, T., et al. "FlashAttention: Fast and Memory-Efficient Exact Attention with IO-Awareness." NeurIPS 2022.
 2. RISC-V International. "RISC-V Vector Extension Specification." Version 1.0, 2021.

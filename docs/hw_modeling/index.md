@@ -2,7 +2,7 @@
 
 ## 📚 文档体系
 
-本学习资料提供了**完整的、系统的硬件性能建模方法论**。
+本学习资料提供了 **完整的、系统的硬件性能建模方法论**  。
 
 ---
 
@@ -24,15 +24,15 @@
 
 #### Fundamentals (677行)
 
-**文件**：`fundamentals.md`
+**文件** ：`fundamentals.md`
 
-**内容**：
+**内容** ：
 
 - 为什么需要性能建模
 - Event-Driven vs. Cycle-Accurate仿真
 - 核心建模概念（Event, Resource, Dependency）
 
-**适合**：初学者，了解基本概念
+**适合** ：初学者，了解基本概念
 
 ---
 
@@ -40,22 +40,22 @@
 
 掌握event-driven建模的核心方法，拆分为5个独立章节便于学习：
 
-- **Event Lifecycle** - `event_lifecycle.md` (692行)
+-  **Event Lifecycle**  - `event_lifecycle.md` (692行)
   - Event的6个阶段，完整示例追踪
 
-- **Resource Contention** - `resource_contention.md` (566行)
+-  **Resource Contention**  - `resource_contention.md` (566行)
   - 资源状态模型，3种竞争策略
 
-- **Dependency & Notify** - `dependency_notify.md` (610行)
+-  **Dependency & Notify**  - `dependency_notify.md` (610行)
   - 依赖图，Notify机制，Fork-Join
 
-- **Event Creation & Time** - `event_creation_time.md` (1,574行)
+-  **Event Creation & Time**  - `event_creation_time.md` (1,574行)
   - Event创建时机，时间推进机制
 
-- **Event-Resource Relationship** - `event_resource_relationship.md` (1,804行) ⭐
+-  **Event-Resource Relationship**  - `event_resource_relationship.md` (1,804行) ⭐
   - Event与资源解耦（最重要！必读）
 
-**关键概念**：
+**关键概念** ：
 
 - Event时间 ≠ 资源时间（解耦）
 - Event.time = "检查时机"，不是"执行时机"
@@ -66,42 +66,42 @@
 
 #### Advanced Topics (1,949行)
 
-**文件**：`advanced_topics.md`
+**文件** ：`advanced_topics.md`
 
-**内容**：
+**内容** ：
 
 1. 多通道并行执行
 2. 调度优化策略
-3. **性能分析** - 瓶颈识别、利用率分析
-4. **调试技巧** - Event追踪、状态快照
-5. **模型验证** - 时间单调性、资源一致性
+3.  **性能分析**  - 瓶颈识别、利用率分析
+4.  **调试技巧**  - Event追踪、状态快照
+5.  **模型验证**  - 时间单调性、资源一致性
 
-**适合**：进阶学习，优化和调试
+**适合** ：进阶学习，优化和调试
 
 ---
 
 #### Practical Guide (3,277行)
 
-**文件**：`practical_guide.md`
+**文件** ：`practical_guide.md`
 
-**内容**：
+**内容** ：
 
-1. **完整实现示例** - 完整可运行的DMA仿真器代码
-2. **常见设计模式**
+1.  **完整实现示例**  - 完整可运行的DMA仿真器代码
+2.  **常见设计模式** 
     - 资源池模式
     - 调度器模式（策略模式）
     - 状态机模式
     - 观察者模式（Notify机制）
-3. **代码组织与架构**
+3.  **代码组织与架构** 
     - 模块划分原则
     - 接口设计
     - 测试策略
-4. **扩展性设计**
+4.  **扩展性设计** 
     - 如何添加新资源类型
     - 如何添加新事件类型
     - 如何扩展调度策略
 
-**适合**：实际项目开发，代码实现
+**适合** ：实际项目开发，代码实现
 
 ---
 
@@ -201,60 +201,6 @@ Week 1:
 
 ---
 
-## 📊 统计数据
-
-```
-文档规模:
-  总计: 11,585 行
-  
-  - fundamentals.md: 677 行
-  - event_lifecycle.md: 692 行
-  - resource_contention.md: 566 行
-  - dependency_notify.md: 610 行
-  - event_creation_time.md: 1,574 行
-  - event_resource_relationship.md: 1,804 行
-  - advanced_topics.md: 1,949 行
-  - practical_guide.md: 3,277 行
-  - index.md: 436 行
-
-覆盖内容:
-  ✓ 基础概念
-  ✓ 方法论
-  ✓ 实现细节
-  ✓ 设计模式
-  ✓ 性能优化
-  ✓ 调试技巧
-  ✓ 扩展性设计
-  ✓ 完整代码示例
-
-代码示例:
-  ✓ Python完整实现（1,500+ 行）
-  ✓ 单元测试示例
-  ✓ 集成测试示例
-  ✓ 性能测试示例
-```
-
----
-
-## 🎓 学习建议
-
-### DO（推荐做法）
-
-✓ **按顺序阅读**： 先第1部分，再第2部分，依次类推  
-✓ **动手实践**： 跟着代码示例自己敲一遍  
-✓ **做笔记**： 特别是第2部分的关键概念  
-✓ **画图**： 画时间线图、状态转换图  
-✓ **问问题**： 遇到不理解的立即查阅相关章节  
-
-### DON'T（避免做法）
-
-✗ 跳过第2部分（最重要的部分）  
-✗ 只看不练（一定要写代码）  
-✗ 死记硬背（理解原理更重要）  
-✗ 忽略边界情况（很多bug来自边界）  
-
----
-
 ## 💡 关键洞察
 
 ### 1. Event-Driven的本质
@@ -298,43 +244,4 @@ Event时间（虚拟时间）:
   - 资源释放时主动通知
   - 创建Event@当前时间
   - Event-driven，不是polling-driven！
-```
-
----
-
-## 🔧 应用到DLA RVV项目
-
-### 当前项目的资源建议
-
-```
-资源类型              是否需要等待队列
-─────────────────────────────────────
-GDMA Channel         ✗ 不需要（时间已知）
-UB/MC Port           ✗ 不需要（时间已知）
-FIFO                 ✗ 不需要（时间已知）
-Compute Unit         ✗ 不需要（时间已知）
-XFE Unit            ✗ 不需要（时间已知）
-Outstanding Buffer   ? 可选（看需求）
-
-结论: 保持简单，只在必要时添加复杂功能
-```
-
-### 实现建议
-
-```python
-class DLAResourceManager:
-    def __init__(self):
-        # 使用BasicResource（无等待队列）
-        self.channels = [BasicResource(...) for _ in range(4)]
-        self.ports = [BasicResource(...) for _ in range(8)]
-        self.fifos = [BasicResource(...) for _ in range(4)]
-        
-        # 如果将来需要，再扩展
-        # self.priority_port = ResourceWithWaitingQueue(...)
-
-优先级: 先工作，后优化
-  1. 实现基础功能
-  2. 验证正确性
-  3. 性能分析
-  4. 按需优化
 ```

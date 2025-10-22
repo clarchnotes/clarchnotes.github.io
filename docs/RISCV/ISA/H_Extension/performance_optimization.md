@@ -48,7 +48,7 @@ uint16_t recycle_vmid() {
 
 ### VMID优化技术
 
-1. **延迟VMID分配**
+1.  **延迟VMID分配** 
 
    ```c
    // 只在实际需要时分配VMID
@@ -60,7 +60,7 @@ uint16_t recycle_vmid() {
    }
    ```
 
-2. **VMID预测回收**
+2.  **VMID预测回收** 
 
    ```c
    // 基于使用频率预测哪些VMID可以回收

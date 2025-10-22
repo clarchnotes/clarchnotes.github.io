@@ -139,9 +139,9 @@ class MultiChannelSystem:
 
 **关键点：**
 
-1. ✓ **独立状态**：每个通道有自己的 `busy_until`
-2. ✓ **独立event**：每个通道的START/COMPLETE event独立
-3. ✓ **灵活调度**：可以选择任意可用通道
+1. ✓  **独立状态**  ：每个通道有自己的 `busy_until`
+2. ✓  **独立event**  ：每个通道的START/COMPLETE event独立
+3. ✓  **灵活调度**  ：可以选择任意可用通道
 
 ---
 

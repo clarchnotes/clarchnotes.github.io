@@ -2,7 +2,7 @@
 
 ## 第2部分 A：Event生命周期
 
-> **本文是第2部分的第1个子文档，聚焦于Event的生命周期**  
+>  **本文是第2部分的第1个子文档，聚焦于Event的生命周期**   
 > 其他子文档：[资源竞争](./第2部分B_资源竞争建模.md) | [依赖与Notify](./第2部分C_依赖与Notify机制.md) | [Event创建时机](./第2部分D_Event创建与时间推进.md) | [Event与资源关系](./第2部分E_Event与资源关系.md)
 
 ---
@@ -174,9 +174,9 @@ class EventQueue:
 
 **关键特性：**
 
-1. **自动排序**： 按时间自动排序，无需手动维护
-2. **高效**： 插入和删除都是O(log n)
-3. **正确性**： 保证总是取出时间最早的event
+1.  **自动排序**  ： 按时间自动排序，无需手动维护
+2.  **高效**  ： 插入和删除都是O(log n)
+3.  **正确性**  ： 保证总是取出时间最早的event
 
 **示例：**
 
@@ -235,15 +235,15 @@ class Simulator:
 
 **关键点：**
 
-1. **时间跳跃**： `current_time = event.time` 是核心
+1.  **时间跳跃**  ： `current_time = event.time` 是核心
    - 不是 `current_time += 1` (那是cycle-accurate)
    - 直接跳到event发生的时间
 
-2. **单调性**： 时间只增不减
+2.  **单调性**  ： 时间只增不减
    - Event必须按时间顺序处理
    - 不能创建过去的event
 
-3. **完整性**： 必须处理完队列中所有event
+3.  **完整性**  ： 必须处理完队列中所有event
 
 **时间跳跃示例：**
 
@@ -296,9 +296,9 @@ def dispatch_event(self, event):
 
 | Event类型 | 职责 | 创建时机 | 后续event |
 |-----------|------|----------|-----------|
-| **START** | 开始操作<br>获取资源 | 调度时 | COMPLETE |
-| **COMPLETE** | 完成操作<br>释放资源<br>notify依赖 | START处理时 | 依赖的START |
-| **RESOURCE_FREE** | 标记资源可用<br>尝试调度等待的操作 | COMPLETE处理时 | 可能触发START |
+|  **START**  | 开始操作<br>获取资源 | 调度时 | COMPLETE |
+|  **COMPLETE**  | 完成操作<br>释放资源<br>notify依赖 | START处理时 | 依赖的START |
+|  **RESOURCE_FREE**  | 标记资源可用<br>尝试调度等待的操作 | COMPLETE处理时 | 可能触发START |
 
 ---
 
@@ -645,13 +645,13 @@ print(f"跳过的周期: 1-49, 51-79  (共78个周期)")
 
 ### 最重要的3个点
 
-1. **时间跳跃**： `current_time = event.time` (不是 +=1)
-2. **优先队列**： 自动按时间排序，O(log n)
-3. **因果链**： Event处理会创建新的Event，形成因果链
+1.  **时间跳跃**  ： `current_time = event.time` (不是 +=1)
+2.  **优先队列**  ： 自动按时间排序，O(log n)
+3.  **因果链**  ： Event处理会创建新的Event，形成因果链
 
 ### 常见错误
 
-❌ **错误1**： 忘记推进时间
+❌  **错误1**  ： 忘记推进时间
 
 ```python
 # 错误
@@ -659,14 +659,14 @@ event = event_queue.dequeue()
 # 忘记: current_time = event.time
 ```
 
-❌ **错误2**： 创建过去的event
+❌  **错误2**  ： 创建过去的event
 
 ```python
 # 错误
 event = Event(time=current_time - 10, ...)  # 过去的时间！
 ```
 
-❌ **错误3**： 没有创建后续event
+❌  **错误3**  ： 没有创建后续event
 
 ```python
 # 错误
@@ -692,6 +692,6 @@ def dispatch_event(self, event):
 
 ---
 
-**下一篇**： [第2部分B：资源竞争建模](./第2部分B_资源竞争建模.md)
+**下一篇** ： [第2部分B：资源竞争建模](./第2部分B_资源竞争建模.md)
 
 *本文档行数: ~640行 (原2部分的约15%)*

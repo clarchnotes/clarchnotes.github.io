@@ -18,13 +18,13 @@
 
 **Hypervisor中断寄存器：**
 
-- **`hie` (Hypervisor Interrupt Enable):** Hypervisor自己的中断使能寄存器
-- **`hip` (Hypervisor Interrupt Pending):** Hypervisor自己的中断挂起寄存器
+-  **`hie` (Hypervisor Interrupt Enable):**  Hypervisor自己的中断使能寄存器
+-  **`hip` (Hypervisor Interrupt Pending):**  Hypervisor自己的中断挂起寄存器
 
 **Guest虚拟中断寄存器：**
 
-- **`vsie` (Virtual Supervisor Interrupt Enable):** Guest OS的虚拟中断使能寄存器
-- **`vsip` (Virtual Supervisor Interrupt Pending):** Guest OS的虚拟中断挂起寄存器
+-  **`vsie` (Virtual Supervisor Interrupt Enable):**  Guest OS的虚拟中断使能寄存器
+-  **`vsip` (Virtual Supervisor Interrupt Pending):**  Guest OS的虚拟中断挂起寄存器
 
 ## 中断委托机制
 
@@ -61,7 +61,7 @@
 
 ### 完整的中断注入过程
 
-1. **物理中断发生**
+1.  **物理中断发生** 
 
    ```c
    // 物理定时器中断发生，陷入HS-mode
@@ -70,7 +70,7 @@
    }
    ```
 
-2. **Hypervisor处理中断**
+2.  **Hypervisor处理中断** 
 
    ```c
    void hypervisor_timer_handler() {
@@ -85,7 +85,7 @@
    }
    ```
 
-3. **虚拟中断注入**
+3.  **虚拟中断注入** 
 
    ```c
    void inject_virtual_interrupt(guest_id_t guest, int interrupt_type) {
@@ -107,7 +107,7 @@
    }
    ```
 
-4. **Guest中断处理**
+4.  **Guest中断处理** 
 
    ```c
    // 当切换回Guest执行时：
@@ -131,9 +131,9 @@
 
 当处于VS或VU模式时，硬件按以下顺序检查中断：
 
-1. **外部中断** (SEIP位)
-2. **软件中断** (SSIP位)  
-3. **定时器中断** (STIP位)
+1.  **外部中断**  (SEIP位)
+2.  **软件中断**  (SSIP位)  
+3.  **定时器中断**  (STIP位)
 
 ### 中断使能条件
 
@@ -180,7 +180,7 @@ void inject_external_interrupt(guest_id_t guest, int irq_number) {
 
 ### 中断虚拟化的性能优化
 
-1. **中断聚合 (Interrupt Coalescing)**
+1.  **中断聚合 (Interrupt Coalescing)** 
 
    ```c
    // 将多个物理中断聚合为单个虚拟中断
@@ -192,7 +192,7 @@ void inject_external_interrupt(guest_id_t guest, int irq_number) {
    }
    ```
 
-2. **中断负载均衡**
+2.  **中断负载均衡** 
 
    ```c
    // 在多个Guest之间均衡中断负载
@@ -201,7 +201,7 @@ void inject_external_interrupt(guest_id_t guest, int irq_number) {
    }
    ```
 
-3. **延迟中断注入**
+3.  **延迟中断注入** 
 
    ```c
    // 延迟注入中断直到Guest实际需要时

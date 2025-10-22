@@ -17,11 +17,11 @@ H扩展引入了大量CSR来为Guest OS构建一个"虚拟的硬件环境"，同
 
 **关键字段详解：**
 
-- **SPV (Supervisor Previous Virtualization mode):** 用于记录在陷入Hypervisor之前，`V`是0还是1。当从HS-mode返回时，硬件会恢复这个状态。
+-  **SPV (Supervisor Previous Virtualization mode):**  用于记录在陷入Hypervisor之前，`V`是0还是1。当从HS-mode返回时，硬件会恢复这个状态。
 
-- **GVA (Guest Virtual Address):** 如果为1，表示当`htval`中写入GPA时，`htval`的最高位也应该被设置。
+-  **GVA (Guest Virtual Address):**  如果为1，表示当`htval`中写入GPA时，`htval`的最高位也应该被设置。
 
-- **VGEIN (Virtual Guest External Interrupt Number):** 控制Hypervisor如何向Guest注入外部中断。
+-  **VGEIN (Virtual Guest External Interrupt Number):**  控制Hypervisor如何向Guest注入外部中断。
 
 ### htval & htinst
 
@@ -103,11 +103,11 @@ Guest OS的陷阱向量基址：
 
 ### 其他vs*寄存器
 
-- **vsscratch:** Guest OS的临时寄存器，用于保存上下文
-- **vsepc:** Guest异常程序计数器，保存异常发生时的PC
-- **vscause:** Guest异常原因寄存器，记录异常或中断的类型
-- **vstval:** Guest陷阱值寄存器，提供异常相关的额外信息
-- **vsatp:** Guest地址翻译寄存器，控制第一阶段地址翻译
+-  **vsscratch:**  Guest OS的临时寄存器，用于保存上下文
+-  **vsepc:**  Guest异常程序计数器，保存异常发生时的PC
+-  **vscause:**  Guest异常原因寄存器，记录异常或中断的类型
+-  **vstval:**  Guest陷阱值寄存器，提供异常相关的额外信息
+-  **vsatp:**  Guest地址翻译寄存器，控制第一阶段地址翻译
 
 ## CSR访问重定向
 
@@ -164,14 +164,14 @@ void hypervisor_timer_handler() {
 
 虚拟CSR的实现需要考虑性能：
 
-1. **寄存器映射:** vs*寄存器通常作为独立的物理寄存器实现
-2. **上下文切换:** VM切换时需要保存/恢复所有vs*寄存器
-3. **访问频率:** 频繁访问的CSR（如vsatp）需要特别优化
+1.  **寄存器映射:**  vs*寄存器通常作为独立的物理寄存器实现
+2.  **上下文切换:**  VM切换时需要保存/恢复所有vs*寄存器
+3.  **访问频率:**  频繁访问的CSR（如vsatp）需要特别优化
 
 ### 硬件优化技术
 
-1. **寄存器重命名:** 将vs*寄存器映射到物理寄存器文件
-2. **延迟同步:** 某些CSR的更新可以延迟到必要时才同步
-3. **缓存机制:** 将常用的CSR值缓存在处理器内部
+1.  **寄存器重命名:**  将vs*寄存器映射到物理寄存器文件
+2.  **延迟同步:**  某些CSR的更新可以延迟到必要时才同步
+3.  **缓存机制:**  将常用的CSR值缓存在处理器内部
 
 这种精心设计的CSR架构使得Guest OS可以无缝运行，同时为Hypervisor提供了完整的控制和监控能力。

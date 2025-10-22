@@ -61,11 +61,11 @@
 
 #### vredsum.vs - 向量-标量整数求和归约
 
-**指令格式**： `vredsum.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredsum.vs vd, vs2, vs1, vm`
 
-**功能**： 将 vs2 中的所有活跃元素加到 vs1 的第一个元素上，结果放在 vd 的第一个元素中。
+**功能** ： 将 vs2 中的所有活跃元素加到 vs1 的第一个元素上，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredsum_vs.h
@@ -77,7 +77,7 @@ VI_VV_LOOP_REDUCTION
 })
 ```
 
-**宏展开分析**：  
+**宏展开分析** ：  
 `VI_VV_LOOP_REDUCTION`宏展开后，`vredsum.vs`的实际执行流程如下：
 
 ```cpp
@@ -145,15 +145,15 @@ else if (sew == e64) {
 P.VU.vstart->write(0);
 ```
 
-**注意**：宏展开分析表明 SPIKE 模拟器在这个指令的实现上可能存在 bug。真正的归约求和应该是将所有元素累加，而不是只保留最后一次加法的结果。正确的实现应该是：`vd_0 = vd_0 + vs2;`
+**注意** ：宏展开分析表明 SPIKE 模拟器在这个指令的实现上可能存在 bug。真正的归约求和应该是将所有元素累加，而不是只保留最后一次加法的结果。正确的实现应该是：`vd_0 = vd_0 + vs2;`
 
 #### vredmaxu.vs - 向量-标量无符号整数最大值归约
 
-**指令格式**： `vredmaxu.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredmaxu.vs vd, vs2, vs1, vm`
 
-**功能**： 找出 vs2 中所有活跃元素和 vs1 第一个元素的无符号最大值，结果放在 vd 的第一个元素中。
+**功能** ： 找出 vs2 中所有活跃元素和 vs1 第一个元素的无符号最大值，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredmaxu_vs.h
@@ -165,7 +165,7 @@ VI_VV_ULOOP_REDUCTION
 })
 ```
 
-**宏展开分析**：  
+**宏展开分析** ：  
 `VI_VV_ULOOP_REDUCTION`宏展开后，与`VI_VV_LOOP_REDUCTION`类似，但使用无符号整数类型。关键操作是在每次迭代中使用`max(vd_0, vs2)`比较当前累积的最大值(`vd_0`)和当前元素(`vs2`)，保留较大的值。对于非活跃元素，不做任何操作，保持当前的最大值不变。
 
 ```cpp
@@ -177,11 +177,11 @@ vd_0 = max(vd_0, vs2);  // 保留较大的值
 
 #### vredmax.vs - 向量-标量有符号整数最大值归约
 
-**指令格式**： `vredmax.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredmax.vs vd, vs2, vs1, vm`
 
-**功能**： 找出 vs2 中所有活跃元素和 vs1 第一个元素的有符号最大值，结果放在 vd 的第一个元素中。
+**功能** ： 找出 vs2 中所有活跃元素和 vs1 第一个元素的有符号最大值，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredmax_vs.h
@@ -197,11 +197,11 @@ VI_VV_LOOP_REDUCTION
 
 #### vredminu.vs - 向量-标量无符号整数最小值归约
 
-**指令格式**： `vredminu.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredminu.vs vd, vs2, vs1, vm`
 
-**功能**： 找出 vs2 中所有活跃元素和 vs1 第一个元素的无符号最小值，结果放在 vd 的第一个元素中。
+**功能** ： 找出 vs2 中所有活跃元素和 vs1 第一个元素的无符号最小值，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredminu_vs.h
@@ -217,11 +217,11 @@ VI_VV_ULOOP_REDUCTION
 
 #### vredmin.vs - 向量-标量有符号整数最小值归约
 
-**指令格式**： `vredmin.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredmin.vs vd, vs2, vs1, vm`
 
-**功能**： 找出 vs2 中所有活跃元素和 vs1 第一个元素的有符号最小值，结果放在 vd 的第一个元素中。
+**功能** ： 找出 vs2 中所有活跃元素和 vs1 第一个元素的有符号最小值，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredmin_vs.h
@@ -239,11 +239,11 @@ VI_VV_LOOP_REDUCTION
 
 #### vredand.vs - 向量-标量按位与归约
 
-**指令格式**： `vredand.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredand.vs vd, vs2, vs1, vm`
 
-**功能**： 计算 vs2 中所有活跃元素和 vs1 第一个元素的按位与，结果放在 vd 的第一个元素中。
+**功能** ： 计算 vs2 中所有活跃元素和 vs1 第一个元素的按位与，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredand_vs.h
@@ -255,16 +255,16 @@ VI_VV_LOOP_REDUCTION
 })
 ```
 
-**宏展开分析**：  
+**宏展开分析** ：  
 使用按位与操作符`&=`进行累积，这是一个复合赋值操作，确保每个元素都参与按位与计算。与前面的`vredsum.vs`的宏展开类似，只是操作从加法变为按位与。
 
 #### vredor.vs - 向量-标量按位或归约
 
-**指令格式**： `vredor.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredor.vs vd, vs2, vs1, vm`
 
-**功能**： 计算 vs2 中所有活跃元素和 vs1 第一个元素的按位或，结果放在 vd 的第一个元素中。
+**功能** ： 计算 vs2 中所有活跃元素和 vs1 第一个元素的按位或，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredor_vs.h
@@ -280,11 +280,11 @@ VI_VV_LOOP_REDUCTION
 
 #### vredxor.vs - 向量-标量按位异或归约
 
-**指令格式**： `vredxor.vs vd, vs2, vs1, vm`
+**指令格式** ： `vredxor.vs vd, vs2, vs1, vm`
 
-**功能**： 计算 vs2 中所有活跃元素和 vs1 第一个元素的按位异或，结果放在 vd 的第一个元素中。
+**功能** ： 计算 vs2 中所有活跃元素和 vs1 第一个元素的按位异或，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vredxor_vs.h
@@ -302,11 +302,11 @@ VI_VV_LOOP_REDUCTION
 
 #### vfredosum.vs - 向量-标量浮点有序求和归约
 
-**指令格式**： `vfredosum.vs vd, vs2, vs1, vm`
+**指令格式** ： `vfredosum.vs vd, vs2, vs1, vm`
 
-**功能**： 以确定性顺序将 vs2 中的所有活跃浮点元素加到 vs1 的第一个元素上，结果放在 vd 的第一个元素中。
+**功能** ： 以确定性顺序将 vs2 中的所有活跃浮点元素加到 vs1 的第一个元素上，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vfredosum_vs.h
@@ -318,7 +318,7 @@ VI_VFP_LOOP_REDUCTION
 })
 ```
 
-**宏展开分析**：  
+**宏展开分析** ：  
 `VI_VFP_LOOP_REDUCTION`宏展开后，与整数归约类似，但针对浮点数处理：
 
 ```cpp
@@ -360,11 +360,11 @@ if (sew == e32) {  // 单精度浮点
 
 #### vfredusum.vs - 向量-标量浮点不保证顺序求和归约
 
-**指令格式**： `vfredusum.vs vd, vs2, vs1, vm`
+**指令格式** ： `vfredusum.vs vd, vs2, vs1, vm`
 
-**功能**： 不保证顺序将 vs2 中的所有活跃浮点元素加到 vs1 的第一个元素上，结果放在 vd 的第一个元素中。
+**功能** ： 不保证顺序将 vs2 中的所有活跃浮点元素加到 vs1 的第一个元素上，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vfredusum_vs.h
@@ -380,11 +380,11 @@ VI_VFP_LOOP_REDUCTION
 
 #### vfredmax.vs - 向量-标量浮点最大值归约
 
-**指令格式**： `vfredmax.vs vd, vs2, vs1, vm`
+**指令格式** ： `vfredmax.vs vd, vs2, vs1, vm`
 
-**功能**： 找出 vs2 中所有活跃浮点元素和 vs1 第一个元素的最大值，结果放在 vd 的第一个元素中。
+**功能** ： 找出 vs2 中所有活跃浮点元素和 vs1 第一个元素的最大值，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vfredmax_vs.h
@@ -400,11 +400,11 @@ VI_VFP_LOOP_REDUCTION
 
 #### vfredmin.vs - 向量-标量浮点最小值归约
 
-**指令格式**： `vfredmin.vs vd, vs2, vs1, vm`
+**指令格式** ： `vfredmin.vs vd, vs2, vs1, vm`
 
-**功能**： 找出 vs2 中所有活跃浮点元素和 vs1 第一个元素的最小值，结果放在 vd 的第一个元素中。
+**功能** ： 找出 vs2 中所有活跃浮点元素和 vs1 第一个元素的最小值，结果放在 vd 的第一个元素中。
 
-**SPIKE 实现**：
+**SPIKE 实现** ：
 
 ```cpp
 // 在 riscv-isa-sim/riscv/insns/vfredmin_vs.h
