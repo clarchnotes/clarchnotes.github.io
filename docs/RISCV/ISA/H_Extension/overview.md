@@ -61,29 +61,29 @@ H扩展为Guest OS提供了一整套虚拟的S-mode CSR：
 
 H扩展引入了一个关键的状态位`V`：
 
-* **V=0**: 非虚拟化模式，用于Hypervisor执行
-* **V=1**: 虚拟化模式，用于Guest OS和Guest应用程序执行
+* **V=0**： 非虚拟化模式，用于Hypervisor执行
+* **V=1**： 虚拟化模式，用于Guest OS和Guest应用程序执行
 
 ### Guest vs Host
 
-* **Host**: 运行Hypervisor的物理机器环境
-* **Guest**: 运行在虚拟机中的操作系统环境
-* **Hypervisor**: 虚拟机监控程序，管理和调度Guest OS
+* **Host**： 运行Hypervisor的物理机器环境
+* **Guest**： 运行在虚拟机中的操作系统环境
+* **Hypervisor**： 虚拟机监控程序，管理和调度Guest OS
 
 ### 地址空间术语
 
-* **GVA (Guest Virtual Address)**: Guest程序使用的虚拟地址
-* **GPA (Guest Physical Address)**: Guest OS认为的"物理地址"
-* **HPA (Host Physical Address)**: 真实的机器物理地址
+* **GVA (Guest Virtual Address)**： Guest程序使用的虚拟地址
+* **GPA (Guest Physical Address)**： Guest OS认为的"物理地址"
+* **HPA (Host Physical Address)**： 真实的机器物理地址
 
 ## 性能优势
 
 相比纯软件虚拟化方案，H扩展提供以下性能优势：
 
-1. **减少陷阱频率**: 通过陷阱委托机制，大多数Guest OS操作无需退出到Hypervisor
-2. **硬件地址翻译**: 两阶段地址翻译由硬件MMU执行，无需软件模拟
-3. **TLB虚拟化**: VMID标记实现不同VM的TLB条目共存，减少TLB刷新
-4. **中断虚拟化**: 硬件支持的虚拟中断注入和处理
+1. **减少陷阱频率**： 通过陷阱委托机制，大多数Guest OS操作无需退出到Hypervisor
+2. **硬件地址翻译**： 两阶段地址翻译由硬件MMU执行，无需软件模拟
+3. **TLB虚拟化**： VMID标记实现不同VM的TLB条目共存，减少TLB刷新
+4. **中断虚拟化**： 硬件支持的虚拟中断注入和处理
 
 ## 与其他虚拟化技术的比较
 

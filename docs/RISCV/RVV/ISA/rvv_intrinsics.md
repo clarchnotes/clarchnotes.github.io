@@ -10,11 +10,11 @@ RISC-V 向量扩展 (RISC-V Vector Extension, RVV) 是 RISC-V 指令集架构 (I
 
 RVV 的主要目标是：
 
-- **提升性能**: 通过并行处理大量数据元素，显著加速计算密集型任务，如多媒体处理、科学计算、人工智能等。
+- **提升性能**： 通过并行处理大量数据元素，显著加速计算密集型任务，如多媒体处理、科学计算、人工智能等。
 
-- **提高能效比**: 相对于执行多条标量指令，单条向量指令完成同样的工作可以减少指令获取、解码和执行的开销，从而降低功耗。
+- **提高能效比**： 相对于执行多条标量指令，单条向量指令完成同样的工作可以减少指令获取、解码和执行的开销，从而降低功耗。
 
-- **灵活性与可伸缩性**: RVV 设计具有高度的灵活性，允许实现不同的向量长度 (VLEN) 和元素位宽 (SEW)，以适应从小型嵌入式系统到高性能计算服务器的各种应用场景。
+- **灵活性与可伸缩性**： RVV 设计具有高度的灵活性，允许实现不同的向量长度 (VLEN) 和元素位宽 (SEW)，以适应从小型嵌入式系统到高性能计算服务器的各种应用场景。
 
 ### 1.3 内建函数 (Intrinsics) 的角色和重要性
 
@@ -24,11 +24,11 @@ RVV 的主要目标是：
 
 使用内建函数的好处：
 
-- **易用性**: 程序员可以在熟悉的高级语言环境中使用向量指令，而无需深入了解汇编细节。
+- **易用性**： 程序员可以在熟悉的高级语言环境中使用向量指令，而无需深入了解汇编细节。
 
-- **可移植性 (一定程度上)**: 虽然内建函数特定于架构，但它们比纯汇编代码更易于在支持相同内建函数的不同编译器或处理器实现之间移植。
+- **可移植性 (一定程度上)**： 虽然内建函数特定于架构，但它们比纯汇编代码更易于在支持相同内建函数的不同编译器或处理器实现之间移植。
 
-- **编译器优化**: 编译器可以对内建函数进行优化，并更好地管理寄存器分配和指令调度。
+- **编译器优化**： 编译器可以对内建函数进行优化，并更好地管理寄存器分配和指令调度。
 
 ## 2. RVV 内建函数的核心概念
 
@@ -42,9 +42,9 @@ RVV 定义了一组向量寄存器（通常为 32 个，`v0` 到 `v31`）。每�
 
 `vtype` 是一个特殊的控制状态寄存器 (CSR)，用于配置向量指令如何操作向量寄存器中的数据。它主要由以下几个字段组成：
 
-- **`SEW` (Selected Element Width)**: 定义了向量中每个数据元素的位宽。可以是 8位、16位、32位、64位等。例如，`e8` 表示8位元素，`e32` 表示32位元素。
+- **`SEW` (Selected Element Width)**： 定义了向量中每个数据元素的位宽。可以是 8位、16位、32位、64位等。例如，`e8` 表示8位元素，`e32` 表示32位元素。
 
-- **`LMUL` (Vector Length Multiplier)**: 向量长度乘数，用于将多个物理向量寄存器组合起来形成一个更长的逻辑向量寄存器，或者将一个物理向量寄存器在逻辑上划分为更小的部分。`LMUL` 可以是分数 (如 `mf8`=1/8, `mf4`=1/4, `mf2`=1/2)、1 (`m1`) 或整数 (如 `m2`, `m4`, `m8`)。
+- **`LMUL` (Vector Length Multiplier)**： 向量长度乘数，用于将多个物理向量寄存器组合起来形成一个更长的逻辑向量寄存器，或者将一个物理向量寄存器在逻辑上划分为更小的部分。`LMUL` 可以是分数 (如 `mf8`=1/8, `mf4`=1/4, `mf2`=1/2)、1 (`m1`) 或整数 (如 `m2`, `m4`, `m8`)。
 
   - 逻辑向量寄存器的有效元素数量上限 `VLMAX = (LMUL * VLEN) / SEW`。
 
@@ -60,9 +60,9 @@ RVV 定义了一组向量寄存器（通常为 32 个，`v0` 到 `v31`）。每�
 
 许多 RVV 指令支持掩码操作。掩码是一个特殊的向量寄存器（通常是 `v0`，或者由指令指定），其每个位对应数据向量中的一个元素。如果掩码位为1，则对相应的数据元素执行操作；如果为0，则不执行操作。这允许对向量中的特定元素进行条件执行，而无需昂贵的分支。
 
-- **`vta` (Vector Tail Agnostic)**: 尾部不可知策略。当掩码操作时，如果 `vta=1`，则不活跃元素（掩码位为0）的目标寄存器中的值保持不变 (undisturbed)。
+- **`vta` (Vector Tail Agnostic)**： 尾部不可知策略。当掩码操作时，如果 `vta=1`，则不活跃元素（掩码位为0）的目标寄存器中的值保持不变 (undisturbed)。
 
-- **`vma` (Vector Mask Agnostic)**: 掩码不可知策略。当掩码操作时，如果 `vma=1`，则不活跃元素的目标寄存器中的值被设置为全1。
+- **`vma` (Vector Mask Agnostic)**： 掩码不可知策略。当掩码操作时，如果 `vma=1`，则不活跃元素的目标寄存器中的值被设置为全1。
 
 通常，默认行为（`vta=1`, `vma=0`）是尾部元素和被屏蔽掉的元素保持不变。
 
@@ -70,9 +70,9 @@ RVV 定义了一组向量寄存器（通常为 32 个，`v0` 到 `v31`）。每�
 
 当 `vl` 小于 `VLMAX` 时，向量寄存器中从 `vl` 到 `VLMAX-1` 的元素称为"尾部元素"。
 
-- **Tail Agnostic (`vta=1`)**: 尾部元素的值在操作后保持不变。这是默认且推荐的行为。
+- **Tail Agnostic (`vta=1`)**： 尾部元素的值在操作后保持不变。这是默认且推荐的行为。
 
-- **Tail Undisturbed**: 与 Tail Agnostic 类似，是 RVV 规范中更精确的术语。
+- **Tail Undisturbed**： 与 Tail Agnostic 类似，是 RVV 规范中更精确的术语。
 
 ## 3. RVV 内建函数命名约定解析
 
@@ -82,11 +82,11 @@ RVV 内建函数的命名非常规范，其名称本身就包含了大量关于�
 
 让我们详细解析各个部分：
 
-- **`riscv_`**: 所有 RISC-V 特定内建函数的标准前缀。
+- **`riscv_`**： 所有 RISC-V 特定内建函数的标准前缀。
 
-- **`v`**: 紧随 `riscv_` 之后，表明这是一个向量 (Vector) 内建函数。
+- **`v`**： 紧随 `riscv_` 之后，表明这是一个向量 (Vector) 内建函数。
 
-- **`<opname>` (操作名称)**: 指示指令执行的基本操作。
+- **`<opname>` (操作名称)**： 指示指令执行的基本操作。
 
   - 例如：`l` (load), `s` (store), `add` (addition), `sub` (subtraction), `mul` (multiplication), `div` (division), `sqrt` (square root), `mv` (move), `merge` (merge/select), `seq` (set if equal for comparison), `redsum` (reduction sum), `gather` (gather), `slideup` (slide up)。
 
@@ -104,9 +104,9 @@ RVV 内建函数的命名非常规范，其名称本身就包含了大量关于�
 
     - `sxs` (store indexed strided)
 
-- **`<element_specifier_or_variant>` (元素说明符或操作变体)**: 通常紧随操作名，指明元素位宽或操作的特定变体。
+- **`<element_specifier_or_variant>` (元素说明符或操作变体)**： 通常紧随操作名，指明元素位宽或操作的特定变体。
 
-  - **`e<SEW>`**: 指定元素位宽 (Selected Element Width)。
+  - **`e<SEW>`**： 指定元素位宽 (Selected Element Width)。
 
     - `e8`: 8位元素
 
@@ -118,7 +118,7 @@ RVV 内建函数的命名非常规范，其名称本身就包含了大量关于�
 
   - 某些指令可能有其他变体指示，如 `w` (widening), `n` (narrowing)。
 
-- **`<operand_types_short>` (操作数类型简写，通常用于算术/逻辑指令)**: 表明操作数是向量 (`v`)、标量 (`x` 来自通用寄存器, `f` 来自浮点寄存器) 还是立即数 (`i`)。
+- **`<operand_types_short>` (操作数类型简写，通常用于算术/逻辑指令)**： 表明操作数是向量 (`v`)、标量 (`x` 来自通用寄存器, `f` 来自浮点寄存器) 还是立即数 (`i`)。
 
   - `_vv_`: 向量-向量操作 (两个向量操作数)。
 
@@ -134,15 +134,15 @@ RVV 内建函数的命名非常规范，其名称本身就包含了大量关于�
 
   - 对于加载存储，这部分通常省略，因为操作数类型（内存地址、向量）是固定的。
 
-- **`_<masking>` (掩码行为，可选)**:
+- **`_<masking>` (掩码行为，可选)**：
 
   - 如果函数名包含 `_m`，表示该指令是掩码操作版本。它会额外接受一个掩码向量作为参数。
 
   - 例如 `riscv_vadd_vv_i32m1_m`。
 
-- **`_<suffix>` (后缀 - 主要指明数据类型和LMUL)**: 这部分描述了主要向量操作数和结果的向量类型。
+- **`_<suffix>` (后缀 - 主要指明数据类型和LMUL)**： 这部分描述了主要向量操作数和结果的向量类型。
 
-  - **数据类型**:
+  - **数据类型**：
 
     - `i8`, `i16`, `i32`, `i64`: 有符号整数。
 
@@ -150,7 +150,7 @@ RVV 内建函数的命名非常规范，其名称本身就包含了大量关于�
 
     - `f16`, `f32`, `f64`: 浮点数。
 
-  - **`m<LMUL>` (向量长度乘数)**:
+  - **`m<LMUL>` (向量长度乘数)**：
 
     - `mf8`: LMUL = 1/8
 
@@ -166,13 +166,13 @@ RVV 内建函数的命名非常规范，其名称本身就包含了大量关于�
 
     - `m8`: LMUL = 8
 
-  - **`<xN>` (用于多寄存器操作，通常用于分段加载/存储)**:
+  - **`<xN>` (用于多寄存器操作，通常用于分段加载/存储)**：
 
     - `x2`, `x3`, ..., `x8`: 表示该操作涉及 N 个逻辑向量寄存器（形成一个向量寄存器组）。
 
     - 例如，在 `riscv_vlseg2e16_v_f16mf2x2` 中, `f16mf2x2` 指的是操作一个包含两个 `vfloat16mf2_t` 类型向量的组。
 
-- **`_v_` (旧式或特定上下文中的向量操作指示)**: 在一些早期的或特定的内建函数命名中，`_v_` 可能用来强调这是一个向量操作，或者用来分隔名称的不同部分。在现代的、更系统化的命名中，其含义可能被其他部分覆盖。例如，在 `riscv_vlseg2e16_v_f16mf2x2` 中，`_v_` 位于元素说明符之后和类型后缀之前。
+- **`_v_` (旧式或特定上下文中的向量操作指示)**： 在一些早期的或特定的内建函数命名中，`_v_` 可能用来强调这是一个向量操作，或者用来分隔名称的不同部分。在现代的、更系统化的命名中，其含义可能被其他部分覆盖。例如，在 `riscv_vlseg2e16_v_f16mf2x2` 中，`_v_` 位于元素说明符之后和类型后缀之前。
 
 **通过命名快速理解函数功能 - 以 `riscv_vlseg2e16_v_f16mf2x2` 为例：**
 
@@ -226,11 +226,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **单位步长加载 (Unit-stride Load)**
 
-    - **函数**: `vfloat32m1_t riscv_vle32_v_f32m1(const float32_t *base, size_t vl);`
+    - **函数**： `vfloat32m1_t riscv_vle32_v_f32m1(const float32_t *base, size_t vl);`
 
-    - **作用**: 从内存地址 `base` 开始，连续加载 `vl` 个 32 位浮点数到目标向量寄存器。
+    - **作用**： 从内存地址 `base` 开始，连续加载 `vl` 个 32 位浮点数到目标向量寄存器。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vle32`: Vector Load Element, 32-bit.
 
@@ -240,7 +240,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
     - **详细示例与文本流程图 (`riscv_vle32_v_f32m1`)**
 
-        - **场景设定**:
+        - **场景设定**：
 
             - `VLEN = 128` 位 (硬件向量寄存器物理长度)
 
@@ -256,15 +256,15 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - 数据类型为 `float32_t` (4 字节)。
 
-        - **内存中的数据 (示例)**: | 内存地址 | 数据 (float32_t) | | :------------ | :--------------- | | `0x2000` | `10.0f` | | `0x2004` | `20.0f` | | `0x2008` | `30.0f` | | `0x200C` | `40.0f` | (由于 vl=3, 此元素不完全加载到活动部分)
+        - **内存中的数据 (示例)**： | 内存地址 | 数据 (float32_t) | | :------------ | :--------------- | | `0x2000` | `10.0f` | | `0x2004` | `20.0f` | | `0x2008` | `30.0f` | | `0x200C` | `40.0f` | (由于 vl=3, 此元素不完全加载到活动部分)
 
-        - **操作前**:
+        - **操作前**：
 
             - 目标向量寄存器 `vdest` (类型 `vfloat32m1_t`) 内容任意或为之前的值。
 
         - **操作: `vdest = riscv_vle32_v_f32m1((float32_t*)0x2000, 3);`**
 
-        - **操作后 (`vl=3`, 假设 `vta=1` 尾部保持不变)**:
+        - **操作后 (`vl=3`, 假设 `vta=1` 尾部保持不变)**：
 
             - `vdest[0] = 10.0f`
 
@@ -274,7 +274,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - `vdest[3] = <保持不变/未定义>` (尾部元素，因为 vl=3 < VLMAX=4)
 
-        - **文本流程图**:
+        - **文本流程图**：
 
             ```
                              内存 (Memory)
@@ -305,11 +305,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 2. **单位步长存储 (Unit-stride Store)**
 
-    - **函数**: `void riscv_vse16_v_u16m2(uint16_t *base, vuint16m2_t value, size_t vl);`
+    - **函数**： `void riscv_vse16_v_u16m2(uint16_t *base, vuint16m2_t value, size_t vl);`
 
-    - **作用**: 将向量寄存器 `value` 中的 `vl` 个 16 位无符号整数连续存储到内存地址 `base` 开始的位置。
+    - **作用**： 将向量寄存器 `value` 中的 `vl` 个 16 位无符号整数连续存储到内存地址 `base` 开始的位置。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vse16`: Vector Store Element, 16-bit.
 
@@ -319,11 +319,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 3. **跨步加载 (Strided Load)**
 
-    - **函数**: `vint64m4_t riscv_vlse64_v_i64m4(const int64_t *base, ptrdiff_t bstride, size_t vl);`
+    - **函数**： `vint64m4_t riscv_vlse64_v_i64m4(const int64_t *base, ptrdiff_t bstride, size_t vl);`
 
-    - **作用**: 从内存中加载 `vl` 个 64 位有符号整数。第一个元素从 `base` 加载，第二个从 `base + bstride` 加载，以此类推。`bstride` 是字节步长。
+    - **作用**： 从内存中加载 `vl` 个 64 位有符号整数。第一个元素从 `base` 加载，第二个从 `base + bstride` 加载，以此类推。`bstride` 是字节步长。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vlse64`: Vector Load Strided Element, 64-bit.
 
@@ -333,11 +333,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 4. **索引加载 (Indexed Load)**
 
-    - **函数**: `vfloat16mf2_t riscv_vloxei16_v_f16mf2(const float16_t *base, vuint16mf2_t indices, size_t vl);`
+    - **函数**： `vfloat16mf2_t riscv_vloxei16_v_f16mf2(const float16_t *base, vuint16mf2_t indices, size_t vl);`
 
-    - **作用**: 根据向量 `indices` 中的索引值，从内存地址 `base + indices[i] * sizeof(element)` 加载 `vl` 个 16 位浮点数。`indices` 中的每个元素是字节偏移。
+    - **作用**： 根据向量 `indices` 中的索引值，从内存地址 `base + indices[i] * sizeof(element)` 加载 `vl` 个 16 位浮点数。`indices` 中的每个元素是字节偏移。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vloxei16`: Vector Load Offset Indexed Element, 16-bit indices (暗示了索引向量的元素宽度通常与数据元素宽度相关或可推断). `x`表示通用寄存器索引，`ei`表示元素索引。
 
@@ -347,11 +347,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 5. **分段加载 (Segment Load) - 我们讨论过的例子**
 
-    - **函数**: `vfloat16mf2x2_t riscv_vlseg2e16_v_f16mf2x2(const float16_t *base, size_t vl);`
+    - **函数**： `vfloat16mf2x2_t riscv_vlseg2e16_v_f16mf2x2(const float16_t *base, size_t vl);`
 
-    - **作用**: 从内存 `base` 开始，交错加载数据到两个向量寄存器（形成一个 `x2` 组）。加载 `vl` 组元素，每组包含2个16位浮点数，分别放入两个目标寄存器。
+    - **作用**： 从内存 `base` 开始，交错加载数据到两个向量寄存器（形成一个 `x2` 组）。加载 `vl` 组元素，每组包含2个16位浮点数，分别放入两个目标寄存器。
 
-    - **命名解析**: 已在前面详细解释。
+    - **命名解析**： 已在前面详细解释。
 
     - **详细示例与文本流程图 (`riscv_vlseg2e16_v_f16mf2x2`)**
 
@@ -362,8 +362,8 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
             - **`LMUL = 1/2`** (来自 `f16mf2`)
             - 每个 `vfloat16mf2_t` 逻辑寄存器最大容量: `(128 * 1/2) / 16 = 4` 个元素。
             - **`vl = 3`** (我们选择的当前向量长度)
-            - **基地址**: `0x1000`
-            - **目标寄存器**: `v0`, `v1` (都是 `vfloat16mf2_t` 类型)
+            - **基地址**： `0x1000`
+            - **目标寄存器**： `v0`, `v1` (都是 `vfloat16mf2_t` 类型)
 
         - **内存中的数据:**
 
@@ -418,16 +418,16 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
         - **流程说明 (针对此例):**
 
-            1. **函数调用**: `riscv_vlseg2e16_v_f16mf2x2(0x1000, 3)`
-            2. **数据流**:
+            1. **函数调用**： `riscv_vlseg2e16_v_f16mf2x2(0x1000, 3)`
+            2. **数据流**：
                 - 从内存地址 `0x1000` 读取 `1.0`，存入 `v0` 的第 `0` 个元素。
                 - 从内存地址 `0x1002` 读取 `2.0`，存入 `v1` 的第 `0` 个元素。
                 - 从内存地址 `0x1004` 读取 `3.0`，存入 `v0` 的第 `1` 个元素。
                 - 从内存地址 `0x1006` 读取 `4.0`，存入 `v1` 的第 `1` 个元素。
                 - 从内存地址 `0x1008` 读取 `5.0`，存入 `v0` 的第 `2` 个元素。
                 - 从内存地址 `0x100A` 读取 `6.0`，存入 `v1` 的第 `2` 个元素。
-            3. **`vl` 控制**: 由于 `vl=3`，每个向量寄存器只加载了 3 个元素。内存中地址 `0x100C` 及之后的数据在此次操作中不会被读取。
-            4. **寄存器状态**:
+            3. **`vl` 控制**： 由于 `vl=3`，每个向量寄存器只加载了 3 个元素。内存中地址 `0x100C` 及之后的数据在此次操作中不会被读取。
+            4. **寄存器状态**：
                 - `v0` 包含 `{1.0, 3.0, 5.0, <不变/未定义>}`
                 - `v1` 包含 `{2.0, 4.0, 6.0, <不变/未定义>}`
                 - `<不变/未定义>` 表示这些元素位置（索引为3）的值没有被这次 `vlseg2e16_v_f16mf2x2` 操作修改。它们会保留之前的值，或者如果是第一次使用且没有显式初始化，其内容是未定义的 (取决于具体的硬件和向量处理策略，如尾部元素处理 `vta`/`vma` 设置，但通常对于非掩码的 load/store，不活跃的元素是不受影响的，即 "undisturbed"。)
@@ -440,11 +440,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量-向量加法 (Vector-Vector Addition)**
 
-    - **函数**: `vint32m1_t riscv_vadd_vv_i32m1(vint32m1_t op1, vint32m1_t op2, size_t vl);`
+    - **函数**： `vint32m1_t riscv_vadd_vv_i32m1(vint32m1_t op1, vint32m1_t op2, size_t vl);`
 
-    - **作用**: 将向量 `op1` 和 `op2` 中的对应元素相加，结果存入新的向量寄存器。
+    - **作用**： 将向量 `op1` 和 `op2` 中的对应元素相加，结果存入新的向量寄存器。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vadd`: Vector Add.
 
@@ -454,7 +454,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
     - **详细示例与文本流程图 (`riscv_vadd_vv_i32m1`)**
 
-        - **场景设定**:
+        - **场景设定**：
 
             - `VLEN = 128` 位
 
@@ -466,17 +466,17 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - 假设当前向量长度 `vl = 4`。
 
-        - **操作数寄存器**:
+        - **操作数寄存器**：
 
             - `vop1` (类型 `vint32m1_t`)
 
             - `vop2` (类型 `vint32m1_t`)
 
-        - **目标寄存器**:
+        - **目标寄存器**：
 
             - `vresult` (类型 `vint32m1_t`)
 
-        - **操作前 (`vl=4`)**:
+        - **操作前 (`vl=4`)**：
 
             - `vop1 = {1, 2, 3, 4}`
 
@@ -486,7 +486,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
         - **操作: `vresult = riscv_vadd_vv_i32m1(vop1, vop2, 4);`**
 
-        - **操作后 (`vl=4`)**:
+        - **操作后 (`vl=4`)**：
 
             - `vresult[0] = vop1[0] + vop2[0] = 1 + 10 = 11`
 
@@ -496,7 +496,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - `vresult[3] = vop1[3] + vop2[3] = 4 + 40 = 44`
 
-        - **文本流程图**:
+        - **文本流程图**：
 
             ```
               +---------------------------+     +---------------------------+
@@ -532,11 +532,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 2. **向量-标量乘法 (Vector-Scalar Multiplication)**
 
-    - **函数**: `vfloat32m2_t riscv_vfmul_vf_f32m2(vfloat32m2_t op1, float32_t op2, size_t vl);`
+    - **函数**： `vfloat32m2_t riscv_vfmul_vf_f32m2(vfloat32m2_t op1, float32_t op2, size_t vl);`
 
-    - **作用**: 将向量 `op1` 中的每个元素与标量浮点数 `op2` 相乘。
+    - **作用**： 将向量 `op1` 中的每个元素与标量浮点数 `op2` 相乘。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vfmul`: Vector Float Multiply.
 
@@ -546,11 +546,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 3. **宽化加法 (Widening Addition)**
 
-    - **函数**: `vint32m1_t riscv_vwadd_wv_i32m1(vint16mf2_t op1, vint16mf2_t op2, size_t vl);`
+    - **函数**： `vint32m1_t riscv_vwadd_wv_i32m1(vint16mf2_t op1, vint16mf2_t op2, size_t vl);`
 
-    - **作用**: 将两个16位有符号整数向量 `op1` 和 `op2` 的对应元素相加，结果符号扩展为32位整数并存入目标向量。用于防止溢出或需要更高精度结果的场景。
+    - **作用**： 将两个16位有符号整数向量 `op1` 和 `op2` 的对应元素相加，结果符号扩展为32位整数并存入目标向量。用于防止溢出或需要更高精度结果的场景。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vwadd`: Widening Vector Add.
 
@@ -560,11 +560,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 4. **窄化定点剪切加法 (Narrowing Fixed-Point Saturated Addition)**
 
-    - **函数**: `vint8mf4_t riscv_vnclip_wx_i8mf4(vint16mf2_t op1, uint8_t shift, size_t vl);` (注意：vnclip 通常与另一个操作如add/sub结合，这里简化为vnclip本身，实际可能是 `vnsra` (narrowing shift right arithmetic) 或 `vnclipu` (narrowing clip unsigned))
+    - **函数**： `vint8mf4_t riscv_vnclip_wx_i8mf4(vint16mf2_t op1, uint8_t shift, size_t vl);` (注意：vnclip 通常与另一个操作如add/sub结合，这里简化为vnclip本身，实际可能是 `vnsra` (narrowing shift right arithmetic) 或 `vnclipu` (narrowing clip unsigned))
 
-    - **作用**: 这是一个窄化操作的例子，通常在定点算术中，将较宽的向量元素（如16位）经过移位（`shift`）和饱和（clip）处理后，窄化为较窄的向量元素（如8位）。
+    - **作用**： 这是一个窄化操作的例子，通常在定点算术中，将较宽的向量元素（如16位）经过移位（`shift`）和饱和（clip）处理后，窄化为较窄的向量元素（如8位）。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vnclip`: Vector Narrowing Clip (饱和)。
 
@@ -578,11 +578,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量-向量按位异或 (Vector-Vector XOR)**
 
-    - **函数**: `vuint64m8_t riscv_vxor_vv_u64m8(vuint64m8_t op1, vuint64m8_t op2, size_t vl);`
+    - **函数**： `vuint64m8_t riscv_vxor_vv_u64m8(vuint64m8_t op1, vuint64m8_t op2, size_t vl);`
 
-    - **作用**: 将向量 `op1` 和 `op2` 中的对应元素进行按位异或操作。
+    - **作用**： 将向量 `op1` 和 `op2` 中的对应元素进行按位异或操作。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vxor`: Vector XOR.
 
@@ -592,11 +592,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 2. **向量-立即数按位与 (Vector-Immediate AND)**
 
-    - **函数**: `vuint16m1_t riscv_vand_vi_u16m1(vuint16m1_t op1, int16_t imm, size_t vl);`
+    - **函数**： `vuint16m1_t riscv_vand_vi_u16m1(vuint16m1_t op1, int16_t imm, size_t vl);`
 
-    - **作用**: 将向量 `op1` 中的每个元素与立即数 `imm` 进行按位与操作。
+    - **作用**： 将向量 `op1` 中的每个元素与立即数 `imm` 进行按位与操作。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vand`: Vector AND.
 
@@ -610,11 +610,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量-标量逻辑左移 (Vector-Scalar Logical Left Shift)**
 
-    - **函数**: `vint32m2_t riscv_vsll_vx_i32m2(vint32m2_t op1, uint32_t shift_amount_scalar, size_t vl);`
+    - **函数**： `vint32m2_t riscv_vsll_vx_i32m2(vint32m2_t op1, uint32_t shift_amount_scalar, size_t vl);`
 
-    - **作用**: 将向量 `op1` 中的每个元素逻辑左移 `shift_amount_scalar` 指定的位数。
+    - **作用**： 将向量 `op1` 中的每个元素逻辑左移 `shift_amount_scalar` 指定的位数。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vsll`: Vector Shift Logical Left.
 
@@ -626,11 +626,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量寄存器移动 (Vector Register Move)**
 
-    - **函数**: `vint32m1_t riscv_vmv_v_v_i32m1(vint32m1_t src, size_t vl);`
+    - **函数**： `vint32m1_t riscv_vmv_v_v_i32m1(vint32m1_t src, size_t vl);`
 
-    - **作用**: 将向量 `src` 的内容复制到新的向量寄存器。
+    - **作用**： 将向量 `src` 的内容复制到新的向量寄存器。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vmv`: Vector Move.
 
@@ -640,11 +640,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 2. **浮点转有符号整数 (Float to Signed Integer Conversion, rounding towards zero)**
 
-    - **函数**: `vint16mf2_t riscv_vfcvt_x_f_v_i16mf2(vfloat16mf2_t src, size_t vl);`
+    - **函数**： `vint16mf2_t riscv_vfcvt_x_f_v_i16mf2(vfloat16mf2_t src, size_t vl);`
 
-    - **作用**: 将浮点向量 `src` 中的每个元素转换为16位有符号整数，采用向零舍入。
+    - **作用**： 将浮点向量 `src` 中的每个元素转换为16位有符号整数，采用向零舍入。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vfcvt`: Vector Float Convert.
 
@@ -658,11 +658,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量-标量等于比较 (Vector-Scalar Equal Comparison)**
 
-    - **函数**: `vbool8_t riscv_vmseq_vx_i32m2_b8(vint32m2_t op1, int32_t op2, size_t vl);`
+    - **函数**： `vbool8_t riscv_vmseq_vx_i32m2_b8(vint32m2_t op1, int32_t op2, size_t vl);`
 
-    - **作用**: 比较向量 `op1` 的每个32位整数元素是否等于标量 `op2`。若相等，则结果掩码向量 (`vbool8_t` 类型，对应 `LMUL=m2` 的32位元素需要 `32/8=4` 个 `vbool8_t` 元素来覆盖，这里 `b8` 表示掩码的粒度是8位，所以一个32位元素对应4个掩码位，但通常一个元素对应一个掩码位，`b8` 可能指 `SEW=32` 时，每个掩码元素是8位宽，可以覆盖4个 `SEW=8` 的数据元素。对于 `SEW=32` 的数据，结果掩码类型通常是 `vbool<SEW/LMUL>` 相关的，例如 `vbool4_t` (如果 `LMUL=m2`, `32/2 = 16` 个掩码位，每个掩码位1bit，则 `vbool16_t` 这种类型)。更准确地说，结果是 `vboolN_t`，其中 `N` 是 `64/LMUL`。例如，如果 `LMUL=m2`，结果是 `vbool32_t`。
+    - **作用**： 比较向量 `op1` 的每个32位整数元素是否等于标量 `op2`。若相等，则结果掩码向量 (`vbool8_t` 类型，对应 `LMUL=m2` 的32位元素需要 `32/8=4` 个 `vbool8_t` 元素来覆盖，这里 `b8` 表示掩码的粒度是8位，所以一个32位元素对应4个掩码位，但通常一个元素对应一个掩码位，`b8` 可能指 `SEW=32` 时，每个掩码元素是8位宽，可以覆盖4个 `SEW=8` 的数据元素。对于 `SEW=32` 的数据，结果掩码类型通常是 `vbool<SEW/LMUL>` 相关的，例如 `vbool4_t` (如果 `LMUL=m2`, `32/2 = 16` 个掩码位，每个掩码位1bit，则 `vbool16_t` 这种类型)。更准确地说，结果是 `vboolN_t`，其中 `N` 是 `64/LMUL`。例如，如果 `LMUL=m2`，结果是 `vbool32_t`。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vmseq`: Vector Mask Set if Equal.
 
@@ -674,11 +674,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 2. **向量-向量小于比较 (Vector-Vector Less Than Comparison)**
 
-    - **函数**: `vbool16_t riscv_vmslt_vv_u16m1_b16(vuint16m1_t op1, vuint16m1_t op2, size_t vl);`
+    - **函数**： `vbool16_t riscv_vmslt_vv_u16m1_b16(vuint16m1_t op1, vuint16m1_t op2, size_t vl);`
 
-    - **作用**: 比较向量 `op1` 的每个元素是否小于向量 `op2` 的对应元素。
+    - **作用**： 比较向量 `op1` 的每个元素是否小于向量 `op2` 的对应元素。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vmslt`: Vector Mask Set if Less Than.
 
@@ -694,11 +694,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **掩码下的向量-向量加法**
 
-    - **函数**: `vint32m1_t riscv_vadd_vv_i32m1_m(vbool32_t mask, vint32m1_t op1, vint32m1_t op2, size_t vl);`
+    - **函数**： `vint32m1_t riscv_vadd_vv_i32m1_m(vbool32_t mask, vint32m1_t op1, vint32m1_t op2, size_t vl);`
 
-    - **作用**: 仅当掩码向量 `mask` 中的对应位为1时，才将向量 `op1` 和 `op2` 中的对应元素相加。如果掩码位为0，则目标向量的对应元素保持不变（假设 `vta=1`）。
+    - **作用**： 仅当掩码向量 `mask` 中的对应位为1时，才将向量 `op1` 和 `op2` 中的对应元素相加。如果掩码位为0，则目标向量的对应元素保持不变（假设 `vta=1`）。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vadd_vv_i32m1`: 与非掩码版本相同。
 
@@ -706,7 +706,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
     - **详细示例与文本流程图 (`riscv_vadd_vv_i32m1_m`)**
 
-        - **场景设定**:
+        - **场景设定**：
 
             - `VLEN = 128` 位, `SEW = 32` 位, `LMUL = m1`
 
@@ -714,7 +714,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - 当前向量长度 `vl = 4`。
 
-        - **操作数寄存器**:
+        - **操作数寄存器**：
 
             - `vmask` (类型 `vbool32_t`, 每个位对应一个32位数据元素)
 
@@ -722,11 +722,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - `vop2` (类型 `vint32m1_t`)
 
-        - **目标寄存器**:
+        - **目标寄存器**：
 
             - `vresult` (类型 `vint32m1_t`)
 
-        - **操作前 (`vl=4`, 假设 `vta=1`)**:
+        - **操作前 (`vl=4`, 假设 `vta=1`)**：
 
             - `vmask = {1, 0, 1, 0}` (逻辑值: true, false, true, false)
 
@@ -738,7 +738,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
         - **操作: `vresult = riscv_vadd_vv_i32m1_m(vmask, vop1, vop2, 4);`**
 
-        - **操作后 (`vl=4`)**:
+        - **操作后 (`vl=4`)**：
 
             - `vresult[0] = vop1[0] + vop2[0] = 1 + 10 = 11` (因为 `vmask[0]` 为 1)
 
@@ -748,7 +748,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
             - `vresult[3] = 400` (因为 `vmask[3]` 为 0, 元素保持不变)
 
-        - **文本流程图**:
+        - **文本流程图**：
 
             ```
               +---------------------------+     +---------------------------+     +---------------------------+
@@ -791,11 +791,11 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量求和归约 (Vector Sum Reduction)**
 
-    - **函数**: `vint32m1_t riscv_vredsum_vs_i32m1_i32m1(vint32m1_t vector_val, vint32m1_t scalar_init, size_t vl);` (注意：通常归约的结果是一个标量，或者写入目标向量的第一个元素。内建函数签名可能返回一个向量，其中只有第一个元素是有效的归约结果。)
+    - **函数**： `vint32m1_t riscv_vredsum_vs_i32m1_i32m1(vint32m1_t vector_val, vint32m1_t scalar_init, size_t vl);` (注意：通常归约的结果是一个标量，或者写入目标向量的第一个元素。内建函数签名可能返回一个向量，其中只有第一个元素是有效的归约结果。)
 
-    - **作用**: 将向量 `vector_val` 中的所有活动元素与 `scalar_init` 的第一个元素（作为初始值）相加，最终结果存储在返回向量的第一个元素中。
+    - **作用**： 将向量 `vector_val` 中的所有活动元素与 `scalar_init` 的第一个元素（作为初始值）相加，最终结果存储在返回向量的第一个元素中。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vredsum`: Vector Reduction Sum.
 
@@ -809,13 +809,13 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **向量收集 (Vector Gather)**
 
-    - **函数**: `vint32m1_t riscv_vrgather_vx_i32m1(vint32m1_t src, uint32_t index_scalar, size_t vl);` (这是一个根据标量索引收集单个元素到向量所有位置的例子，更常见的是用向量索引 `vrgatherei16`)
+    - **函数**： `vint32m1_t riscv_vrgather_vx_i32m1(vint32m1_t src, uint32_t index_scalar, size_t vl);` (这是一个根据标量索引收集单个元素到向量所有位置的例子，更常见的是用向量索引 `vrgatherei16`)
 
-    - **函数 (更通用的形式)**: `vint32m1_t riscv_vrgatherei16_vv_i32m1(vint32m1_t src, vuint16mf2_t indices, size_t vl);`
+    - **函数 (更通用的形式)**： `vint32m1_t riscv_vrgatherei16_vv_i32m1(vint32m1_t src, vuint16mf2_t indices, size_t vl);`
 
-    - **作用 (通用形式)**: 根据 `indices` 向量中的值，从源向量 `src` 中收集元素到目标向量。`dest[i] = src[indices[i]]`。
+    - **作用 (通用形式)**： 根据 `indices` 向量中的值，从源向量 `src` 中收集元素到目标向量。`dest[i] = src[indices[i]]`。
 
-    - **命名解析 (通用形式)**:
+    - **命名解析 (通用形式)**：
 
         - `vrgather`: Vector Register Gather.
 
@@ -827,13 +827,13 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 2. **向量上滑 (Vector Slide Up)**
 
-    - **函数**: `vint32m1_t riscv_vslideup_vx_i32m1(vint32m1_t dest_and_src, vint32m1_t src_val_to_slide_in, uint32_t offset, size_t vl);` (简化版，通常 `dest` 和 `src` 分开，或者 `vslide1up`)
+    - **函数**： `vint32m1_t riscv_vslideup_vx_i32m1(vint32m1_t dest_and_src, vint32m1_t src_val_to_slide_in, uint32_t offset, size_t vl);` (简化版，通常 `dest` 和 `src` 分开，或者 `vslide1up`)
 
-    - **函数 (更常见形式)**: `vint32m1_t riscv_vslide1up_vx_i32m1(vint32m1_t src, int32_t val_to_slide_in, size_t vl);`
+    - **函数 (更常见形式)**： `vint32m1_t riscv_vslide1up_vx_i32m1(vint32m1_t src, int32_t val_to_slide_in, size_t vl);`
 
-    - **作用 (vslide1up)**: 将向量 `src` 的所有元素向上滑动一个位置（`dest[i+1] = src[i]`），并将标量 `val_to_slide_in` 放入向量的第一个位置 (`dest[0]`)。
+    - **作用 (vslide1up)**： 将向量 `src` 的所有元素向上滑动一个位置（`dest[i+1] = src[i]`），并将标量 `val_to_slide_in` 放入向量的第一个位置 (`dest[0]`)。
 
-    - **命名解析 (vslide1up)**:
+    - **命名解析 (vslide1up)**：
 
         - `vslide1up`: Vector Slide 1 element Up.
 
@@ -847,21 +847,21 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
 1. **设置向量长度和类型 (Set Vector Length and Type)**
 
-    - **函数**: `size_t riscv_vsetvli(size_t avl, enum riscv_vtype_sew sew, enum riscv_vtype_lmul lmul);` (注意：实际的 `vtype_t` 可能是一个打包的类型，或者像这样通过 `sew` 和 `lmul` 枚举来构造)
+    - **函数**： `size_t riscv_vsetvli(size_t avl, enum riscv_vtype_sew sew, enum riscv_vtype_lmul lmul);` (注意：实际的 `vtype_t` 可能是一个打包的类型，或者像这样通过 `sew` 和 `lmul` 枚举来构造)
 
-    - **作用**: 设置应用程序请求的向量长度 `avl` (Application Vector Length)、选定元素宽度 `sew` 和向量长度乘数 `lmul`。函数会返回实际设置的 `vl`，该值是 `avl` 和硬件根据 `sew`、`lmul` 计算出的 `VLMAX` 之间的较小者。这个调用会更新 `vl` 和 `vtype` CSR。
+    - **作用**： 设置应用程序请求的向量长度 `avl` (Application Vector Length)、选定元素宽度 `sew` 和向量长度乘数 `lmul`。函数会返回实际设置的 `vl`，该值是 `avl` 和硬件根据 `sew`、`lmul` 计算出的 `VLMAX` 之间的较小者。这个调用会更新 `vl` 和 `vtype` CSR。
 
-    - **命名解析**:
+    - **命名解析**：
 
         - `vsetvli`: Vector Set Vector Length Immediate (虽然名为 immediate，但在C内建函数中通常表现为传入具体值)。
 
-    - **重要性**: 在执行任何其他向量操作之前，通常需要调用此函数来配置向量上下文。
+    - **重要性**： 在执行任何其他向量操作之前，通常需要调用此函数来配置向量上下文。
 
 ## 5. 在 C/C++ 中使用 RVV 内建函数
 
 要在 C/C++ 代码中使用 RVV 内建函数，您通常需要：
 
-1. **包含头文件**: 大多数支持 RVV 的编译器会提供一个头文件，其中定义了所有内建函数和相关的向量数据类型。常见的头文件是：
+1. **包含头文件**： 大多数支持 RVV 的编译器会提供一个头文件，其中定义了所有内建函数和相关的向量数据类型。常见的头文件是：
 
     ```
     #include <riscv_vector.h>
@@ -869,7 +869,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
     
     ```
 
-2. **编译器支持和编译选项**: 您的编译器必须支持 RISC-V Vector Extension。您需要在编译时指定正确的架构和 ABI。例如，对于 GCC 或 Clang：
+2. **编译器支持和编译选项**： 您的编译器必须支持 RISC-V Vector Extension。您需要在编译时指定正确的架构和 ABI。例如，对于 GCC 或 Clang：
 
     - `-march=rv64gcv` (或 `rv32gcv`): 指定目标架构。`g` 代表通用扩展，`c` 代表压缩指令，`v` 代表向量扩展。您可能需要更具体的版本，如 `rv64gcv0p10`。
 
@@ -877,7 +877,7 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
 
     - 可能需要启用特定的向量扩展版本，如 `-menable-experimental-rvv` 或类似的标志，具体取决于编译器的成熟度和支持阶段。
 
-3. **简单代码示例框架**:
+3. **简单代码示例框架**：
 
     ```
     #include <riscv_vector.h>
@@ -941,27 +941,27 @@ _(注: `size_t vl` 是大多数向量内建函数共有的参数，代表当前�
     
     ```
 
-    **编译 (示例)**: `gcc -march=rv64gcv -mabi=lp64d -o vector_example vector_example.c` (具体标志可能因编译器版本而异，可能需要 `-I/path/to/riscv_vector_header_if_not_standard` 以及确保编译器内置了 `riscv_vector.h` 中 `RISCV_VSEW_E32` 等宏的定义)
+    **编译 (示例)**： `gcc -march=rv64gcv -mabi=lp64d -o vector_example vector_example.c` (具体标志可能因编译器版本而异，可能需要 `-I/path/to/riscv_vector_header_if_not_standard` 以及确保编译器内置了 `riscv_vector.h` 中 `RISCV_VSEW_E32` 等宏的定义)
 
 ## 6. 性能考量与最佳实践
 
-- **数据对齐**: 确保加载/存储的内存地址相对于元素大小和 `VLEN` 对齐，可以避免性能损失。某些不对齐的访问可能会导致异常或显著变慢。
+- **数据对齐**： 确保加载/存储的内存地址相对于元素大小和 `VLEN` 对齐，可以避免性能损失。某些不对齐的访问可能会导致异常或显著变慢。
 
-- **最大化 `vl`**: 尽量让每次向量操作处理尽可能多的元素（即 `vl` 接近 `VLMAX`），以摊销指令开销并最大化并行度。这通常通过循环分块（strip-mining）实现，如上述示例。
+- **最大化 `vl`**： 尽量让每次向量操作处理尽可能多的元素（即 `vl` 接近 `VLMAX`），以摊销指令开销并最大化并行度。这通常通过循环分块（strip-mining）实现，如上述示例。
 
-- **利用掩码操作避免分支**: 对于条件计算，优先使用掩码操作而不是标量 `if-else` 分支，因为分支会中断流水线并降低向量效率。
+- **利用掩码操作避免分支**： 对于条件计算，优先使用掩码操作而不是标量 `if-else` 分支，因为分支会中断流水线并降低向量效率。
 
-- **理解 `LMUL` 的影响**:
+- **理解 `LMUL` 的影响**：
 
   - 较大的 `LMUL` (如 `m2`, `m4`, `m8`) 可以处理更长的逻辑向量，减少循环迭代次数，但会占用更多物理向量寄存器，可能导致寄存器压力增大和 spilling。
 
   - 较小的 `LMUL` (如 `mf2`, `mf4`, `mf8`) 每个逻辑向量较短，占用较少物理寄存器，适合寄存器受限或数据元素本身较宽的场景。
 
-- **循环展开和向量化**: 编译器有时可以自动向量化简单的循环。但对于复杂情况，手动使用内建函数可以提供更精细的控制。理解循环依赖性对于有效向量化至关重要。
+- **循环展开和向量化**： 编译器有时可以自动向量化简单的循环。但对于复杂情况，手动使用内建函数可以提供更精细的控制。理解循环依赖性对于有效向量化至关重要。
 
-- **最小化配置开销**: `vsetvl` 指令本身也有开销。如果循环内部的 `SEW` 和 `LMUL` 不变，尽量在循环外设置一次，或者仅在必要时更改。
+- **最小化配置开销**： `vsetvl` 指令本身也有开销。如果循环内部的 `SEW` 和 `LMUL` 不变，尽量在循环外设置一次，或者仅在必要时更改。
 
-- **考虑数据依赖**: 向量指令之间的数据依赖会影响流水线效率。合理安排指令顺序，或使用编译器提供的 `#pragma` 来辅助调度。
+- **考虑数据依赖**： 向量指令之间的数据依赖会影响流水线效率。合理安排指令顺序，或使用编译器提供的 `#pragma` 来辅助调度。
 
 ## 7. 总结
 
@@ -969,8 +969,8 @@ RISC-V Vector Extension 及其内建函数为开发者提供了一个强大而�
 
 ## 8. 附录：参考资料 (概念性)
 
-- **RISC-V Vector Extension Specification**: RISC-V 国际官方发布的向量扩展规范文档是最终的权威参考。
+- **RISC-V Vector Extension Specification**： RISC-V 国际官方发布的向量扩展规范文档是最终的权威参考。
 
-- **Compiler Documentation (GCC, Clang/LLVM)**: 特定编译器的文档会详细说明其对 RVV 内建函数的支持、可用的编译选项以及任何特定于实现的细节。
+- **Compiler Documentation (GCC, Clang/LLVM)**： 特定编译器的文档会详细说明其对 RVV 内建函数的支持、可用的编译选项以及任何特定于实现的细节。
 
-- **RISC-V Software Development Tools**: 相关的模拟器、调试器和性能分析工具对于开发和优化 RVV 代码至关重要。
+- **RISC-V Software Development Tools**： 相关的模拟器、调试器和性能分析工具对于开发和优化 RVV 代码至关重要。

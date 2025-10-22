@@ -26,16 +26,18 @@ StoreQueueData包含三个主要的子模块：
 StoreQueueData在XiangShan的LSQ (Load-Store Queue) 系统中扮演着关键角色：
 
 1. **与StoreQueue的关系**：
- - 作为StoreQueue的核心数据store组件
- - 由StoreQueue实例化和管理
- - 接收来自StoreQueue的写入和转发控制信号
- - 提供数据给StoreQueue用于写回SBuffer和处理MMIO操作
+
+- 作为StoreQueue的核心数据store组件
+- 由StoreQueue实例化和管理
+- 接收来自StoreQueue的写入和转发控制信号
+- 提供数据给StoreQueue用于写回SBuffer和处理MMIO操作
 
 2. **与LoadQueue的关系**：
- - 通过StoreQueue提供load-store转发功能
- - 响应LoadQueue发起的地址匹配查询
- - 为LoadQueue提供潜在的转发数据
- - 协助LoadQueue解决内存依赖问题
+
+- 通过StoreQueue提供load-store转发功能
+- 响应LoadQueue发起的地址匹配查询
+- 为LoadQueue提供潜在的转发数据
+- 协助LoadQueue解决内存依赖问题
 
 ## 2. SQAddrModule：地址处理模块
 
@@ -357,64 +359,74 @@ for (i <- 0 until numForward) {
 
 以下是StoreQueueData在整个LSQ系统中的数据流概述：
 
-1. **store指令入队阶段**:
- - StoreQueue从后端接收store指令
- - 为指令分配队列条目
- - 初始化相关状态标志
+1. **store指令入队阶段**：
 
-2. **地址和数据写入阶段**:
- - StoreQueue从执行单元接收计算好的store地址，写入SQAddrModule
- - StoreQueue从执行单元接收store数据，写入SQDataModule
- - 设置适当的状态标志指示地址和数据就绪
+- StoreQueue从后端接收store指令
+- 为指令分配队列条目
+- 初始化相关状态标志
 
-3. **转发检查阶段**:
- - LoadQueue通过StoreQueue向SQAddrModule发送地址查询请求
- - SQAddrModule执行CAM操作，生成地址匹配掩码
- - StoreQueue基于地址匹配和指令年龄信息，计算最终的转发需求
- - 转发需求通过`needForward`信号发送给SQDataModule
- - SQDataModule产生转发结果，返回给StoreQueue
- - StoreQueue将转发数据提供给LoadQueue
+2. **地址和数据写入阶段**：
 
-4. **store提交阶段**:
- - ROB通知StoreQueue某store指令可以提交
- - StoreQueue从SQDataModule读取完整的store数据
- - 根据store类型(普通store、MMIO等)处理数据写回
+- StoreQueue从执行单元接收计算好的store地址，写入SQAddrModule
+- StoreQueue从执行单元接收store数据，写入SQDataModule
+- 设置适当的状态标志指示地址和数据就绪
+
+3. **转发检查阶段**：
+
+- LoadQueue通过StoreQueue向SQAddrModule发送地址查询请求
+- SQAddrModule执行CAM操作，生成地址匹配掩码
+- StoreQueue基于地址匹配和指令年龄信息，计算最终的转发需求
+- 转发需求通过`needForward`信号发送给SQDataModule
+- SQDataModule产生转发结果，返回给StoreQueue
+- StoreQueue将转发数据提供给LoadQueue
+
+4. **store提交阶段**：
+
+- ROB通知StoreQueue某store指令可以提交
+- StoreQueue从SQDataModule读取完整的store数据
+- 根据store类型(普通store、MMIO等)处理数据写回
 
 ### 5.2 store-load转发完整流程
 
 store-load转发是StoreQueueData最关键的功能之一，下面详细说明完整的转发流程：
 
-1. **load地址生成**:
- - LoadUnit计算load指令的地址
+1. **load地址生成**：
 
-2. **转发查询初始化**:
- - LoadQueue构造转发查询，包括地址、掩码和队列索引信息
- - 查询通过LoadQueue的`forward`接口发送到StoreQueue
+- LoadUnit计算load指令的地址
 
-3. **StoreQueue转发处理**:
- - StoreQueue接收查询请求
- - 向SQAddrModule发送地址匹配查询
- - 接收地址匹配结果(`forwardMmask`)
- - 应用年龄过滤和指针比较，生成最终需要检查的条目掩码
- - 将需要检查的条目掩码通过`needForward`信号发送给SQDataModule
+2. **转发查询初始化**：
 
-4. **SQDataModule数据转发**:
- - 针对每个字节，检查指定条目是否有效且需要转发
- - 使用优先级逻辑选择最新的匹配数据
- - 生成转发结果:
-  - `forwardValidFast`: 快速路径，当前周期有效
-  - `forwardValid`和`forwardData`: 完整路径，下一周期有效
+- LoadQueue构造转发查询，包括地址、掩码和队列索引信息
+- 查询通过LoadQueue的`forward`接口发送到StoreQueue
 
-5. **转发结果返回**:
- - StoreQueue接收SQDataModule的转发结果
- - 将结果通过`forward`接口返回给LoadQueue
+3. **StoreQueue转发处理**：
 
-6. **LoadQueue处理转发结果**:
- - 接收转发结果(是否有匹配、转发数据)
- - 根据结果决定是否:
-  - 使用转发的数据
-  - 等待store指令完成
-  - 继续正常的load操作
+- StoreQueue接收查询请求
+- 向SQAddrModule发送地址匹配查询
+- 接收地址匹配结果(`forwardMmask`)
+- 应用年龄过滤和指针比较，生成最终需要检查的条目掩码
+- 将需要检查的条目掩码通过`needForward`信号发送给SQDataModule
+
+4. **SQDataModule数据转发**：
+
+- 针对每个字节，检查指定条目是否有效且需要转发
+- 使用优先级逻辑选择最新的匹配数据
+- 生成转发结果:
+- `forwardValidFast`: 快速路径，当前周期有效
+- `forwardValid`和`forwardData`: 完整路径，下一周期有效
+
+5. **转发结果返回**：
+
+- StoreQueue接收SQDataModule的转发结果
+- 将结果通过`forward`接口返回给LoadQueue
+
+6. **LoadQueue处理转发结果**：
+
+- 接收转发结果(是否有匹配、转发数据)
+- 根据结果决定是否:
+- 使用转发的数据
+- 等待store指令完成
+- 继续正常的load操作
 
 这个完整流程确保了load指令能够正确地从尚未提交到缓存的store指令中获取数据，是乱序处理器中保证数据依赖正确性的关键机制。
 
@@ -504,19 +516,22 @@ matchResultVec(j).valid := needCheck0Reg && data(j).valid
 StoreQueueData是整个LSQ系统的核心数据store组件，具有以下关键特性：
 
 1. **对StoreQueue提供服务**：
- - store所有store指令的地址、数据和掩码
- - 支持StoreQueue对提交指令的数据读取
- - 辅助StoreQueue完成store指令的完整处理
+
+- store所有store指令的地址、数据和掩码
+- 支持StoreQueue对提交指令的数据读取
+- 辅助StoreQueue完成store指令的完整处理
 
 2. **与LoadQueue协同工作**：
- - 通过StoreQueue向LoadQueue提供转发服务
- - 快速响应LoadQueue的地址匹配查询
- - 为LoadQueue提供精确的字节级转发数据
+
+- 通过StoreQueue向LoadQueue提供转发服务
+- 快速响应LoadQueue的地址匹配查询
+- 为LoadQueue提供精确的字节级转发数据
 
 3. **促进内存一致性维护**：
- - 支持乱序执行中的数据依赖正确性
- - 减少因store-load依赖导致的流水线停顿
- - 提高指令级并行性
+
+- 支持乱序执行中的数据依赖正确性
+- 减少因store-load依赖导致的流水线停顿
+- 提高指令级并行性
 
 这种设计使StoreQueueData成为连接StoreQueue和LoadQueue的桥梁，对于实现高效的乱序执行至关重要。
 

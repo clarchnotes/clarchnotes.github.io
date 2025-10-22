@@ -64,6 +64,7 @@
 **三种创建时机：**
 
 **时机1: 初始化时**
+
 ```python
 def initialize_simulation():
     """创建初始event"""
@@ -81,6 +82,7 @@ def initialize_simulation():
 ```
 
 **时机2: 处理event时 (因果关系)**
+
 ```python
 def handle_start_event(event):
     """处理START event, 创建COMPLETE event"""
@@ -101,6 +103,7 @@ def handle_start_event(event):
 ```
 
 **时机3: 依赖满足时 (notify触发)**
+
 ```python
 def handle_complete_event(event):
     """处理COMPLETE event, 可能触发依赖的START event"""
@@ -171,9 +174,9 @@ class EventQueue:
 
 **关键特性：**
 
-1. **自动排序**: 按时间自动排序，无需手动维护
-2. **高效**: 插入和删除都是O(log n)
-3. **正确性**: 保证总是取出时间最早的event
+1. **自动排序**： 按时间自动排序，无需手动维护
+2. **高效**： 插入和删除都是O(log n)
+3. **正确性**： 保证总是取出时间最早的event
 
 **示例：**
 
@@ -232,15 +235,15 @@ class Simulator:
 
 **关键点：**
 
-1. **时间跳跃**: `current_time = event.time` 是核心
+1. **时间跳跃**： `current_time = event.time` 是核心
    - 不是 `current_time += 1` (那是cycle-accurate)
    - 直接跳到event发生的时间
-   
-2. **单调性**: 时间只增不减
+
+2. **单调性**： 时间只增不减
    - Event必须按时间顺序处理
    - 不能创建过去的event
 
-3. **完整性**: 必须处理完队列中所有event
+3. **完整性**： 必须处理完队列中所有event
 
 **时间跳跃示例：**
 
@@ -642,26 +645,29 @@ print(f"跳过的周期: 1-49, 51-79  (共78个周期)")
 
 ### 最重要的3个点
 
-1. **时间跳跃**: `current_time = event.time` (不是 +=1)
-2. **优先队列**: 自动按时间排序，O(log n)
-3. **因果链**: Event处理会创建新的Event，形成因果链
+1. **时间跳跃**： `current_time = event.time` (不是 +=1)
+2. **优先队列**： 自动按时间排序，O(log n)
+3. **因果链**： Event处理会创建新的Event，形成因果链
 
 ### 常见错误
 
-❌ **错误1**: 忘记推进时间
+❌ **错误1**： 忘记推进时间
+
 ```python
 # 错误
 event = event_queue.dequeue()
 # 忘记: current_time = event.time
 ```
 
-❌ **错误2**: 创建过去的event
+❌ **错误2**： 创建过去的event
+
 ```python
 # 错误
 event = Event(time=current_time - 10, ...)  # 过去的时间！
 ```
 
-❌ **错误3**: 没有创建后续event
+❌ **错误3**： 没有创建后续event
+
 ```python
 # 错误
 def handle_start(event):
@@ -686,7 +692,6 @@ def dispatch_event(self, event):
 
 ---
 
-**下一篇**: [第2部分B：资源竞争建模](./第2部分B_资源竞争建模.md)
+**下一篇**： [第2部分B：资源竞争建模](./第2部分B_资源竞争建模.md)
 
 *本文档行数: ~640行 (原2部分的约15%)*
-

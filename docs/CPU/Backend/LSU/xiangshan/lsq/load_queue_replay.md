@@ -131,18 +131,21 @@ when (enq.valid && enq.bits.isLoadReplay) {
 LoadQueueReplay 采用三种选择调度方式[^1]：
 
 1. **根据入队年龄**：
- - 使用3个年龄矩阵(每一个Bank对应一个年龄矩阵)记录入队时间
- - 从已准备好可重发的指令中选择入队时间最长的指令
+
+- 使用3个年龄矩阵(每一个Bank对应一个年龄矩阵)记录入队时间
+- 从已准备好可重发的指令中选择入队时间最长的指令
 
 2. **根据Load指令的年龄**：
- - 根据LqPtr判断靠近最老的load指令进行重发
- - 判断宽度为OldestSelectStride=4
+
+- 根据LqPtr判断靠近最老的load指令进行重发
+- 判断宽度为OldestSelectStride=4
 
 3. **数据相关优先调度**：
- - 首先调度因L2 Hint唤醒的重发（L2 Cache回填前2-3拍提前给出唤醒信号）
- - 如不存在L2 Hint情况，将replay原因分为高低优先级：
-     - 高优先级：dcache缺失(C_DM)或转发失败(C_FF)导致的replay
-     - 低优先级：其他replay原因
+
+- 首先调度因L2 Hint唤醒的重发（L2 Cache回填前2-3拍提前给出唤醒信号）
+- 如不存在L2 Hint情况，将replay原因分为高低优先级：
+  - 高优先级：dcache缺失(C_DM)或转发失败(C_FF)导致的replay
+  - 低优先级：其他replay原因
 
 ```scala
 // replay优先级选择逻辑
@@ -205,10 +208,11 @@ when (enq.valid && enq.bits.isLoadReplay) {
 replay过程分为三个阶段[^1]：
 
 1. **S0阶段**：选择需要replay的条目
- - 优先处理L2 Hint唤醒的条目
- - 然后是高优先级原因（C_DM和C_FF）
- - 最后是其他原因的replay条目
- - 可能还会考虑入队年龄和指令年龄
+
+- 优先处理L2 Hint唤醒的条目
+- 然后是高优先级原因（C_DM和C_FF）
+- 最后是其他原因的replay条目
+- 可能还会考虑入队年龄和指令年龄
 
 2. **S1阶段**：读取虚拟地址并标记调度状态
 
@@ -255,9 +259,10 @@ when (lastReplay(i) && io.replay(i).fire) {
 LoadQueueReplay 与 LoadQueue 是相互配合但状态独立的两个模块：
 
 1. **独立的条目管理**：
- - LoadQueueReplay 有自己独立的条目，不直接修改 LoadQueue 中的条目状态
- - 每个需要replay的load指令在 LoadQueueReplay 中有独立的追踪条目
- - LoadQueue 中的原始条目保持其状态，直到最终执行成功或被取消
+
+- LoadQueueReplay 有自己独立的条目，不直接修改 LoadQueue 中的条目状态
+- 每个需要replay的load指令在 LoadQueueReplay 中有独立的追踪条目
+- LoadQueue 中的原始条目保持其状态，直到最终执行成功或被取消
 
 2. **数据流向**：
 
@@ -325,22 +330,31 @@ LoadQueueReplay 监控 RAR 和 RAW 队列的状态：
 1. load指令在 VirtualLoadQueue 分配条目（lqIdx = 10）
 2. load单元执行指令，发现缓存未命中，设置replay标志
 3. 执行结果通过 `io.ldu.ldin` 返回，同时：
- - VirtualLoadQueue 保持原始条目状态不变
- - 执行结果同时发送到 LoadQueueReplay 的 `io.enq` 接口
+
+- VirtualLoadQueue 保持原始条目状态不变
+- 执行结果同时发送到 LoadQueueReplay 的 `io.enq` 接口
+
 4. LoadQueueReplay 分配条目（例如 idx = 5），记录:
- - 原始 uop（包含 lqIdx = 10）
- - 原因 = C_DM（缓存未命中）
- - 虚拟地址和 MSHR ID
+
+- 原始 uop（包含 lqIdx = 10）
+- 原因 = C_DM（缓存未命中）
+- 虚拟地址和 MSHR ID
+
 5. 收到 L2 提示或缓存行返回时：
- - LoadQueueReplay 解除条目（idx = 5）的阻塞
- - 通过 `io.replay` 接口发送replay请求到load单元
+
+- LoadQueueReplay 解除条目（idx = 5）的阻塞
+- 通过 `io.replay` 接口发送replay请求到load单元
+
 6. load单元重新执行指令：
- - 使用相同的 lqIdx = 10
- - 这次从缓存或 MSHR 获取数据
+
+- 使用相同的 lqIdx = 10
+- 这次从缓存或 MSHR 获取数据
+
 1. replay结果通过 `io.ldu.ldin` 返回：
- - 不需要继续replay时，LoadQueue 更新 lqIdx = 10 的条目状态（committed = true）
- - LoadQueueReplay 释放条目 idx = 5
- - 最终数据通过 LoadQueue 的输出接口传递给处理器后端
+
+- 不需要继续replay时，LoadQueue 更新 lqIdx = 10 的条目状态（committed = true）
+- LoadQueueReplay 释放条目 idx = 5
+- 最终数据通过 LoadQueue 的输出接口传递给处理器后端
 
 ## 8. 总结
 

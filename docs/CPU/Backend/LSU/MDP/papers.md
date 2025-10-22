@@ -31,9 +31,9 @@ Store Sets 算法基于一个关键观察：**特定的 load 和 store 指令对
 
 - 多个 load 操作依赖于单个 store 操作（常见情况：一个写入者，多个读取者）
 - 一个 load 操作依赖于多个 store 操作：
-  - **情况 1**: 分支，一个 load 可能依赖于不同分支路径上的 store
-  - **情况 2**: 字大小的结构体被分割成多个字段，多个字段被写入但整个结构体被一次性读取
-  - **情况 3**: WAW (Write-After-Write) 情况
+  - **情况 1**： 分支，一个 load 可能依赖于不同分支路径上的 store
+  - **情况 2**： 字大小的结构体被分割成多个字段，多个字段被写入但整个结构体被一次性读取
+  - **情况 3**： WAW (Write-After-Write) 情况
 
 ### 2.3. 硬件实现
 
@@ -56,15 +56,15 @@ Store Sets 算法需要两个主要的硬件表：
 
 #### 2.3.3 操作流程
 
-- **初始化**: 程序开始时，SSIT 中的所有条目都无效。初始情况下，store 和 load 指令访问表格时不会获得有效的内存依赖信息。
+- **初始化**： 程序开始时，SSIT 中的所有条目都无效。初始情况下，store 和 load 指令访问表格时不会获得有效的内存依赖信息。
 
-- **违例处理**: 当 load 提交内存顺序违例时，SSIT 中会创建一个 store set。冲突中涉及的 load 和 store 指令被分配一个 store set 标识符（SSID X）。SSID 可以通过多种方式分配，例如对 load 的 PC 进行异或哈希。SSID X 会被写入 SSIT 中的两个位置：一个由 load PC 索引，另一个由 store PC 索引。
+- **违例处理**： 当 load 提交内存顺序违例时，SSIT 中会创建一个 store set。冲突中涉及的 load 和 store 指令被分配一个 store set 标识符（SSID X）。SSID 可以通过多种方式分配，例如对 load 的 PC 进行异或哈希。SSID X 会被写入 SSIT 中的两个位置：一个由 load PC 索引，另一个由 store PC 索引。
 
-- **Store 处理**: 当该 store PC 再次被取指时，它会读取由其 PC 索引的 SSIT 条目。由于 SSID 有效，它使用该 store set 的 SSID 访问 LFST。如果它没有找到来自 store set X 的有效最近取指指令，它不会依赖于另一个 store。该 store 会将自己的指令序号（inum）写入 LFST。
+- **Store 处理**： 当该 store PC 再次被取指时，它会读取由其 PC 索引的 SSIT 条目。由于 SSID 有效，它使用该 store set 的 SSID 访问 LFST。如果它没有找到来自 store set X 的有效最近取指指令，它不会依赖于另一个 store。该 store 会将自己的指令序号（inum）写入 LFST。
 
-- **Load 处理**: 当 load 指令随后被取指时，它使用 SSID X 访问 SSIT 然后是 LFST。LFST 通知指令调度器该 load 依赖于其中找到的 store 指令。调度器然后在 load 和 store 之间强制执行依赖关系，类似于它处理寄存器依赖约束的方式。
+- **Load 处理**： 当 load 指令随后被取指时，它使用 SSID X 访问 SSIT 然后是 LFST。LFST 通知指令调度器该 load 依赖于其中找到的 store 指令。调度器然后在 load 和 store 之间强制执行依赖关系，类似于它处理寄存器依赖约束的方式。
 
-- **多重冲突**: 如果 load 后来与另一个 store 发生冲突，SSIT 会因新的内存顺序违例而更新。SSID X 被复制到由新 store 的 PC 索引的 SSIT 条目中。现在 SSIT 中有三个条目指向 SSID X。下次取指这些指令时，第二个 store 将依赖于第一个 store，load 将依赖于第二个 store。
+- **多重冲突**： 如果 load 后来与另一个 store 发生冲突，SSIT 会因新的内存顺序违例而更新。SSID X 被复制到由新 store 的 PC 索引的 SSIT 条目中。现在 SSIT 中有三个条目指向 SSID X。下次取指这些指令时，第二个 store 将依赖于第一个 store，load 将依赖于第二个 store。
 
 ### 2.4. Store Set 合并策略
 

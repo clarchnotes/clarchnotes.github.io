@@ -532,7 +532,8 @@ Notify方式（操作完成时）:
 
 ### 常见错误
 
-❌ **错误1**: 只维护前向依赖
+❌ **错误1**： 只维护前向依赖
+
 ```python
 # 错误：没有反向依赖
 self.dependencies = {}  # 只有这个
@@ -540,14 +541,16 @@ self.dependencies = {}  # 只有这个
 # 问题：无法高效找到dependents，只能轮询
 ```
 
-✓ **正确做法**:
+✓ **正确做法**：
+
 ```python
 # 同时维护双向
 self.dependencies = {}   # 前向
 self.dependents = {}     # 反向（Notify用）
 ```
 
-❌ **错误2**: 忘记检查所有依赖
+❌ **错误2**： 忘记检查所有依赖
+
 ```python
 # 错误：只检查一个依赖
 if dep_id in completed:
@@ -556,7 +559,8 @@ if dep_id in completed:
 # 问题：可能还有其他依赖未满足
 ```
 
-✓ **正确做法**:
+✓ **正确做法**：
+
 ```python
 # 检查所有依赖
 all_deps = graph.get_dependencies(op_id)
@@ -564,7 +568,8 @@ if all_deps.issubset(completed):
     move_to_ready(op)
 ```
 
-❌ **错误3**: 轮询所有操作
+❌ **错误3**： 轮询所有操作
+
 ```python
 # 错误：低效轮询
 for op in all_operations:
@@ -572,7 +577,8 @@ for op in all_operations:
         schedule(op)
 ```
 
-✓ **正确做法**:
+✓ **正确做法**：
+
 ```python
 # 使用Notify
 def on_operation_complete(op_id):
@@ -585,18 +591,21 @@ def on_operation_complete(op_id):
 ### 实现checklist
 
 ✓ 数据结构:
+
 - [ ] 前向依赖图 (`dependencies`)
 - [ ] 反向依赖图 (`dependents`)
 - [ ] 完成集合 (`completed`)
 - [ ] 就绪队列 (`ready`)
 
 ✓ 核心方法:
+
 - [ ] `add_dependency()` - 同时更新双向图
 - [ ] `notify_dependents()` - Notify机制
 - [ ] `are_dependencies_satisfied()` - 依赖检查
 - [ ] `mark_complete()` - 触发Notify
 
 ✓ 测试要点:
+
 - [ ] Fork模式（一个操作→多个后继）
 - [ ] Join模式（多个操作→一个后继）
 - [ ] Fork-Join组合
@@ -604,7 +613,6 @@ def on_operation_complete(op_id):
 
 ---
 
-**下一篇**: [第2部分D：Event创建与时间推进](./第2部分D_Event创建与时间推进.md)
+**下一篇**： [第2部分D：Event创建与时间推进](./第2部分D_Event创建与时间推进.md)
 
 *本文档行数: ~590行 (原2部分第9节)*
-

@@ -379,16 +379,16 @@ for (i <- 0 until freeWidth) {
 
 - 通道 0 (i=0)：
 
- 	- `offset = 0`（前面没有有效请求）
- 	- `enqPtr = tailPtr + 0 = 0`
- 	- `freeReq(0) = 0`，不执行操作
- 	- `freeSelMaskVec(0) = 0000`
+  - `offset = 0`（前面没有有效请求）
+  - `enqPtr = tailPtr + 0 = 0`
+  - `freeReq(0) = 0`，不执行操作
+  - `freeSelMaskVec(0) = 0000`
 
 - 通道 1 (i=1)：
- 	- `offset = 0`（前面通道 0 没有有效请求）
- 	- `enqPtr = tailPtr + 0 = 0`
- 	- `freeReq(1) = 1`，执行释放：`freeList(0) = OHToUInt(1000) = 3`
- 	- `freeSelMaskVec(1) = 1000`
+  - `offset = 0`（前面通道 0 没有有效请求）
+  - `enqPtr = tailPtr + 0 = 0`
+  - `freeReq(1) = 1`，执行释放：`freeList(0) = OHToUInt(1000) = 3`
+  - `freeSelMaskVec(1) = 1000`
 
 最终`freeSelMask = freeSelMaskVec(0) | freeSelMaskVec(1) = 0000 | 1000 = 1000`
 
@@ -418,14 +418,21 @@ tailPtr := Mux(doFree, tailPtrNext, tailPtr)
 
 1. **freeMask 更新**：仍为 0010
 2. **交错分组**：
- - 通道 0: `[b2,b0] = [0,0]` 无资源
- - 通道 1: `[b3,b1] = [0,1]` 有资源 ID 1
+
+- 通道 0: `[b2,b0] = [0,0]` 无资源
+- 通道 1: `[b3,b1] = [0,1]` 有资源 ID 1
+
 3. **选择资源**：
- - 通道 1 选择资源 ID 1
+
+- 通道 1 选择资源 ID 1
+
 4. **执行释放**：
- - `freeList(1) = 1`
+
+- `freeList(1) = 1`
+
 5. **更新尾指针**：
- - `tailPtr`更新为 2
+
+- `tailPtr`更新为 2
 
 最终状态：
 

@@ -220,9 +220,10 @@ loadQueueReplay.io.rawFull          <> loadQueueRAW.io.lqFull
 
 1. load单元在S3阶段通过`ldin`接口向LoadQueue发送结果
 2. 结果同时分发给多个子模块：
- - VirtualLoadQueue更新指令状态
- - LoadQueueReplay处理可能的replay
- - 异常缓冲器记录可能的异常
+
+- VirtualLoadQueue更新指令状态
+- LoadQueueReplay处理可能的replay
+- 异常缓冲器记录可能的异常
 
 ### 5.5 load replay
 
@@ -235,13 +236,15 @@ loadQueueReplay.io.rawFull          <> loadQueueRAW.io.lqFull
 ### 5.6 内存依赖冲突处理
 
 1. 如果检测到RAW冲突：
- - LoadQueueRAW生成回滚信号
- - 通过`nuke_rollback`接口发送到ROB
- - 处理器从正确点恢复执行
+
+- LoadQueueRAW生成回滚信号
+- 通过`nuke_rollback`接口发送到ROB
+- 处理器从正确点恢复执行
 
 2. 如果检测到RAR冲突：
- - LoadQueueRAR生成适当的响应
- - 可能导致指令重排序或replay
+
+- LoadQueueRAR生成适当的响应
+- 可能导致指令重排序或replay
 
 ## 6. uncache load处理
 
@@ -310,8 +313,9 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. LoadQueueRAW检查是否存在写后读冲突:
- - 扫描地址重叠的store指令
- - 检查这些store指令是否在当前load之前
+
+- 扫描地址重叠的store指令
+- 检查这些store指令是否在当前load之前
 
 3. load单元同时查询读后读冲突:
 
@@ -339,9 +343,10 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. 结果同时分发给各子模块:
- - VirtualLoadQueue将条目标记为已提交: `committed(idx) = true`
- - 异常缓冲器检查并记录可能的异常
- - LoadQueueReplay判断不需要replay
+
+- VirtualLoadQueue将条目标记为已提交: `committed(idx) = true`
+- 异常缓冲器检查并记录可能的异常
+- LoadQueueReplay判断不需要replay
 
 3. load结果通过LoadQueue的输出接口返回给处理器后端:
 
@@ -376,9 +381,10 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 3. LoadQueueRAW执行违例检查:
- - 扫描所有已执行但未提交的load
- - 检查地址是否与新store指令重叠
- - 检查load是否应该在该store之后执行
+
+- 扫描所有已执行但未提交的load
+- 检查地址是否与新store指令重叠
+- 检查load是否应该在该store之后执行
 
 4. 如果检测到违例，生成回滚信号:
 
@@ -402,18 +408,21 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. LoadQueueReplay记录replay信息:
- - storeload指令的地址、掩码和其他必要信息
- - 记录replay类型和原因
+
+- storeload指令的地址、掩码和其他必要信息
+- 记录replay类型和原因
 
 ### 第2步: 等待replay条件满足
 
 1. 对于缓存未命中导致的replay:
- - 监听`tl_d_channel`接口的缓存行返回
- - 检查返回的地址是否与等待replay的load匹配
+
+- 监听`tl_d_channel`接口的缓存行返回
+- 检查返回的地址是否与等待replay的load匹配
 
 2. 对于依赖store的replay:
- - 监控相关store指令的状态
- - 当store数据准备好时触发replay
+
+- 监控相关store指令的状态
+- 当store数据准备好时触发replay
 
 ### 第3步: 发起replay
 
@@ -425,8 +434,9 @@ io.nack_rollback(0) := uncacheBuffer.io.rollback
    ```
 
 2. load单元重新执行该指令:
- - 可能直接使用转发的数据
- - 或重新访问现在已经在缓存中的数据
+
+- 可能直接使用转发的数据
+- 或重新访问现在已经在缓存中的数据
 
 ## 10. 性能监控与调试
 

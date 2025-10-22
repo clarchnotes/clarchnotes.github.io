@@ -12,10 +12,11 @@ LoadQueueUncache 实现了两阶段流水线入队处理[^1]：
 
 1. **第一阶段(s1)**：根据 ROB 索引对请求进行排序，确保程序顺序。
 2. **第二阶段(s2)**：判断请求是否满足入队条件：
- - 未被重定向刷新
- - 无异常
- - 无需 replay
- - 是 MMIO 或 NC 请求
+
+- 未被重定向刷新
+- 无异常
+- 无需 replay
+- 是 MMIO 或 NC 请求
 
 符合条件的请求通过 FreeList 分配空闲条目，写入相应的 UncacheEntry。当 Buffer 满且无法分配空间时，会产生回滚请求要求重新执行最老的无法入队请求。
 
@@ -26,26 +27,29 @@ LoadQueueUncache 实现了两阶段流水线入队处理[^1]：
 - 当 UncacheEntry 完成请求处理、被 redirect 刷新或接收到外部错误响应时，该条目会出队并释放 FreeList 中的标志
 - 返回给 LoadUnit 的请求在第一拍选出，第二拍返回
 - MMIO 和 NC 有固定的回写端口分配：
- 	- MMIO 只返回到 LoadUnit 2
- 	- NC 可返回到 LoadUnit 1/2，通过 entry id 与端口数的余数确定
+  - MMIO 只返回到 LoadUnit 2
+  - NC 可返回到 LoadUnit 1/2，通过 entry id 与端口数的余数确定
 
 ### 1.3 特性 3：Uncache 交互逻辑
 
 与 Uncache 模块的交互分为三个关键步骤[^1]：
 
 1. **发送请求(req)**：
- - 选择准备好的请求，发送给 Uncache Buffer
- - 请求中包含源 ID (mid)
+
+- 选择准备好的请求，发送给 Uncache Buffer
+- 请求中包含源 ID (mid)
 
 2. **接收 ID 响应(idResp)**：
- - Uncache Buffer 接收请求后返回 idResp
- - 包含源 ID (mid) 和为该请求分配的目标 ID (sid)
- - LoadQueueUncache 通过 mid 找到对应条目并store sid
+
+- Uncache Buffer 接收请求后返回 idResp
+- 包含源 ID (mid) 和为该请求分配的目标 ID (sid)
+- LoadQueueUncache 通过 mid 找到对应条目并store sid
 
 3. **接收结果响应(resp)**：
- - Uncache Buffer 完成访问后返回结果
- - 通过 sid 找到所有相关条目并传递结果
- - 一个 sid 可能对应多个条目（因为 Uncache Buffer 的合并特性）
+
+- Uncache Buffer 完成访问后返回结果
+- 通过 sid 找到所有相关条目并传递结果
+- 一个 sid 可能对应多个条目（因为 Uncache Buffer 的合并特性）
 
 ## 2. 系统架构
 
@@ -172,22 +176,26 @@ for (w <- 0 until LoadPipelineWidth) {
 数据流步骤：
 
 1. **初始输入**：
- - 来自各个 LoadUnit 的请求 (`io.req`) 包含指令信息、地址、MMIO/NC 标志等
- - 每个请求都有效位 (`valid`) 和请求数据 (`bits`)
+
+- 来自各个 LoadUnit 的请求 (`io.req`) 包含指令信息、地址、MMIO/NC 标志等
+- 每个请求都有效位 (`valid`) 和请求数据 (`bits`)
 
 2. **s1 阶段排序**：
- - 对输入请求基于 ROB 索引排序，确保处理按程序顺序进行
- - 排序结果写入 `s1_sortedVec`，提取有效位 (`s1_valid`) 和数据 (`s1_req`)
+
+- 对输入请求基于 ROB 索引排序，确保处理按程序顺序进行
+- 排序结果写入 `s1_sortedVec`，提取有效位 (`s1_valid`) 和数据 (`s1_req`)
 
 3. **s1→s2 寄存**：
- - 有效请求被寄存到 s2 阶段寄存器 (`s2_req`)
- - 有效位考虑可能的重定向，生成 `s2_valid`
+
+- 有效请求被寄存到 s2 阶段寄存器 (`s2_req`)
+- 有效位考虑可能的重定向，生成 `s2_valid`
 
 4. **s2 阶段筛选**：
- - 检查异常状态 (`s2_has_exception`)
- - 检查replay需求 (`s2_need_replay`)
- - 确认是 MMIO 或 NC 请求
- - 生成最终入队需求 (`s2_enqueue`)
+
+- 检查异常状态 (`s2_has_exception`)
+- 检查replay需求 (`s2_need_replay`)
+- 确认是 MMIO 或 NC 请求
+- 生成最终入队需求 (`s2_enqueue`)
 
 5. **空间分配**：
 
@@ -203,8 +211,9 @@ for (w <- 0 until LoadPipelineWidth) {
      freeList.io.doAllocate(w) := s2_enqValidVec(w)
    }
    ```
- - 计算每个请求的偏移量，确定 FreeList 分配的条目索引
- - 只有当 FreeList 能够分配空间时，请求才能有效入队
+
+- 计算每个请求的偏移量，确定 FreeList 分配的条目索引
+- 只有当 FreeList 能够分配空间时，请求才能有效入队
 
 6. **写入 UncacheEntry**：
 
@@ -220,8 +229,9 @@ for (w <- 0 until LoadPipelineWidth) {
        }
    }
    ```
- - 根据分配的索引，将请求写入对应的 UncacheEntry
- - 设置 UncacheEntry 的请求有效位和数据
+
+- 根据分配的索引，将请求写入对应的 UncacheEntry
+- 设置 UncacheEntry 的请求有效位和数据
 
 ### 4.2 UncacheEntry 内部数据流
 
@@ -250,8 +260,9 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      nderr := false.B
    }
    ```
- - 接收请求时，设置 `req_valid` 并store请求内容
- - 初始化错误标志和接受状态
+
+- 接收请求时，设置 `req_valid` 并store请求内容
+- 初始化错误标志和接受状态
 
 2. **状态转换与处理**：
 
@@ -294,9 +305,10 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      }
    }
    ```
- - `canSendReq` 触发条件:
-  - 对 MMIO: 指令必须到达 ROB 头部 (`pendingld && req.uop.robIdx === pendingPtr`)
-  - 对 NC: 只需 `req_valid` 为真
+
+- `canSendReq` 触发条件:
+- 对 MMIO: 指令必须到达 ROB 头部 (`pendingld && req.uop.robIdx === pendingPtr`)
+- 对 NC: 只需 `req_valid` 为真
 
 3. **ID 响应处理**：
 
@@ -306,7 +318,8 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      slaveId := io.uncache.idResp.bits.sid
    }
    ```
- - 收到 Uncache 的 ID 响应时，记录 `slaveId` 并设置 `slaveAccept`
+
+- 收到 Uncache 的 ID 响应时，记录 `slaveId` 并设置 `slaveAccept`
 
 4. **数据响应处理**：
 
@@ -316,8 +329,9 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      nderr := io.uncache.resp.bits.nderr
    }
    ```
- - 接收 Uncache 返回的数据并store
- - 记录可能的硬件错误状态
+
+- 接收 Uncache 返回的数据并store
+- 记录可能的硬件错误状态
 
 5. **结果处理与格式化**：
 
@@ -331,8 +345,9 @@ val nderr = RegInit(false.B)        // 硬件错误标志
    ))
    val rdataPartialLoad = rdataHelper(selUop, rdataSel)
    ```
- - 根据地址的低3位选择数据字节
- - 根据指令类型处理数据（符号扩展、字节选择等）
+
+- 根据地址的低3位选择数据字节
+- 根据指令类型处理数据（符号扩展、字节选择等）
 
 ### 4.3 Uncache 交互数据流
 
@@ -355,9 +370,10 @@ val nderr = RegInit(false.B)        // 硬件错误标志
    // 连接到输出
    AddPipelineReg(uncacheReq, io.uncache.req, false.B)
    ```
- - 优先处理 MMIO 请求，然后处理 NC 请求
- - 使用轮询仲裁器 (RRArbiter) 选择 NC 请求
- - 请求通过流水线寄存器发送到 Uncache
+
+- 优先处理 MMIO 请求，然后处理 NC 请求
+- 使用轮询仲裁器 (RRArbiter) 选择 NC 请求
+- 请求通过流水线寄存器发送到 Uncache
 
 2. **Entry 请求生成**：
 
@@ -370,9 +386,10 @@ val nderr = RegInit(false.B)        // 硬件错误标志
    io.uncache.req.bits.id := entryIndex.U
    io.uncache.req.bits.nc := req.nc
    ```
- - 当 UncacheEntry 处于 s_req 状态且未被刷新时，生成有效请求
- - 包含物理地址、虚拟地址、掩码、请求 ID 等信息
- - 区分 MMIO (nc=false) 和 NC (nc=true)
+
+- 当 UncacheEntry 处于 s_req 状态且未被刷新时，生成有效请求
+- 包含物理地址、虚拟地址、掩码、请求 ID 等信息
+- 区分 MMIO (nc=false) 和 NC (nc=true)
 
 3. **ID 响应路由**：
 
@@ -382,7 +399,8 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      e.io.uncache.idResp <> io.uncache.idResp
    }
    ```
- - 根据响应中的 mid (源 ID) 将 idResp 路由到对应的 UncacheEntry
+
+- 根据响应中的 mid (源 ID) 将 idResp 路由到对应的 UncacheEntry
 
 4. **数据响应路由**：
 
@@ -392,8 +410,9 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      e.io.uncache.resp <> io.uncache.resp
    }
    ```
- - 根据响应中的 id 与 Entry store的 slaveId 比较
- - 将数据响应路由到匹配的 UncacheEntry
+
+- 根据响应中的 id 与 Entry store的 slaveId 比较
+- 将数据响应路由到匹配的 UncacheEntry
 
 ### 4.4 结果回写数据流 (LoadQueueUncache → LoadUnit)
 
@@ -414,9 +433,10 @@ val nderr = RegInit(false.B)        // 硬件错误标志
    io.mmioRawData.uop := req.uop
    io.mmioRawData.addrOffset := req.paddr
    ```
- - 当 UncacheEntry 处于 s_wait 状态且未被刷新时，准备回写数据
- - 包含处理后的数据、uop 信息、地址信息等
- - 设置异常状态（如有）
+
+- 当 UncacheEntry 处于 s_wait 状态且未被刷新时，准备回写数据
+- 包含处理后的数据、uop 信息、地址信息等
+- 设置异常状态（如有）
 
 2. **NC 结果准备**：
 
@@ -431,8 +451,9 @@ val nderr = RegInit(false.B)        // 硬件错误标志
    io.ncOut.bits.nc := true.B
    io.ncOut.bits.mask := Mux(req.paddr(3), req.mask(15, 8), req.mask(7, 0))
    ```
- - 与 MMIO 类似，但路径和部分字段有所不同
- - 明确标记 nc=true
+
+- 与 MMIO 类似，但路径和部分字段有所不同
+- 明确标记 nc=true
 
 3. **输出端口分配**：
 
@@ -457,10 +478,11 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      AddPipelineReg(ncOut(i), io.ncOut(i), false.B) 
    }
    ```
- - MMIO 固定使用 UncacheWBPort (=2) 端口
- - NC 可使用 NCWBPorts 中定义的多个端口
- - 通过优先编码器选择要回写的条目
- - 输出经过流水线寄存器，确保时序稳定
+
+- MMIO 固定使用 UncacheWBPort (=2) 端口
+- NC 可使用 NCWBPorts 中定义的多个端口
+- 通过优先编码器选择要回写的条目
+- 输出经过流水线寄存器，确保时序稳定
 
 4. **完成后释放**：
 
@@ -471,8 +493,9 @@ val nderr = RegInit(false.B)        // 硬件错误标志
    
    freeList.io.free := freeMaskVec.asUInt
    ```
- - 当回写成功或条目被刷新时，标记为可释放
- - 将释放掩码传递给 FreeList，完成资源回收
+
+- 当回写成功或条目被刷新时，标记为可释放
+- 将释放掩码传递给 FreeList，完成资源回收
 
 ### 4.5 资源满回滚处理详细流程
 
@@ -485,7 +508,8 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      s2_enqueue(w) && !s2_enqValidVec(w)
    ))
    ```
- - 找出所有需要入队但无法分配空间的请求
+
+- 找出所有需要入队但无法分配空间的请求
 
 2. **构建回滚请求**：
 
@@ -502,13 +526,15 @@ val nderr = RegInit(false.B)        // 硬件错误标志
      redirect
    })
    ```
- - 为每个受阻请求创建潜在的回滚请求
- - 包含必要的重定向信息：ROB 索引、FTQ 索引和偏移等
+
+- 为每个受阻请求创建潜在的回滚请求
+- 包含必要的重定向信息：ROB 索引、FTQ 索引和偏移等
 
 3. **选择最老请求**：
- - 通过比较 ROB 索引找出最老的请求
- - 生成一个 one-hot 向量，表示应选择哪个请求
- - 使用 Mux1H 选择最终的回滚请求
+
+- 通过比较 ROB 索引找出最老的请求
+- 生成一个 one-hot 向量，表示应选择哪个请求
+- 使用 Mux1H 选择最终的回滚请求
 
 4. **验证与输出**：
 
@@ -519,48 +545,57 @@ val nderr = RegInit(false.B)        // 硬件错误标志
                        !oldestRedirect.bits.robIdx.needFlush(lastLastCycleRedirect))
    io.rollback.bits := RegEnable(oldestRedirect.bits, oldestRedirect.valid)
    ```
- - 保存最近两个周期的重定向信息
- - 确保选中的请求未被这些重定向刷新
- - 将验证通过的回滚请求在下一周期输出
+
+- 保存最近两个周期的重定向信息
+- 确保选中的请求未被这些重定向刷新
+- 将验证通过的回滚请求在下一周期输出
 
 ### 4.6 完整数据流示例：MMIO load指令
 
 以一个 MMIO load指令为例，完整数据流如下：
 
 1. **load单元检测与发送**：
- - load单元执行 `LD x5, 0x10000000` 指令，地址映射到设备寄存器
- - 检测到 MMIO 属性，设置 `mmio=true, nc=false`
- - 请求通过 `io.req(w)` 发送到 LoadQueueUncache
+
+- load单元执行 `LD x5, 0x10000000` 指令，地址映射到设备寄存器
+- 检测到 MMIO 属性，设置 `mmio=true, nc=false`
+- 请求通过 `io.req(w)` 发送到 LoadQueueUncache
 
 2. **LoadQueueUncache 入队处理**：
- - s1 阶段对请求按 ROB 索引排序
- - s2 阶段验证有效性，确认为 MMIO 请求
- - 从 FreeList 分配条目号（例如 3）
- - 将请求写入 UncacheEntry(3)
+
+- s1 阶段对请求按 ROB 索引排序
+- s2 阶段验证有效性，确认为 MMIO 请求
+- 从 FreeList 分配条目号（例如 3）
+- 将请求写入 UncacheEntry(3)
 
 3. **等待 ROB 头部**：
- - UncacheEntry(3) 处于 s_idle 状态，等待指令到达 ROB 头部
- - 当条件满足时，状态变为 s_req
+
+- UncacheEntry(3) 处于 s_idle 状态，等待指令到达 ROB 头部
+- 当条件满足时，状态变为 s_req
 
 4. **请求发送到 Uncache**：
- - UncacheEntry(3) 被选中发送请求
- - 通过流水线寄存器发送到 Uncache，包含 mid=3
+
+- UncacheEntry(3) 被选中发送请求
+- 通过流水线寄存器发送到 Uncache，包含 mid=3
 
 5. **接收 ID 响应**：
- - Uncache 返回 ID 响应，包含 sid=7
- - UncacheEntry(3) store slaveId 并进入 s_resp 状态
+
+- Uncache 返回 ID 响应，包含 sid=7
+- UncacheEntry(3) store slaveId 并进入 s_resp 状态
 
 6. **等待数据响应**：
- - Uncache 执行总线访问，获取设备寄存器数据
- - 返回数据响应，UncacheEntry(3) 接收数据并进入 s_wait 状态
+
+- Uncache 执行总线访问，获取设备寄存器数据
+- 返回数据响应，UncacheEntry(3) 接收数据并进入 s_wait 状态
 
 7. **结果处理与回写**：
- - UncacheEntry(3) 准备回写数据
- - 数据通过 `io.mmioOut(UncacheWBPort)` 发送到 LoadUnit
+
+- UncacheEntry(3) 准备回写数据
+- 数据通过 `io.mmioOut(UncacheWBPort)` 发送到 LoadUnit
 
 8. **完成与释放**：
- - 回写成功后，标记 UncacheEntry(3) 为可释放
- - FreeList 回收条目，UncacheEntry(3) 返回 s_idle 状态
+
+- 回写成功后，标记 UncacheEntry(3) 为可释放
+- FreeList 回收条目，UncacheEntry(3) 返回 s_idle 状态
 
 ## 5. 接口时序
 
@@ -585,14 +620,16 @@ val nderr = RegInit(false.B)        // 硬件错误标志
 uncache 交互时序分为两种情况[^1]：
 
 1. **无未完成请求**：
- - 每段只能发出一个请求，直到收到回复
- - 请求发出后，Uncache 下一周期返回 idResp
- - 经过总线访问后，最终收到访问结果
+
+- 每段只能发出一个请求，直到收到回复
+- 请求发出后，Uncache 下一周期返回 idResp
+- 经过总线访问后，最终收到访问结果
 
 2. **有未完成请求**：
- - 可以连续发出多个请求
- - 请求可能会因为 Uncache 满而被中间寄存器暂存
- - 多个请求可能会在不同时间收到回复
+
+- 可以连续发出多个请求
+- 请求可能会因为 Uncache 满而被中间寄存器暂存
+- 多个请求可能会在不同时间收到回复
 
 ## 6. 与系统其他模块的交互
 

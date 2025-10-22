@@ -248,12 +248,12 @@ io.enq.req(0).bits.uopIdx = 3   // 微操作索引
 
 1. **队列状态检查**：
 
- - `validCount = 10 - 8 = 2`（当前有 2 个有效条目）
- - `allowEnqueue = true`（队列未满，可以接受新请求）
+- `validCount = 10 - 8 = 2`（当前有 2 个有效条目）
+- `allowEnqueue = true`（队列未满，可以接受新请求）
 
 2. **条目分配**：
 
- - 条目 10 被分配给该指令：
+- 条目 10 被分配给该指令：
 
      ```scala
      allocated(10) = true
@@ -264,10 +264,11 @@ io.enq.req(0).bits.uopIdx = 3   // 微操作索引
 
 3. **指针更新**：
 
- - `enqPtrExt` 更新为 11（增加一个条目）
+- `enqPtrExt` 更新为 11（增加一个条目）
 
 4. **返回分配结果**：
- - `io.enq.resp(0) = {value=10, flag=0}`
+
+- `io.enq.resp(0) = {value=10, flag=0}`
 
 ### 第 2 步：执行阶段
 
@@ -306,25 +307,27 @@ when (!need_rep && need_valid) {
 在接下来的周期中，VirtualLoadQueue 会检查哪些条目可以出队：
 
 1. **出队检查**：
- - 对于条目 8 和 9（假设已提交）
- - 对于条目 10（我们的 load 指令）
-  - `allocated(10) = true`
-  - `committed(10) = true`
-  - 可以出队
+
+- 对于条目 8 和 9（假设已提交）
+- 对于条目 10（我们的 load 指令）
+- `allocated(10) = true`
+- `committed(10) = true`
+- 可以出队
 
 2. **计算出队数量**：
 
- - `deqCountMask = 0b111`（条目 8-10 都可以出队）
- - `commitCount = 3`（可以出队 3 个条目）
+- `deqCountMask = 0b111`（条目 8-10 都可以出队）
+- `commitCount = 3`（可以出队 3 个条目）
 
 3. **更新出队指针**：
 
- - `deqPtrNext = 8 + 3 = 11`
- - 下一个周期 `deqPtr` 更新为 11
+- `deqPtrNext = 8 + 3 = 11`
+- 下一个周期 `deqPtr` 更新为 11
 
 4. **释放条目**：
- - 条目 8-10 的 `allocated` 标志设置为 `false`
- - 这些条目现在可以被重新分配
+
+- 条目 8-10 的 `allocated` 标志设置为 `false`
+- 这些条目现在可以被重新分配
 
 ### 第 5 步：状态更新
 

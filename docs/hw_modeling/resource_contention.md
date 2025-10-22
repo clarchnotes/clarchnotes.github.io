@@ -40,9 +40,9 @@ P0:   |===操作1===|             (0-100)
 
 **竞争的3个关键要素：**
 
-1. **时间重叠**: 多个操作在时间上重叠
-2. **资源独占**: 资源不能同时被多个操作使用
-3. **冲突解决**: 必须有机制决定谁先使用
+1. **时间重叠**： 多个操作在时间上重叠
+2. **资源独占**： 资源不能同时被多个操作使用
+3. **冲突解决**： 必须有机制决定谁先使用
 
 ---
 
@@ -333,10 +333,10 @@ start = calculate_start_time_multi_resource(op)
 
 **多资源协调的关键：**
 
-1. **收集所有约束**: 资源、依赖、时间等
-2. **取最严格约束**: max(所有约束)
-3. **原子性获取**: 要么全部获取，要么都不获取
-4. **顺序释放**: 避免死锁
+1. **收集所有约束**： 资源、依赖、时间等
+2. **取最严格约束**： max(所有约束)
+3. **原子性获取**： 要么全部获取，要么都不获取
+4. **顺序释放**： 避免死锁
 
 ---
 
@@ -470,9 +470,9 @@ M0: |==Op2==|             |===Op3===|
 
 ### 三种解决策略
 
-1. **串行化**: 互斥，无并发
-2. **带宽共享**: 完全并发，性能降低
-3. **容量限制**: 有限并发，精细控制
+1. **串行化**： 互斥，无并发
+2. **带宽共享**： 完全并发，性能降低
+3. **容量限制**： 有限并发，精细控制
 
 ### 多资源协调原则
 
@@ -500,21 +500,24 @@ class Resource:
 
 ### 常见错误
 
-❌ **错误1**: 忘记检查资源可用性
+❌ **错误1**： 忘记检查资源可用性
+
 ```python
 # 错误
 processor.acquire(op.id, current_time, duration)
 # 没有检查 is_available()
 ```
 
-❌ **错误2**: 部分获取资源
+❌ **错误2**： 部分获取资源
+
 ```python
 # 错误
 processor.acquire(...)  # 成功
 memory.acquire(...)     # 失败！但processor已获取
 ```
 
-❌ **错误3**: 忽略多资源约束
+❌ **错误3**： 忽略多资源约束
+
 ```python
 # 错误
 start = max(current_time, processor.busy_until)
@@ -524,6 +527,7 @@ start = max(current_time, processor.busy_until)
 ### 正确做法
 
 ✓ **检查再获取**
+
 ```python
 if all_resources_available(op, resources):
     for resource in resources:
@@ -531,6 +535,7 @@ if all_resources_available(op, resources):
 ```
 
 ✓ **原子性操作**
+
 ```python
 acquired = []
 try:
@@ -549,6 +554,7 @@ except:
 ```
 
 ✓ **考虑所有约束**
+
 ```python
 constraints = [
     current_time,
@@ -560,7 +566,6 @@ start_time = max(constraints)
 
 ---
 
-**下一篇**: [第2部分C：依赖与Notify机制](./第2部分C_依赖与Notify机制.md)
+**下一篇**： [第2部分C：依赖与Notify机制](./第2部分C_依赖与Notify机制.md)
 
 *本文档行数: ~570行 (原2部分的约13%)*
-

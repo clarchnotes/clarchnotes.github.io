@@ -36,12 +36,12 @@ val s_idle :: s_split :: s_req :: s_resp :: s_comb_wakeup_rep :: s_wb :: Nil = E
 val bufferState = RegInit(s_idle)
 ```
 
-- **s_idle**: 空闲状态，等待新请求
-- **s_split**: 分割非对齐load，确定分割方案
-- **s_req**: 发送分割后的请求
-- **s_resp**: 接收分割请求的响应
-- **s_comb_wakeup_rep**: 合并分割结果数据
-- **s_wb**: 将结果写回
+- **s_idle**： 空闲状态，等待新请求
+- **s_split**： 分割非对齐load，确定分割方案
+- **s_req**： 发送分割后的请求
+- **s_resp**： 接收分割请求的响应
+- **s_comb_wakeup_rep**： 合并分割结果数据
+- **s_wb**： 将结果写回
 
 该模块设计为单例架构（只能同时处理一个非对齐请求），设置了以下关键参数：
 

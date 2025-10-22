@@ -22,38 +22,41 @@
 
 ### 核心指南（推荐按顺序阅读）
 
-#### **Fundamentals** (677行)
-**文件**: `fundamentals.md`
+#### Fundamentals (677行)
 
-**内容**:
+**文件**：`fundamentals.md`
+
+**内容**：
+
 - 为什么需要性能建模
 - Event-Driven vs. Cycle-Accurate仿真
 - 核心建模概念（Event, Resource, Dependency）
 
-**适合**: 初学者，了解基本概念
+**适合**：初学者，了解基本概念
 
 ---
 
-#### **Methodology: 建模方法论** ⭐️ 重点
+#### Methodology: 建模方法论 ⭐️
 
 掌握event-driven建模的核心方法，拆分为5个独立章节便于学习：
 
-- **Event Lifecycle** `event_lifecycle.md` (692行)  
-  Event的6个阶段，完整示例追踪
+- **Event Lifecycle** - `event_lifecycle.md` (692行)
+  - Event的6个阶段，完整示例追踪
 
-- **Resource Contention** `resource_contention.md` (566行)  
-  资源状态模型，3种竞争策略
+- **Resource Contention** - `resource_contention.md` (566行)
+  - 资源状态模型，3种竞争策略
 
-- **Dependency & Notify** `dependency_notify.md` (610行)  
-  依赖图，Notify机制，Fork-Join
+- **Dependency & Notify** - `dependency_notify.md` (610行)
+  - 依赖图，Notify机制，Fork-Join
 
-- **Event Creation & Time** `event_creation_time.md` (1,574行)  
-  Event创建时机，时间推进机制
+- **Event Creation & Time** - `event_creation_time.md` (1,574行)
+  - Event创建时机，时间推进机制
 
-- **Event-Resource Relationship** `event_resource_relationship.md` (1,804行) ⭐  
-  Event与资源解耦（最重要！必读）
+- **Event-Resource Relationship** - `event_resource_relationship.md` (1,804行) ⭐
+  - Event与资源解耦（最重要！必读）
 
-**关键概念**:
+**关键概念**：
+
 - Event时间 ≠ 资源时间（解耦）
 - Event.time = "检查时机"，不是"执行时机"
 - 不知道资源何时可用？使用等待队列 + notify
@@ -61,40 +64,44 @@
 
 ---
 
-#### **Advanced Topics** (1,949行)
-**文件**: `advanced_topics.md`
+#### Advanced Topics (1,949行)
 
-**内容**:
+**文件**：`advanced_topics.md`
+
+**内容**：
+
 1. 多通道并行执行
 2. 调度优化策略
-3. **性能分析**（瓶颈识别、利用率分析）
-4. **调试技巧**（Event追踪、状态快照）
-5. **模型验证**（时间单调性、资源一致性）
+3. **性能分析** - 瓶颈识别、利用率分析
+4. **调试技巧** - Event追踪、状态快照
+5. **模型验证** - 时间单调性、资源一致性
 
-**适合**: 进阶学习，优化和调试
+**适合**：进阶学习，优化和调试
 
 ---
 
-#### **Practical Guide** (3,277行)
-**文件**: `practical_guide.md`
+#### Practical Guide (3,277行)
 
-**内容**:
-1. **完整实现示例**（完整可运行的DMA仿真器代码）
+**文件**：`practical_guide.md`
+
+**内容**：
+
+1. **完整实现示例** - 完整可运行的DMA仿真器代码
 2. **常见设计模式**
-   - 资源池模式
-   - 调度器模式（策略模式）
-   - 状态机模式
-   - 观察者模式（Notify机制）
+    - 资源池模式
+    - 调度器模式（策略模式）
+    - 状态机模式
+    - 观察者模式（Notify机制）
 3. **代码组织与架构**
-   - 模块划分原则
-   - 接口设计
-   - 测试策略
+    - 模块划分原则
+    - 接口设计
+    - 测试策略
 4. **扩展性设计**
-   - 如何添加新资源类型
-   - 如何添加新事件类型
-   - 如何扩展调度策略
+    - 如何添加新资源类型
+    - 如何添加新事件类型
+    - 如何扩展调度策略
 
-**适合**: 实际项目开发，代码实现
+**适合**：实际项目开发，代码实现
 
 ---
 
@@ -233,11 +240,11 @@ Week 1:
 
 ### DO（推荐做法）
 
-✓ **按顺序阅读**: 先第1部分，再第2部分，依次类推  
-✓ **动手实践**: 跟着代码示例自己敲一遍  
-✓ **做笔记**: 特别是第2部分的关键概念  
-✓ **画图**: 画时间线图、状态转换图  
-✓ **问问题**: 遇到不理解的立即查阅相关章节  
+✓ **按顺序阅读**： 先第1部分，再第2部分，依次类推  
+✓ **动手实践**： 跟着代码示例自己敲一遍  
+✓ **做笔记**： 特别是第2部分的关键概念  
+✓ **画图**： 画时间线图、状态转换图  
+✓ **问问题**： 遇到不理解的立即查阅相关章节  
 
 ### DON'T（避免做法）
 

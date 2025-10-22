@@ -22,18 +22,18 @@ SLEEF (SIMD Library for Evaluating Elementary Functions) 是一个开源的高�
 
 RVV 的核心特性：
 
-- **向量长度无关 (VLA)**: 支持可变向量长度，通过 `vl` 参数动态调整
-- **LMUL (Length Multiplier)**: 寄存器分组机制，m1/m2/m4/m8
-- **灵活的元素宽度 (SEW)**: 8/16/32/64 位
-- **掩码操作**: 精确的元素级控制
+- **向量长度无关 (VLA)**： 支持可变向量长度，通过 `vl` 参数动态调整
+- **LMUL (Length Multiplier)**： 寄存器分组机制，m1/m2/m4/m8
+- **灵活的元素宽度 (SEW)**： 8/16/32/64 位
+- **掩码操作**： 精确的元素级控制
 
 ### 1.3 算法基础
 
 指数函数 $e^x$ 的向量化实现采用经典的三段式算法：
 
-1. **参数归约 (Argument Reduction)**: $x = k \cdot \ln(2) + r$，其中 $|r| < \frac{\ln(2)}{2}$
-2. **多项式逼近 (Polynomial Approximation)**: 计算 $e^r$ 使用优化的多项式
-3. **结果重构 (Reconstruction)**: $e^x = 2^k \cdot e^r$
+1. **参数归约 (Argument Reduction)**： $x = k \cdot \ln(2) + r$，其中 $|r| < \frac{\ln(2)}{2}$
+2. **多项式逼近 (Polynomial Approximation)**： 计算 $e^r$ 使用优化的多项式
+3. **结果重构 (Reconstruction)**： $e^x = 2^k \cdot e^r$
 
 ## 2. 文件结构
 
