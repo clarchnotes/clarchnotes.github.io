@@ -197,3 +197,14 @@ nav:
       - "Analysis":
           - Compiler/analysis/index.md
           - "Binary Loop Detection Comparison Study": Compiler/analysis/binary_loop_detection.md
+  - Hardware Performance Modeling:
+      - learn_modeling/index.md
+      - "Fundamentals": learn_modeling/fundamentals.md
+      - "Methodology":
+          - "Event Lifecycle": learn_modeling/event_lifecycle.md
+          - "Resource Contention": learn_modeling/resource_contention.md
+          - "Dependency & Notify": learn_modeling/dependency_notify.md
+          - "Event Creation & Time": learn_modeling/event_creation_time.md
+          - "Event-Resource Relationship": learn_modeling/event_resource_relationship.md
+      - "Advanced Topics": learn_modeling/advanced_topics.md
+      - "Practical Guide": learn_modeling/practical_guide.md
