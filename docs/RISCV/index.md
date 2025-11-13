@@ -33,7 +33,10 @@ RISC-V 向量扩展提供灵活且高效的向量计算能力。
 
 ### Spike 模拟器
 
-RISC-V 的官方指令集模拟器。
+RISC-V 的官方指令集模拟器，用于执行 RISC-V 二进制程序。
+
+- [Spike 模拟器概览](Spike/index.md) - Spike、BBL 和 PK 的介绍
+- [RISC-V 启动流程全解析](Spike/boot_process_detailed.md) - BBL、PK、Spike 如何协同工作以运行用户程序
 
 ## 核心概念
 

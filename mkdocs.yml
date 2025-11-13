@@ -134,6 +134,9 @@ nav:
               - "TLB 同步与 SFENCE.VMA": CPU/Backend/MMU/tlb_synchronization.md
   - RISCV:
       - RISCV/index.md
+      - "Spike Simulator":
+          - RISCV/Spike/index.md
+          - "Boot Process Deep Dive": RISCV/Spike/boot_process_detailed.md
       - "ISA":
           - RISCV/ISA/softfloat.md
           - RISCV/ISA/Zfh_Zfhmin.md
@@ -197,14 +200,3 @@ nav:
       - "Analysis":
           - Compiler/analysis/index.md
           - "Binary Loop Detection Comparison Study": Compiler/analysis/binary_loop_detection.md
-  - Hardware Performance Modeling:
-      - hw_modeling/index.md
-      - "Fundamentals": hw_modeling/fundamentals.md
-      - "Methodology":
-          - "Event Lifecycle": hw_modeling/event_lifecycle.md
-          - "Resource Contention": hw_modeling/resource_contention.md
-          - "Dependency & Notify": hw_modeling/dependency_notify.md
-          - "Event Creation & Time": hw_modeling/event_creation_time.md
-          - "Event-Resource Relationship": hw_modeling/event_resource_relationship.md
-      - "Advanced Topics": hw_modeling/advanced_topics.md
-      - "Practical Guide": hw_modeling/practical_guide.md
