@@ -200,3 +200,8 @@ nav:
       - "Analysis":
           - Compiler/analysis/index.md
           - "Binary Loop Detection Comparison Study": Compiler/analysis/binary_loop_detection.md
+  - Emulator:
+      - Emulator/index.md
+      - "QEMU":
+          - Emulator/QEMU/index.md
+          - "Plugin Development Guide": Emulator/QEMU/plugin_guide.md
