@@ -1,0 +1,6085 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://clarchnotes.github.io/Benchmark/Simpoint/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../SPEC2006/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>Simpoint - Arch Notes</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="lime" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#simpoint" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../.." title="Arch Notes" class="md-header__button md-logo" aria-label="Arch Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arch Notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Simpoint
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../AI/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  AI
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../NPU/timeloop/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  NPU
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../CPU/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  CPU
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../RISCV/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  RISCV
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../GPU/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  GPU
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Numerical_Computing/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Numerical Computing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Chiplet/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Chiplet
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../HWSec/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  HWSEC
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Benchmark
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Compiler/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Compiler
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../Emulator/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Emulator
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Arch Notes" class="md-nav__button md-logo" aria-label="Arch Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Arch Notes
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../AI/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../AI/attention/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attention
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Attention
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AI/attention/attention_basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attention basic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AI/attention/flash_attention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FlashAttention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../AI/attention/rope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NPU
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    NPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TimeLoop Framework
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TimeLoop Framework
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NPU/timeloop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    面向异构NPU的自动化映射与性能优化：TimeLoop框架深度解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../CPU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CPU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_1" id="__nav_4_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decoder
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decoder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/fontend/decoder/ht_write_decoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to write efficient decoder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Backend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1" id="__nav_4_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSU
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LSU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSU Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../CPU/Backend/LSU/xiangshan/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Xiangshan
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3_1_2" id="__nav_4_3_1_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Xiangshan
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsu_microarch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSU Microarchitecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../CPU/Backend/LSU/xiangshan/lsq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSQ
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3_1_2_3" id="__nav_4_3_1_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LSQ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/freelist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FreeList
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VirtualLoadQueue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_queue_raw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueRAW
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_queue_rar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueRAR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_queue_replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueReplay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueUncache 模块文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_queue_exception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LqExceptionBuffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadMisalignBuffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/store_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StoreQueue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/store_queue_data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StoreQueueData
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/lsq/store_misalign_buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StoreMisalignBuffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_2_4" id="__nav_4_3_1_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/xiangshan/pipeline/load_unit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load unit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3" id="__nav_4_3_1_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MDP
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MDP
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/LSU/MDP/papers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Dependence Prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../CPU/Backend/MMU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MMU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3_2" id="__nav_4_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MMU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/MMU/sv39_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V Sv39 虚拟内存架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/MMU/tlb_structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLB 结构与硬件实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/MMU/tlb_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLB 工作流程与查找过程
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/MMU/page_table_walker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    页表遍历器机制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/MMU/accessed_dirty_bits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A/D 位详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CPU/Backend/MMU/tlb_synchronization.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLB 同步与 SFENCE.VMA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../RISCV/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISCV
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    RISCV
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../RISCV/Baremetal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Baremetal Programming
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Baremetal Programming
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/Baremetal/programming_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Complete Programming Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../RISCV/Spike/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spike Simulator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spike Simulator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/Spike/boot_process_detailed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boot Process Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ISA
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ISA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/softfloat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPIKE SoftFloat库分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/Zfh_Zfhmin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V浮点扩展(Zfh/Zfhmin/Zfbfmin/Zvfbfmin/Zvfbfwma)研究报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/pointer_mask/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V Pointer Masking Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../RISCV/ISA/H_Extension/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H Extension (Hypervisor)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4_4" id="__nav_5_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    H Extension (Hypervisor)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V H扩展概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/privilege_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    虚拟化特权级模型与陷阱处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/two_stage_translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    两阶段地址翻译详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/csr_registers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关键CSR寄存器详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/virtual_interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    虚拟中断处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/new_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H扩展新增指令集
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/ISA/H_Extension/performance_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    性能优化技术
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../RISCV/RVV/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RVV
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    RVV
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../RISCV/RVV/ISA/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ISA
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_5_2" id="__nav_5_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ISA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/ISA/rvv_intrinsics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V Vector Extension (RVV) 内建函数详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/ISA/reduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V 向量归约指令概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/ISA/permutation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V 向量置换与移动指令概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/ISA/int_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V 向量算术与逻辑运算指令概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/ISA/fp_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fp arith
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/ISA/mask_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mask arith
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../RISCV/RVV/vector_memory_pmp_pma/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    向量内存访问与PMP/PMA交互深度解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../GPU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    GPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../GPU/basics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GPU/basics/basic_concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU基本概念：从零开始理解GPU并行计算
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SFU (Special Function Unit)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SFU (Special Function Unit)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GPU/SFU/sfu_design_and_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SFU 硬件设计与实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CUDA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GPU/CUDA/cuda_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA并行计算模式与优化策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../GPU/CUDA/cuda_prgm_efficiency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA并行计算模式与优化策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../GPU/TinyGPU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TinyGPU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TinyGPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Numerical_Computing/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Numerical Computing
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Numerical Computing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    超越函数实现
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    超越函数实现
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Numerical_Computing/power_function_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Power 函数库实现深度解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Numerical_Computing/sleef_rvv_exp_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SLEEF RVV 指数函数实现解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多项式逼近技术
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多项式逼近技术
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Numerical_Computing/polynomial_approximation_methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多项式逼近与求值方法论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Chiplet/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chiplet
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chiplet
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Chiplet/basics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Chiplet/basics/why-chiplet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Why Chiplet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Chiplet/basics/chiplet_basetech/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chiplet技术基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Chiplet/basics/chiplet_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chiplet实例分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../HWSec/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HWSEC
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    HWSEC
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectre
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectre
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../HWSec/spectre/spectre_variant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectre Variants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmark
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simpoint
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simpoint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SimPoint: 智能采样加速体系结构性能评估
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SimPoint: 智能采样加速体系结构性能评估">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 引言：SimPoint的诞生背景与目标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-phasic-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 核心原理：程序的阶段性行为 (Phasic Behavior)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. SimPoint 方法论：详细步骤
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. SimPoint 方法论：详细步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-bbvs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. 程序行为画像：基本块向量 (BBVs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. 程序阶段识别：聚类分析
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-simpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3. 选择模拟点 (SimPoints)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4. 加权与性能估计
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SimPoint 的优势
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. SimPoint 的局限性与挑战
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 工具、演进与相关技术
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 结论
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../SPEC2006/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPEC CPU2006 各基准测试程序特性详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Compiler/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compiler
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Compiler
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Compiler/analysis/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11_2" id="__nav_11_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Compiler/analysis/binary_loop_detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary Loop Detection Comparison Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Emulator/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emulator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Emulator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../Emulator/QEMU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QEMU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_2" id="__nav_12_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_12_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    QEMU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Emulator/QEMU/plugin_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SimPoint: 智能采样加速体系结构性能评估
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SimPoint: 智能采样加速体系结构性能评估">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 引言：SimPoint的诞生背景与目标
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-phasic-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 核心原理：程序的阶段性行为 (Phasic Behavior)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. SimPoint 方法论：详细步骤
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. SimPoint 方法论：详细步骤">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-bbvs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. 程序行为画像：基本块向量 (BBVs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. 程序阶段识别：聚类分析
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-simpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3. 选择模拟点 (SimPoints)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4. 加权与性能估计
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SimPoint 的优势
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-simpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. SimPoint 的局限性与挑战
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. 工具、演进与相关技术
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 结论
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>Simpoint</h1>
+
+<h2 id="simpoint">SimPoint: 智能采样加速体系结构性能评估<a class="headerlink" href="#simpoint" title="Permanent link">&para;</a></h2>
+<h3 id="1-simpoint">1. 引言：SimPoint的诞生背景与目标<a class="headerlink" href="#1-simpoint" title="Permanent link">&para;</a></h3>
+<p>在计算机体系结构的设计与研究中，精确的性能评估是驱动创新和优化的核心环节。传统的性能评估主要依赖于周期精确的模拟器，这类模拟器虽然能提供详尽的微体系结构行为数据，但其执行速度极为缓慢，模拟一个复杂的现代处理器运行一个标准基准测试程序可能需要数周甚至数月。这种漫长的反馈周期严重制约了设计迭代的速度和探索的广度。</p>
+<p><strong>SimPoint</strong> 是一种为了解决这一核心痛点而提出的、基于智能采样的模拟加速技术。其核心目标是：在保证可接受的性能预测精度的前提下，显著缩短体系结构模拟所需的总时间。它通过识别程序执行中的代表性片段，仅对这些片段进行详细模拟，从而以点带面地推断整体性能。</p>
+<h3 id="2-phasic-behavior">2. 核心原理：程序的阶段性行为 (Phasic Behavior)<a class="headerlink" href="#2-phasic-behavior" title="Permanent link">&para;</a></h3>
+<p>SimPoint方法论的基石在于一个重要的观察： <strong>大多数程序在执行过程中并非呈现完全随机或持续变化的行为，而是表现出阶段性特征。</strong>  这意味着程序在不同的执行时段内，会反复进入一些具有相似计算特性和资源利用模式的“阶段”（Phases）。例如，一个程序可能依次经历数据初始化阶段、核心计算循环阶段、数据输出阶段等，每个阶段内部的行为相对稳定且具有代表性。</p>
+<p>SimPoint正是利用了程序的这种阶段性行为，通过识别这些不同的执行阶段，并为每个阶段选取一个或少数几个最具代表性的短执行片段（称为“模拟点”或SimPoints），然后仅对这些SimPoints进行详细的微体系结构模拟。最终，通过对这些模拟点的性能数据进行加权平均，来近似估算整个程序的完整性能。</p>
+<h3 id="3-simpoint">3. SimPoint 方法论：详细步骤<a class="headerlink" href="#3-simpoint" title="Permanent link">&para;</a></h3>
+<h4 id="31-bbvs">3.1. 程序行为画像：基本块向量 (BBVs)<a class="headerlink" href="#31-bbvs" title="Permanent link">&para;</a></h4>
+<p>为了识别程序的不同执行阶段，首先需要一种能够有效表征程序在不同时间段行为特征的方法。SimPoint采用基本块向量（Basic Block Vector, BBV）来实现这一目标。BBV提供了一种相对独立于具体微体系结构细节的方式来捕捉程序的动态行为特征。</p>
+<ul>
+<li>
+<p><strong>3.1.1. 什么是基本块 (Basic Block)？</strong> </p>
+</li>
+<li>
+<p><strong>定义：</strong>  基本块是一段连续的指令序列，它只有一个入口（代码只能从其第一条指令进入）和一个出口（执行流在到达最后一条指令后离开该块，最后一条指令通常是控制转移指令如跳转、调用或返回，或者是顺序执行到下一个逻辑块）。在一个基本块内部，没有指令是跳转目标，也没有指令（除了最后一条）会导致跳转。</p>
+</li>
+<li>
+<p><strong>为何使用BB：</strong>  基本块是程序控制流图（CFG）的基本单元。它们的执行频率直接反映了程序在哪部分代码上花费了时间，以及控制流的走向。使用BBV进行画像，可以在不深入到具体指令的微操细节的情况下，捕捉到程序在较高层面上的行为模式变化，这对于识别阶段性行为非常有效。</p>
+</li>
+<li>
+<p><strong>识别：</strong>  基本块通常由编译器在编译过程中静态识别和划分，或者由二进制分析工具在程序加载后进行分析得到。</p>
+</li>
+<li>
+<p><strong>3.1.2. 构建基本块向量 (BBVs)</strong> </p>
+<ol>
+<li>
+<p><strong>静态分析与全局BB ID分配：</strong> </p>
+<ul>
+<li>
+<p>在程序分析阶段（通常是离线的预处理步骤），工具会遍历整个程序（所有可执行代码段和相关库），识别出其中所有的静态基本块。</p>
+</li>
+<li>
+<p>每一个在程序中唯一存在的静态基本块都会被赋予一个全局唯一的标识符（ID），例如从0开始递增的整数。这个ID列表构成了后续BBV的“骨架”，其总长度 <code>N</code>（即程序中静态基本块的总数）是固定的。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong>  假设我们的图像处理程序经过静态分析后，共识别出 <code>N=5000</code> 个唯一的静态基本块。它们被赋予ID <code>BB_0</code> 到 <code>BB_4999</code>。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>划分执行区间 (Intervals)：</strong> </p>
+<ul>
+<li>
+<p>程序的整个动态执行过程被逻辑上切分为连续的、固定长度的区间。区间的长度通常以执行的指令数来衡量，例如每执行1亿条指令作为一个区间。</p>
+</li>
+<li>
+<p><strong>区间长度选择的权衡：</strong> </p>
+<ul>
+<li>
+<p><strong>短区间：</strong>  能更精细地捕捉程序行为的快速变化，可能识别出更多、更短的阶段。但会产生更多的BBV数据点，增加后续聚类的计算负担。</p>
+</li>
+<li>
+<p><strong>长区间：</strong>  平滑短期行为波动，减少数据量。但可能将多个细粒度阶段模糊为一个粗粒度阶段，降低阶段识别的精度。SimPoint的原始论文通常使用1亿到10亿指令的区间。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong>  假设我们将图像处理程序的执行划分为每1亿条指令一个区间。如果程序总共执行了90亿条指令，那么就会产生90个执行区间。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>动态统计与计数：</strong> </p>
+<ul>
+<li>
+<p>程序通过功能模拟器（如SimpleScalar的 <code>sim-safe</code>）或使用动态二进制插桩工具（如Pin, DynamoRIO）来执行。</p>
+</li>
+<li>
+<p>在每个执行区间开始时，为所有 <code>N</code> 个全局BB ID初始化一个计数器数组（长度为5000）为零。</p>
+</li>
+<li>
+<p>当程序执行到某个基本块时，该基本块的全局ID被识别出来，其在当前区间对应的计数器值加1。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>向量生成与加权（在区间结束时）：</strong> </p>
+<ul>
+<li>
+<p>当一个区间执行结束（达到1亿条指令）时，收集到的该区间内所有基本块的执行次数，构成了该区间的 <strong>原始BBV</strong>  。</p>
+</li>
+<li>
+<p>详细来说，对于某个特定的执行区间，其原始BBV是一个长度为 N（程序中静态基本块总数）的向量。向量的第 i 个元素，代表了ID为 BB_ID_i 的那个基本块在该区间内被执行的次数。因此，可以表示为：</p>
+<p>BBV_raw = [count(BB_ID_0), count(BB_ID_1), ..., count(BB_ID_(N-1))]</p>
+</li>
+<li>
+<p>加权处理（常用且重要）： 为了更好地反映那些包含更多指令的基本块对程序整体行为（尤其是执行时间）的贡献，SimPoint通常采用指令数加权的BBV。即，每个基本块的原始执行次数会乘以该基本块自身包含的（动态或静态）指令数量。</p>
+<p>Weighted_BB_Count_i = Raw_BB_Execution_Count_i * Number_Of_Instructions_In_BB_i</p>
+<p>这个加权后的计数值成为BBV中对应BB ID的元素值（或者说，是加权BBV的元素）。这样做使得BBV更能代表指令层面的执行特征，而非仅仅是控制流的跳转频率。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序 - 区间X）：</strong>  假设在图像处理程序的某个区间（例如，一个主要进行滤波计算的区间），<code>BB_1024</code> (一个包含10条指令的循环体核心块) 执行了500万次，而 <code>BB_2048</code> (一个包含2条指令的条件判断块) 执行了1000万次。</p>
+<ul>
+<li>
+<p><code>Weighted_BB_Count_1024 = 5,000,000 * 10 = 50,000,000</code></p>
+</li>
+<li>
+<p>Weighted_BB_Count_2048 = 10,000,000 * 2 = 20,000,000</p>
+<p>该区间的BBV（长度为5000）中，第1024个元素的值将是50,000,000，第2048个元素的值将是20,000,000，其他未执行或执行次数极少的块对应元素值很小或为0。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>数据收集：</strong>  对程序的一次完整执行（或足够长的代表性执行片段），会生成一系列按时间顺序排列的BBV，每个BBV对应一个执行区间。对于我们的图像处理程序，就会有90个这样的BBV。</p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>3.1.3. BBV的特征</strong> </p>
+</li>
+<li>
+<p><strong>高维性 (High Dimensionality)：</strong>  对于真实的应用程序（如SPEC CPU基准测试），静态基本块的数量可以从几千到数十万甚至数百万不等。因此，每个BBV都是一个非常长的向量。我们的例子中有5000维。</p>
+</li>
+<li>
+<p><strong>稀疏性 (Sparsity)：</strong>  在任何一个特定的执行区间内，程序通常只会执行其所有静态基本块中的一小部分。因此，BBV中的绝大多数元素值都会是零。这种稀疏性对存储和后续处理算法的选择有影响。</p>
+</li>
+<li>
+<p><strong>归一化 (Normalization - 可选但常用步骤)：</strong> </p>
+<ul>
+<li>
+<p><strong>目的：</strong> </p>
+</li>
+<li>
+<p>使得不同区间的BBV具有可比性，尤其是在不同区间总指令数可能因程序行为而略有偏差时（尽管目标是固定指令数区间，但实际边界可能略有浮动）。</p>
+</li>
+<li>
+<p>某些距离度量或聚类算法对输入数据的尺度敏感，归一化有助于提高这些算法的稳定性和性能。</p>
+</li>
+<li>
+<p><strong>方法：</strong> </p>
+</li>
+<li>
+<p><strong>L1范数归一化：</strong>  将BBV中的每个元素除以该BBV所有元素之和（即该区间内（加权）BB执行总次数）。这样，每个元素表示该BB的执行（或其包含的指令）占当前区间总执行的一个比例，所有元素之和为1。<code>Normalized_BBV_element_i = Weighted_BB_Count_i / Σ(Weighted_BB_Counts_all)</code></p>
+</li>
+<li>
+<p><strong>L2范数归一化：</strong>  将BBV中的每个元素除以该BBV的欧几里得长度（L2范数）。这使得所有BBV向量都具有单位长度。</p>
+</li>
+<li>
+<p>SimPoint的原始实现倾向于使用L1范数归一化，将BBV转换为频率分布。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序 - 区间X的归一化BBV）：</strong>  假设区间X的加权BBV元素总和为 <code>S_X</code>。那么归一化后，<code>Normalized_BBV_X_element_1024 = 50,000,000 / S_X</code>。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="32">3.2. 程序阶段识别：聚类分析<a class="headerlink" href="#32" title="Permanent link">&para;</a></h4>
+<p>获得了程序在各个区间的BBV序列（通常是加权并归一化后的）后，下一步是通过聚类算法将行为相似的区间（即BBV相似的区间）划分到同一个簇（Cluster）中，每个簇代表程序的一个执行阶段。</p>
+<ul>
+<li>
+<p><strong>3.2.1. 降维 (Dimensionality Reduction)</strong> </p>
+</li>
+<li>
+<p><strong>为何至关重要：</strong> </p>
+<ul>
+<li>
+<p><strong>维度灾难：</strong>  在超高维空间中，所有数据点之间的距离趋向于变得相似（或说距离度量的区分能力下降），这使得基于距离的聚类算法效果变差。同时，在高维空间中，数据点也更稀疏，需要指数级增长的数据量才能维持密度。</p>
+</li>
+<li>
+<p><strong>计算成本：</strong>  直接对成千上万维的向量进行距离计算和迭代聚类，计算开销巨大。</p>
+</li>
+<li>
+<p><strong>噪声影响：</strong>  高维数据中可能包含许多与主要行为模式无关的噪声维度，降维有助于去除这些噪声，保留更本质的结构。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>常用方法：随机投影 (Random Projection)</strong> </p>
+<ul>
+<li>
+<p><strong>理论基础：</strong>  Johnson-Lindenstrauss (JL) 引理保证，可以将高维空间中的点集投影到一个远低于原始维度的随机子空间，同时以很高的概率近似保持点之间的成对距离（误差有界）。</p>
+</li>
+<li>
+<p><strong>矩阵生成：</strong> </p>
+<div class="language-text highlight"><pre><span></span><code>1. 选择目标低维空间的维度 `d`（例如，SimPoint中常用 `d=15` 或 `d=30`，远小于原始BBV维度 `D`）。对于我们5000维的BBV，可能选择 `d=20`。
+
+2. 创建一个 `20 x 5000` 的随机投影矩阵 `R`。矩阵 `R` 的每个元素 `R_ij` 可以从简单的概率分布中独立抽取，例如：
+
+    - 标准正态分布 N(0,1)。
+
+    - 更简单的分布（Achlioptas提出的，计算更高效）：`R_ij` 以 1/6 的概率为 +√3，1/6 的概率为 -√3，2/3 的概率为 0；或者以 1/2 的概率为 +1，1/2 的概率为 -1 (然后整体乘以 `1/√d`)。
+</code></pre></div>
+</li>
+<li>
+<p>投影操作： 对于每一个原始的 5000 维BBV v_orig（通常是归一化后的），其降维后的 20 维向量 v_reduced 通过以下矩阵乘法得到：</p>
+<div class="language-text highlight"><pre><span></span><code>v_reduced = (1/√20) *R* v_orig
+
+(缩放因子 1/√d 或 1/√k (k为目标维度) 有时会包含在投影矩阵的构造中或在投影后应用，以确保投影后的向量长度期望不变或满足JL引理的条件。)
+</code></pre></div>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong>  我们的90个5000维BBV，经过随机投影后，变成了90个20维的向量。这些20维向量保留了原始BBV之间的大部分相似性信息，但更易于聚类。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>3.2.2. k-均值聚类算法 (k-means Clustering)</p>
+<p>在降维后的BBV数据集上，SimPoint标准流程采用k-means算法。</p>
+</li>
+<li>
+<p>目标函数： k-means的目标是找到 k 个簇的划分，使得每个簇内数据点到其质心的平方距离之和（Within-Cluster Sum of Squares - WCSS）最小。</p>
+<div class="language-text highlight"><pre><span></span><code>WCSS = Σ_{i=1 to k} Σ_{x in Cluster_i} ||x - μ_i||²
+
+其中 μ_i 是簇 i 的质心。
+</code></pre></div>
+</li>
+<li>
+<p><strong>初始化质心 (Centroids)：</strong> </p>
+<ul>
+<li>
+<p><strong>随机选择：</strong>  从数据点中随机选取 <code>k</code> 个点作为初始质心。简单但可能导致收敛到局部最优解或收敛速度慢。</p>
+</li>
+<li>
+<p><strong>k-means++（推荐且常用）：</strong>  一种更智能的初始化策略，旨在选择分散的初始质心。</p>
+<div class="language-text highlight"><pre><span></span><code>1. 从数据集中随机选择第一个质心。
+
+2. 对于后续的每个质心（直到选出 k 个）：对数据集中的每个点 x，计算其与已选定质心集中最近质心的距离 D(x)。然后以 D(x)² 成正比的概率选择点 x 作为下一个质心。
+
+    这种方法能显著改善k-means的最终结果质量和收敛速度。
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>迭代过程：</strong> </p>
+<div class="language-text highlight"><pre><span></span><code>1. 分配步骤 (Assignment Step)： 对于数据集中的每一个（降维后的）BBV，计算它到当前所有 k 个质心的距离。通常使用欧氏距离 (L2 norm)：
+
+    distance(v_reduced, μ_j) = √Σ_{l=1 to d} (v_reduced_l - μ_jl)²
+
+    然后，将该BBV分配给与其距离最近的那个质心所代表的簇。
+
+2. 更新步骤 (Update Step)： 在所有BBV都被分配到簇之后，重新计算每个簇的质心。新的质心是该簇中所有分配给它的BBV的算术平均值（向量的每个维度分别求平均）。
+
+    μ_i_new = (1 / |Cluster_i|) * Σ_{v_reduced in Cluster_i} v_reduced
+
+    其中 |Cluster_i| 是分配给簇 i 的BBV数量。
+</code></pre></div>
+</li>
+<li>
+<p>收敛判据：</p>
+<div class="language-text highlight"><pre><span></span><code>重复执行分配步骤和更新步骤，直到满足以下一个或多个条件：
+</code></pre></div>
+<ul>
+<li>
+<p>簇的分配不再发生变化（或只有极少数点改变簇归属）。</p>
+</li>
+<li>
+<p>质心的位置变化非常小（例如，所有质心移动的距离之和小于某个阈值）。</p>
+</li>
+<li>
+<p>达到预设的最大迭代次数（防止极端情况下的无限循环）。</p>
+<div class="language-text highlight"><pre><span></span><code>k-means算法保证会收敛。
+</code></pre></div>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong>  假设我们通过BIC（见下文）确定 <code>k=3</code>。k-means算法会在90个20维向量上运行。</p>
+<ul>
+<li>
+<p>初始随机选择3个20维向量作为质心。</p>
+</li>
+<li>
+<p>然后将每个向量分配给最近的质心，形成3个初步的簇。</p>
+</li>
+<li>
+<p>重新计算每个簇的质心（3个新的20维向量）。</p>
+</li>
+<li>
+<p>重复分配和更新，直到簇的成员不再变化。最终，90个区间被划分为3个簇，分别代表了我们预期的“数据加载与预处理”、“核心滤波计算”和“数据压缩与存储”阶段。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>3.2.3. 确定最佳簇数量 (k)</p>
+<p>选择合适的 k 值是k-means中的一个核心挑战。SimPoint主要依赖BIC。</p>
+</li>
+<li>
+<p><strong>贝叶斯信息准则 (Bayesian Information Criterion - BIC) 详解：</strong> </p>
+<ul>
+<li>
+<p>BIC是一种用于模型选择的统计准则，它在模型的拟合优度（模型对数据的解释程度）和模型的复杂度（参数数量，在此即簇的数量）之间进行权衡。</p>
+</li>
+<li>
+<p>BIC的典型计算公式为：<code>BIC = -2 * log(L_max) + p * log(n)</code></p>
+</li>
+<li>
+<p><code>L_max</code>: 模型的最大似然值。对于k-means，通常假设每个簇的数据点服从以该簇质心为均值的高斯分布，并且所有簇共享一个协方差矩阵（通常是对角的，表示特征独立，或者更简单地用簇内方差和WCSS相关联）。<code>log(L_max)</code> 反映了数据点在这些高斯分布下的总概率，WCSS越小，<code>L_max</code> 越大。</p>
+</li>
+<li>
+<p><code>p</code>: 模型中自由参数的数量。对于k-means，<code>p</code> 大致可以估算为 <code>k * d</code> (k个质心，每个d维) 加上 <code>k-1</code> (k个簇的先验概率，和为1所以是k-1个自由参数)。</p>
+</li>
+<li>
+<p><code>n</code>: 数据点的数量（即执行区间的总数，我们例子中是90）。</p>
+</li>
+<li>
+<p><strong>目标：</strong>  选择使BIC值 <strong>最小</strong> 的 <code>k</code>。BIC值越小，表示模型在拟合数据和保持简洁性之间取得了更好的平衡。</p>
+</li>
+<li>
+<p><strong>SimPoint中的实践：</strong>  SimPoint工具会尝试一系列的 <code>k</code> 值（例如，从1到20或更多）。对于每个 <code>k</code>，运行k-means（可能多次以避免局部最优），然后计算该 <code>k</code> 值下的BIC得分。最终选择BIC得分最优（通常是最低）的那个 <code>k</code>。有时也会观察BIC得分随 <code>k</code> 变化的曲线，寻找一个“拐点”或得分开始显著改善后趋于平缓的点。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong>  SimPoint工具可能会测试k=1, 2, 3, 4, ..., 10。假设当k=3时，BIC得分最低，因此确定最佳簇数量为3。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>其他辅助启发式方法 (提及)：</strong> </p>
+<ul>
+<li>
+<p><strong>肘部法则 (Elbow Method) 与 WCSS：</strong>  绘制不同 <code>k</code> 值对应的WCSS。当 <code>k</code> 增加时，WCSS会单调递减。理想的 <code>k</code> 值通常在WCSS曲线斜率急剧下降之后变得平缓的“肘部”位置。但这个肘部在实际数据中往往不清晰，主观性较强。</p>
+</li>
+<li>
+<p><strong>轮廓系数 (Silhouette Analysis)：</strong>  对每个数据点计算其轮廓系数，该系数衡量该点与其自身簇的紧密程度（a_i）以及与其他最近簇的分离程度（b_i），<code>s_i = (b_i - a_i) / max(a_i, b_i)</code>。所有点的平均轮廓系数可以作为衡量聚类质量的指标，选择使平均轮廓系数最大的 <code>k</code>。</p>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="33-simpoints">3.3. 选择模拟点 (SimPoints)<a class="headerlink" href="#33-simpoints" title="Permanent link">&para;</a></h4>
+<p>聚类完成后，每个簇代表一个程序执行阶段。下一步是从每个簇中选取一个或少数几个最具代表性的区间作为详细模拟的SimPoint。</p>
+<ul>
+<li>
+<p><strong>选择标准与原理：</strong> </p>
+</li>
+<li>
+<p><strong>最接近质心：</strong>  标准SimPoint方法选择每个簇中 <strong>最接近该簇质心</strong> 的那个原始执行区间。质心是该簇内所有（降维后）BBV的平均行为的代表。因此，离质心最近的点被认为是该阶段“最典型”或“最平均”的代表。</p>
+</li>
+<li>
+<p><strong>具体操作：</strong> </p>
+<ol>
+<li>
+<p>对于k-means算法收敛后得到的每个簇 <code>C_i</code> 及其质心 <code>μ_i</code> (在降维空间中)。</p>
+</li>
+<li>
+<p>遍历分配给簇 <code>C_i</code> 的所有（降维后的）BBV <code>v_reduced</code>。</p>
+</li>
+<li>
+<p>计算每个 <code>v_reduced</code> 与其对应质心 <code>μ_i</code> 之间的欧氏距离。</p>
+</li>
+<li>
+<p>选择那个具有最小距离的 <code>v_reduced</code>。</p>
+</li>
+<li>
+<p>这个被选中的 <code>v_reduced</code> 对应于程序原始执行序列中的一个特定 <strong>执行区间</strong> （例如，“从第X条指令开始，长度为L的区间”）。这个原始执行区间就是被选定的SimPoint。</p>
+</li>
+</ol>
+</li>
+<li>
+<p><strong>SimPoint数量：</strong>  通常情况下，每个簇只选择一个SimPoint。如果某个簇非常大或者内部差异性仍然较大（即使聚为一个簇），理论上也可以考虑从该簇中选择多个点，但这会增加模拟时间，需要权衡。</p>
+</li>
+<li>
+<p><strong>记录SimPoint信息：</strong>  对每个选定的SimPoint，需要记录其在原始程序完整执行中的起始指令计数（或唯一的区间ID）及其长度（通常是标准的区间长度）。这些信息用于后续的详细模拟。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong> </p>
+</li>
+<li>
+<p>对于代表“数据加载与预处理”的簇1，假设其中区间号为7的（降维后）BBV离簇1的质心最近，则区间7成为SimPoint_Load。</p>
+</li>
+<li>
+<p>对于代表“核心滤波计算”的簇2，假设区间号为40的BBV离簇2的质心最近，则区间40成为SimPoint_Filter。</p>
+</li>
+<li>
+<p>对于代表“数据压缩与存储”的簇3，假设区间号为75的BBV离簇3的质心最近，则区间75成为SimPoint_Compress。</p>
+<div class="language-text highlight"><pre><span></span><code>我们现在有了3个SimPoints，每个代表程序的一个主要执行阶段。
+</code></pre></div>
+</li>
+</ul>
+<h4 id="34">3.4. 加权与性能估计<a class="headerlink" href="#34" title="Permanent link">&para;</a></h4>
+<p>选定的SimPoints将在详细的、周期精确的微体系结构模拟器上执行，以获取其在该目标体系结构上的性能数据。</p>
+<ol>
+<li>
+<p><strong>计算权重 (Weight)：</strong> </p>
+<ul>
+<li>
+<p>每个SimPoint的权重代表了它所代表的程序阶段（簇）在整个程序执行中所占的比重。</p>
+</li>
+<li>
+<p>计算方法：</p>
+<p>Weight_i = (分配给簇 i 的原始执行区间的数量) / (程序总共划分的执行区间数量)</p>
+<p>或者，如果更关注指令覆盖：</p>
+<p>Weight_i = (簇 i 中所有区间包含的总指令数) / (程序执行的总指令数)</p>
+<p>对于固定长度的画像区间，这两种计算方式结果相似。所有SimPoint的权重之和应为1。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong> </p>
+<ul>
+<li>
+<p>假设簇1（加载）包含25个区间，则 <code>W_Load = 25 / 90 ≈ 0.278</code>。</p>
+</li>
+<li>
+<p>假设簇2（滤波）包含55个区间，则 <code>W_Filter = 55 / 90 ≈ 0.611</code>。</p>
+</li>
+<li>
+<p>假设簇3（压缩）包含10个区间，则 <code>W_Compress = 10 / 90 ≈ 0.111</code>。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>预热 (Warm-up) 与检查点 (Checkpointing) - 至关重要：</strong> </p>
+<ul>
+<li>
+<p><strong>问题背景：</strong>  当直接跳转到程序执行中间的某个SimPoint开始详细模拟时，模拟器中的微体系结构状态（如各级缓存、分支预测器表、TLB、重排序缓冲区等）是“冷”的（空的或处于无效状态）。这与真实程序执行到该点时这些结构经过之前指令执行已经“预热”的状态截然不同。冷启动会导致初始阶段性能数据失真（例如，过多的强制性缓存未命中，分支预测准确率低）。</p>
+</li>
+<li>
+<p><strong>预热策略：</strong> </p>
+<ul>
+<li>
+<p><strong>显式预热期：</strong>  在正式开始收集SimPoint的性能数据之前，先模拟SimPoint之前的一段指令序列。这段指令序列的执行用于“填充”和“训练”微体系结构状态。</p>
+<ul>
+<li><strong>预热长度：</strong>  是一个关键参数。太短则预热不充分；太长则抵消了采样带来的时间节省。SimPoint的原始论文提出，对于一个长度为L的SimPoint，可以额外模拟其前方长度也为L的一段作为预热，但只统计SimPoint自身的性能。有时也使用固定指令数或基于目标微结构特征的启发式长度。</li>
+</ul>
+</li>
+<li>
+<p><strong>检查点技术 (Checkpointing)：</strong>  更高效的预热方法。</p>
+<ul>
+<li>
+<p><strong>原理：</strong>  在初始的、较快的全程序功能性模拟（或插桩执行）过程中，周期性地（例如，在每个BBV画像区间的边界）保存完整的体系结构状态（寄存器堆、内存映像）和关键的微体系结构状态（如果模拟器支持且开销可接受的话，如缓存标签和状态、分支预测器历史等）到一个检查点文件中。</p>
+</li>
+<li>
+<p><strong>应用：</strong>  当需要模拟某个SimPoint时，找到其开始位置之前最近的一个检查点，从该检查点恢复模拟器状态，然后再执行从检查点到SimPoint开始之间的少量指令进行精细预热，最后进入SimPoint本身进行数据收集。这大大减少了从头开始预热所需的时间。</p>
+</li>
+<li>
+<p>许多SimPoint工具链（如基于SimpleScalar或GEM5的）都支持检查点机制。</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>例子（图像处理程序 - 预热SimPoint_Filter）：</strong>  SimPoint_Filter是区间40。我们可以从区间39的末尾（或一个更早的检查点）开始，模拟到区间40的开始，以预热缓存和分支预测器等。然后才开始正式记录区间40的性能数据。</p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>详细模拟 (Detailed Simulation)：</strong> </p>
+<ul>
+<li>
+<p>使用目标体系结构的周期精确模拟器（如GEM5, SimpleScalar <code>sim-outorder</code> 等）。</p>
+</li>
+<li>
+<p>从预热完成（或检查点恢复并短暂预热后）的状态开始，精确模拟SimPoint区间内的每一条指令。</p>
+</li>
+<li>
+<p>收集关键性能指标 (Performance Metrics)，例如：</p>
+<ul>
+<li>
+<p>IPC (Instructions Per Cycle)</p>
+</li>
+<li>
+<p>各级缓存的命中/未命中率 (Cache Miss Rates)</p>
+</li>
+<li>
+<p>分支预测准确率 (Branch Prediction Accuracy)</p>
+</li>
+<li>
+<p>功耗估计 (Power Consumption)</p>
+</li>
+<li>
+<p>其他特定于研究的微体系结构事件计数。</p>
+</li>
+</ul>
+</li>
+<li>
+<p>对每个SimPoint都独立进行此过程，得到其各自的性能数据 <code>Performance_SimPoint_i</code>。</p>
+</li>
+<li>
+<p><strong>例子（图像处理程序）：</strong> </p>
+<ul>
+<li>
+<p>模拟SimPoint_Load得到 IPC_Load = 0.8</p>
+</li>
+<li>
+<p>模拟SimPoint_Filter得到 IPC_Filter = 1.5</p>
+</li>
+<li>
+<p>模拟SimPoint_Compress得到 IPC_Compress = 1.1</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>加权平均与最终性能估计：</strong> </p>
+<ul>
+<li>
+<p>使用之前计算出的权重，将所有SimPoint的性能数据进行加权平均，得到整个程序在目标体系结构上的综合性能估计。</p>
+</li>
+<li>
+<p>对于任意一个性能指标 M（如IPC）：</p>
+<p>Estimated_Overall_M = Σ_{i=1 to k} (Weight_i * M_SimPoint_i)</p>
+</li>
+<li>
+<p>这个加权平均值即为SimPoint方法对程序整体性能的预测结果。</p>
+</li>
+<li>
+<p>例子（图像处理程序）：</p>
+<p>Estimated_Overall_IPC = (0.278 <em>0.8) + (0.611</em> 1.5) + (0.111 * 1.1)</p>
+<p>Estimated_Overall_IPC = 0.2224 + 0.9165 + 0.1221 ≈ 1.261</p>
+<p>这个1.261就是我们对整个图像处理程序在该目标体系结构上运行的IPC的估计值。</p>
+</li>
+</ul>
+</li>
+</ol>
+<h3 id="5-simpoint">5. SimPoint 的优势<a class="headerlink" href="#5-simpoint" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>显著加速模拟：</strong>  这是SimPoint最核心的价值。通过仅模拟程序执行的一小部分（通常不到1%的指令），可以将原本需要数周甚至数月的模拟时间缩短到数小时或数天。</p>
+</li>
+<li>
+<p><strong>例子：</strong>  我们的图像处理程序，原本需要模拟90个区间（假设每个区间详细模拟耗时2小时，总计180小时）。使用SimPoint后，画像可能需要几小时（功能模拟快得多），聚类和选点几乎可以忽略不计，详细模拟3个SimPoint（每个2小时+预热）可能总共花费约10-15小时。加速比达到10倍以上。对于更长的程序和更复杂的模拟，加速比可能达到数百甚至数千倍。</p>
+</li>
+<li>
+<p><strong>较高的准确性：</strong>  大量研究和实践表明，如果SimPoint被正确应用（包括有效的预热），其性能预测结果与全程序详细模拟的结果相比，误差通常可以控制在几个百分点以内（例如，平均IPC误差在2-5%）。</p>
+</li>
+<li>
+<p><strong>微体系结构无关的阶段识别：</strong>  BBV画像主要基于程序自身的代码结构和执行流，而不是特定处理器的微体系结构特性。这意味着为某个程序-输入对生成的SimPoints（即选定的区间）可以被重用于评估多种不同的体系结构设计方案，而无需为每种方案重新进行耗时的阶段识别。</p>
+</li>
+<li>
+<p><strong>自动化程度高与工具支持：</strong>  存在成熟的开源工具集（如UCSD的SimPoint工具包）和集成框架（如基于Pin的PinPoints），使得SimPoint的整个流程（从BBV收集、聚类、选点到生成模拟脚本）可以高度自动化，方便研究人员使用。</p>
+</li>
+<li>
+<p><strong>提供程序行为洞察：</strong>  SimPoint的阶段划分结果本身也为理解程序的动态行为提供了有价值的洞察，可以帮助识别程序中的主要计算瓶颈或行为模式。</p>
+</li>
+</ul>
+<h3 id="6-simpoint">6. SimPoint 的局限性与挑战<a class="headerlink" href="#6-simpoint" title="Permanent link">&para;</a></h3>
+<p>尽管SimPoint非常成功，但它并非完美，也存在一些局限性和应用挑战：</p>
+<ul>
+<li>
+<p><strong>初始画像开销：</strong>  虽然远小于多次全程序详细模拟，但生成BBV仍需要对程序进行一次完整的（或至少是非常长的）功能性模拟或插桩执行。对于极大规模的输入或极长的程序，这个初始开销本身也可能比较显著。</p>
+</li>
+<li>
+<p><strong>预热的复杂性与敏感性：</strong> </p>
+</li>
+<li>
+<p>SimPoint的最终准确性高度依赖于预热策略的有效性。不充分的预热会导致冷启动效应，高估缓存未命中率等，从而低估性能。过度预热则会增加模拟时间。</p>
+</li>
+<li>
+<p>为不同的微体系结构状态（缓存大小、分支预测器类型等）找到普适且高效的预热长度和方法是一个持续的研究课题。检查点技术虽有帮助，但生成和管理检查点也有其开销和复杂性。</p>
+</li>
+<li>
+<p><strong>多线程程序与并行应用：</strong> </p>
+</li>
+<li>
+<p>SimPoint最初主要针对单线程程序设计和验证。将其直接应用于多线程程序面临巨大挑战，因为线程间的同步（如锁、屏障）、非确定性执行顺序以及共享资源的竞争会使得程序行为更加复杂和难以预测，阶段的定义和代表性也更模糊。</p>
+</li>
+<li>
+<p>需要专门针对多线程的采样技术（如BarrierPoint等）或对SimPoint进行扩展和调整。</p>
+</li>
+<li>
+<p><strong>代表性点的选择与覆盖度：</strong> </p>
+</li>
+<li>
+<p>选择最接近质心的点作为SimPoint，代表的是阶段的“平均”行为。这可能无法完全捕捉到阶段内某些短暂但关键的行为（例如，突发性的高缓存未命中），或者阶段内行为本身就有较大方差的情况。</p>
+</li>
+<li>
+<p>对于某些具有大量细微不同阶段的程序，或者阶段转换非常频繁的程序，SimPoint可能需要选择更多的簇（更大的k值），或者每个簇选择多个点，这会增加模拟开销。</p>
+</li>
+<li>
+<p><strong>离线分析的本质：</strong>  SimPoint是一种离线（Off-line）分析方法，它需要预先获得程序在特定输入下的完整（或大部分）执行画像才能进行阶段划分和选点。这使得它不适用于需要实时在线（On-line）进行性能预测或自适应调整的场景。</p>
+</li>
+<li>
+<p><strong>对输入数据的敏感性：</strong>  一个程序在不同输入数据下的执行行为可能差异巨大，导致其阶段划分和SimPoint也完全不同。因此，为某个程序-输入对生成的SimPoint通常不能直接用于评估该程序在其他差异较大的输入下的性能。需要为每个重要的程序-输入组合分别生成SimPoints。</p>
+</li>
+<li>
+<p><strong>确定最佳 <code>k</code> 值的挑战：</strong>  虽然BIC等统计准则提供了自动选择 <code>k</code> 的方法，但这些准则本身也有其假设和局限性。在某些情况下，它们选出的 <code>k</code> 可能并非最符合直觉或实际需求的阶段划分，有时仍需要领域知识和经验进行调整。</p>
+</li>
+</ul>
+<h3 id="7">7. 工具、演进与相关技术<a class="headerlink" href="#7" title="Permanent link">&para;</a></h3>
+<ul>
+<li>
+<p><strong>SimPoint 工具集 (UCSD)：</strong>  这是最早也是最广为人知的SimPoint实现，由加州大学圣地亚哥分校的Todd Sherwood、Erez Perelman、Greg Hamerly和Brad Calder等人开发。它提供了一系列Perl脚本和C++程序，用于BBV生成（通常与SimpleScalar等模拟器配合）、随机投影、k-means聚类（使用BIC选择k）、SimPoint选择以及生成模拟脚本等。</p>
+</li>
+<li>
+<p><strong>PinPoints (Intel)：</strong>  Intel公司基于其强大的动态二进制插桩框架Pin开发了PinPoints。它允许在运行时收集BBV（或其他程序特征），并集成了SimPoint的分析逻辑，可以直接在真实的x86或IA-64等机器上运行程序并选点，而无需传统的ISA模拟器进行画像。</p>
+</li>
+<li>
+<p><strong>与其他模拟器的集成：</strong>  SimPoint的思想和工具已被广泛集成到各种流行的体系结构模拟器中，如GEM5、SimpleScalar、MARSSx86等，通常以脚本或库的形式提供支持。</p>
+</li>
+<li>
+<p><strong>SimPoint的演进与变种：</strong> </p>
+</li>
+<li>
+<p><strong>SimPoint 3.0：</strong>  对原始SimPoint算法进行了改进，例如更快的聚类搜索算法，支持处理更大规模的区间数据等。</p>
+</li>
+<li>
+<p><strong>SimTrace：</strong>  为了捕捉程序行为随时间的变化序列（而不仅仅是平均行为），SimTrace扩展了SimPoint的思想，它按顺序重放SimPoint所代表的各个阶段的性能特征，以近似整个程序的时间序列行为。</p>
+</li>
+<li>
+<p><strong>SimPoint++：</strong>  近期研究，旨在通过改进选择 <code>k</code> 值的方法（例如结合WCSS和轮廓系数）和降维流程，进一步减少所需的SimPoint数量，同时保持或提高准确性，并增强对多线程应用分析的支持。</p>
+</li>
+<li>
+<p><strong>在线SimPoint (Online SimPoint)：</strong>  一些研究尝试将SimPoint的思想应用于在线场景，即在程序执行过程中动态识别阶段变化并调整采样策略，但这面临更大的挑战。</p>
+</li>
+<li>
+<p><strong>相关的采样与模拟加速技术：</strong> </p>
+</li>
+<li>
+<p><strong>SMARTS (Sampling Microarchitecture Simulation)：</strong>  与SimPoint的阶段驱动、代表性采样不同，SMARTS采用统计采样方法。它在程序执行过程中，周期性地在快速的功能模拟（用于预热和快进）和短时间的详细模拟之间切换，通过收集大量均匀分布的短采样点来估计整体性能。</p>
+</li>
+<li>
+<p><strong>统计模拟 (Statistical Simulation)：</strong>  通过分析程序执行的统计特性（如指令混合、依赖关系等），构建数学模型来直接预测性能，而不是模拟指令流。</p>
+</li>
+<li>
+<p><strong>BarrierPoint / Target-Driven Sampling：</strong>  针对多线程并行程序，这类方法通常关注同步点（如屏障）或特定的并行区域作为采样的边界或目标。</p>
+</li>
+<li>
+<p><strong>代表性工作负载子集选择：</strong>  对于包含多个基准程序的测试集（如SPEC CPU），研究人员也致力于选择一个能代表整个测试集特性的小型子集，以减少评估时间和资源。</p>
+</li>
+</ul>
+<h3 id="8">8. 结论<a class="headerlink" href="#8" title="Permanent link">&para;</a></h3>
+<p>SimPoint作为一种里程碑式的体系结构模拟加速技术，通过巧妙地利用程序的阶段性行为，在模拟速度与预测精度之间取得了革命性的平衡。它不仅极大地提升了计算机体系结构研究与设计的效率，使得研究者能够探索更广阔的设计空间，也为后续的各种采样和模拟加速技术的发展奠定了坚实的基础。</p>
+<p>尽管SimPoint存在一些固有的局限性（如对预热的敏感性、多线程应用的挑战等），但通过学术界和工业界的持续研究、改进和工具支持，SimPoint及其核心思想仍然是现代体系结构性能评估领域不可或缺的重要组成部分。理解其原理、掌握其应用方法、并认识其优势与不足，对于进行高效、可信且富有洞察力的体系结构研究具有至关重要的意义。随着计算需求的不断演进，对更快、更准的性能评估方法的需求永无止境，SimPoint所开创的智能采样之路将持续启发未来的创新。</p>
+<ul>
+<li>计算机体系结构模拟器gem5应该怎么学？ - 阿比王的回答 - 知乎
+<a href="https://www.zhihu.com/question/434274699/answer/1900904680059535935">https://www.zhihu.com/question/434274699/answer/1900904680059535935</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="上一页: 性能基准测试">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                性能基准测试
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../SPEC2006/" class="md-footer__link md-footer__link--next" aria-label="下一页: SPEC CPU2006 各基准测试程序特性详解">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                SPEC CPU2006 各基准测试程序特性详解
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "navigation.footer", "navigation.tabs", "content.code.annotate", "navigation.indexes", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,6407 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://clarchnotes.github.io/GPU/basics/basic_concepts/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../../SFU/sfu_design_and_implementation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.0">
+    
+    
+      
+        <title>GPU基本概念：从零开始理解GPU并行计算 - Arch Notes</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.618322db.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="lime" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#gpugpu" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="Arch Notes" class="md-header__button md-logo" aria-label="Arch Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Arch Notes
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GPU基本概念：从零开始理解GPU并行计算
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="分享" aria-label="分享" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../AI/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  AI
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../NPU/timeloop/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  NPU
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../CPU/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  CPU
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../RISCV/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  RISCV
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  GPU
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Numerical_Computing/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Numerical Computing
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Chiplet/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Chiplet
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../HWSec/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  HWSEC
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Benchmark/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Benchmark
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Compiler/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Compiler
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../Emulator/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Emulator
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="Arch Notes" class="md-nav__button md-logo" aria-label="Arch Notes" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Arch Notes
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../AI/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AI
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../AI/attention/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attention
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Attention
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AI/attention/attention_basic/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attention basic
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AI/attention/flash_attention/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FlashAttention
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../AI/attention/rope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Rope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NPU
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    NPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TimeLoop Framework
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TimeLoop Framework
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NPU/timeloop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    面向异构NPU的自动化映射与性能优化：TimeLoop框架深度解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../CPU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CPU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2" id="__nav_4_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Frontend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Frontend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_2_1" id="__nav_4_2_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Decoder
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_2_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Decoder
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/fontend/decoder/ht_write_decoder/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    How to write efficient decoder
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3" id="__nav_4_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backend
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Backend
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1" id="__nav_4_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSU
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LSU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/basics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSU Basics
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../CPU/Backend/LSU/xiangshan/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Xiangshan
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3_1_2" id="__nav_4_3_1_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Xiangshan
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsu_microarch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSU Microarchitecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../CPU/Backend/LSU/xiangshan/lsq/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LSQ
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3_1_2_3" id="__nav_4_3_1_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LSQ
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/freelist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    FreeList
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/virtual_load_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    VirtualLoadQueue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_queue_raw/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueRAW
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_queue_rar/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueRAR
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_queue_replay/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueReplay
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_queue_uncache/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadQueueUncache 模块文档
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_queue_exception/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LqExceptionBuffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/load_misalign_buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LoadMisalignBuffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/store_queue/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StoreQueue
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/store_queue_data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StoreQueueData
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/lsq/store_misalign_buffer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    StoreMisalignBuffer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_2_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_2_4" id="__nav_4_3_1_2_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="5" aria-labelledby="__nav_4_3_1_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Pipeline
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/xiangshan/pipeline/load_unit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Load unit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_1_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_3_1_3" id="__nav_4_3_1_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MDP
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="4" aria-labelledby="__nav_4_3_1_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_1_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MDP
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/LSU/MDP/papers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Memory Dependence Prediction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_3_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../CPU/Backend/MMU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    MMU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4_3_2" id="__nav_4_3_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    MMU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/MMU/sv39_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V Sv39 虚拟内存架构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/MMU/tlb_structure/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLB 结构与硬件实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/MMU/tlb_workflow/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLB 工作流程与查找过程
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/MMU/page_table_walker/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    页表遍历器机制
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/MMU/accessed_dirty_bits/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    A/D 位详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../CPU/Backend/MMU/tlb_synchronization.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TLB 同步与 SFENCE.VMA
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../RISCV/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISCV
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    RISCV
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../RISCV/Baremetal/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Baremetal Programming
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Baremetal Programming
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/Baremetal/programming_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Complete Programming Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../RISCV/Spike/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spike Simulator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spike Simulator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/Spike/boot_process_detailed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Boot Process Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_4" id="__nav_5_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ISA
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ISA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/softfloat/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPIKE SoftFloat库分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/Zfh_Zfhmin/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V浮点扩展(Zfh/Zfhmin/Zfbfmin/Zvfbfmin/Zvfbfwma)研究报告
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/pointer_mask/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V Pointer Masking Extension
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_4_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../RISCV/ISA/H_Extension/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H Extension (Hypervisor)
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_4_4" id="__nav_5_4_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    H Extension (Hypervisor)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V H扩展概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/privilege_model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    虚拟化特权级模型与陷阱处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/two_stage_translation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    两阶段地址翻译详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/csr_registers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关键CSR寄存器详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/virtual_interrupts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    虚拟中断处理
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/new_instructions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H扩展新增指令集
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/ISA/H_Extension/performance_optimization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    性能优化技术
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../RISCV/RVV/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RVV
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_5" id="__nav_5_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    RVV
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../RISCV/RVV/ISA/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ISA
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_5_2" id="__nav_5_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_5_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ISA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/ISA/rvv_intrinsics/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V Vector Extension (RVV) 内建函数详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/ISA/reduction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V 向量归约指令概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/ISA/permutation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V 向量置换与移动指令概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/ISA/int_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    RISC-V 向量算术与逻辑运算指令概述
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/ISA/fp_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Fp arith
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/ISA/mask_arith/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mask arith
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../RISCV/RVV/vector_memory_pmp_pma/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    向量内存访问与PMP/PMA交互深度解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6" id="__nav_6_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    GPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU基本概念：从零开始理解GPU并行计算
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GPU基本概念：从零开始理解GPU并行计算
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一部分：宏观视角 —— 为何选择GPU进行计算？
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一部分：宏观视角 —— 为何选择GPU进行计算？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. GPU并行计算导论
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. GPU并行计算导论">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpu_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        什么是GPU？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为何使用GPU进行计算？大规模并行的需求
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpucpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU与CPU对比：核心设计理念与目标负载
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二部分：理解CUDA概览
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：理解CUDA概览">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CUDA简介
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. CUDA简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuda_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        什么是CUDA？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kernel-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        内核函数（Kernel Function）的概念
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. CUDA编程模型：并行层次结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. CUDA编程模型：并行层次结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程（Thread）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#block-thread-block-cta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程块（Block / Thread Block / 协作线程阵列 CTA）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网格（Grid）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程束（Warp）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gpu_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三部分：深入探索 —— GPU架构揭秘
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三部分：深入探索 —— GPU架构揭秘">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 关键GPU硬件组件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 关键GPU硬件组件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-multiprocessor-sm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        流多处理器（Streaming Multiprocessor, SM）：执行的核心引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cudacuda-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CUDA核心（CUDA Core）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensor-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        张量核心（Tensor Core）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sfu-special-function-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特殊功能单元（SFU - Special Function Unit）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsu-loadstore-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        加载/存储单元（LSU - Load/Store Unit）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-gpucompute-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. GPU架构演进与计算能力（Compute Capability）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四部分：协同工作原理 —— 执行与内存
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第四部分：协同工作原理 —— 执行与内存">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 内核执行流程与调度
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 内核执行流程与调度">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网格/线程块到SM的映射
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warp-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程束调度器（Warp Scheduler）与延迟隐藏
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SIMT执行模型（硬件视角）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. GPU内存层次结构：导览
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. GPU内存层次结构：导览">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        寄存器（Registers）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        共享内存（Shared Memory）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l1l1-cachetexture-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1缓存（L1 Cache）与纹理缓存（Texture Cache）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l2l2-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L2缓存（L2 Cache）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-memory-device-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        全局内存（Global Memory / Device Memory）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常量内存（Constant Memory）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#texture-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        纹理内存（Texture Memory） (概念重申，与缓存关联)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SFU (Special Function Unit)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SFU (Special Function Unit)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../SFU/sfu_design_and_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SFU 硬件设计与实现
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CUDA
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CUDA/cuda_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA并行计算模式与优化策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../CUDA/cuda_prgm_efficiency/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CUDA并行计算模式与优化策略
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../TinyGPU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    TinyGPU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    TinyGPU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Numerical_Computing/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Numerical Computing
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Numerical Computing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    超越函数实现
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    超越函数实现
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Numerical_Computing/power_function_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Power 函数库实现深度解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Numerical_Computing/sleef_rvv_exp_implementation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SLEEF RVV 指数函数实现解析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多项式逼近技术
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    多项式逼近技术
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Numerical_Computing/polynomial_approximation_methods/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    多项式逼近与求值方法论
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Chiplet/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chiplet
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8" id="__nav_8_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Chiplet
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Chiplet/basics/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Basics
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Basics
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Chiplet/basics/why-chiplet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Why Chiplet
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Chiplet/basics/chiplet_basetech/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chiplet技术基础
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Chiplet/basics/chiplet_example/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Chiplet实例分析
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../HWSec/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    HWSEC
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    HWSEC
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectre
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Spectre
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../HWSec/spectre/spectre_variant/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spectre Variants
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Benchmark/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Benchmark
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Benchmark/Simpoint/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Simpoint
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Benchmark/SPEC2006/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPEC CPU2006 各基准测试程序特性详解
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Compiler/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compiler
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11" id="__nav_11_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_11_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Compiler
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_11_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Compiler/analysis/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Analysis
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_11_2" id="__nav_11_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_11_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_11_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Analysis
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Compiler/analysis/binary_loop_detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Binary Loop Detection Comparison Study
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Emulator/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Emulator
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12" id="__nav_12_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_12_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Emulator
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_12_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../../Emulator/QEMU/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    QEMU
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_12_2" id="__nav_12_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_12_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_12_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    QEMU
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../Emulator/QEMU/plugin_guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plugin Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第一部分：宏观视角 —— 为何选择GPU进行计算？
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第一部分：宏观视角 —— 为何选择GPU进行计算？">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. GPU并行计算导论
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. GPU并行计算导论">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gpu_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        什么是GPU？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpu_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        为何使用GPU进行计算？大规模并行的需求
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gpucpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GPU与CPU对比：核心设计理念与目标负载
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第二部分：理解CUDA概览
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第二部分：理解CUDA概览">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#2-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. CUDA简介
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. CUDA简介">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cuda_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        什么是CUDA？
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#kernel-function" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        内核函数（Kernel Function）的概念
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cuda" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. CUDA编程模型：并行层次结构
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. CUDA编程模型：并行层次结构">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#thread" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程（Thread）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#block-thread-block-cta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程块（Block / Thread Block / 协作线程阵列 CTA）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网格（Grid）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程束（Warp）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gpu_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第三部分：深入探索 —— GPU架构揭秘
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第三部分：深入探索 —— GPU架构揭秘">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#4-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 关键GPU硬件组件
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 关键GPU硬件组件">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#streaming-multiprocessor-sm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        流多处理器（Streaming Multiprocessor, SM）：执行的核心引擎
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cudacuda-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CUDA核心（CUDA Core）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensor-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        张量核心（Tensor Core）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sfu-special-function-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        特殊功能单元（SFU - Special Function Unit）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lsu-loadstore-unit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        加载/存储单元（LSU - Load/Store Unit）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-gpucompute-capability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. GPU架构演进与计算能力（Compute Capability）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        第四部分：协同工作原理 —— 执行与内存
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="第四部分：协同工作原理 —— 执行与内存">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 内核执行流程与调度
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. 内核执行流程与调度">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        网格/线程块到SM的映射
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warp-scheduler" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        线程束调度器（Warp Scheduler）与延迟隐藏
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#simt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SIMT执行模型（硬件视角）
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-gpu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. GPU内存层次结构：导览
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. GPU内存层次结构：导览">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        寄存器（Registers）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shared-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        共享内存（Shared Memory）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l1l1-cachetexture-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L1缓存（L1 Cache）与纹理缓存（Texture Cache）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#l2l2-cache" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        L2缓存（L2 Cache）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#global-memory-device-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        全局内存（Global Memory / Device Memory）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#constant-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        常量内存（Constant Memory）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#texture-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        纹理内存（Texture Memory） (概念重申，与缓存关联)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="gpugpu">GPU基本概念：从零开始理解GPU并行计算<a class="headerlink" href="#gpugpu" title="Permanent link">&para;</a></h1>
+<h2 id="gpu">第一部分：宏观视角 —— 为何选择GPU进行计算？<a class="headerlink" href="#gpu" title="Permanent link">&para;</a></h2>
+<h3 id="1-gpu">1. GPU并行计算导论<a class="headerlink" href="#1-gpu" title="Permanent link">&para;</a></h3>
+<h4 id="gpu_1">什么是GPU？<a class="headerlink" href="#gpu_1" title="Permanent link">&para;</a></h4>
+<p>图形处理器（GPU）最初设计用于高效处理计算机图形渲染任务，例如在视频游戏中创建复杂的视觉效果。然而，研究人员和工程师很快意识到GPU的大规模并行处理能力不仅限于图形，还可以应用于各种计算密集型领域。因此，通用GPU（GPGPU）的概念应运而生，使得GPU成为科学计算、数据分析、人工智能等领域的重要工具。</p>
+<h4 id="gpu_2">为何使用GPU进行计算？大规模并行的需求<a class="headerlink" href="#gpu_2" title="Permanent link">&para;</a></h4>
+<p>许多复杂的科学和工程问题本质上是高度并行的，意味着它们可以被分解成大量可以同时独立或半独立执行的小任务。传统的CPU（中央处理器）虽然单个核心功能强大，但在并行处理任务数量上有限。GPU通过拥有数百甚至数千个相对简单的计算核心，能够同时执行海量计算任务，从而在处理这类问题时展现出远超CPU的性能，即实现高吞吐量（High Throughput）。</p>
+<h4 id="gpucpu">GPU与CPU对比：核心设计理念与目标负载<a class="headerlink" href="#gpucpu" title="Permanent link">&para;</a></h4>
+<p>CPU和GPU的设计目标有着根本的不同：</p>
+<table>
+<thead>
+<tr>
+<th><strong>特性</strong></th>
+<th><strong>CPU (中央处理器)</strong></th>
+<th><strong>GPU (图形处理器)</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>核心数量</td>
+<td>少量（通常4-64个）</td>
+<td>大量（数百到数千个）</td>
+</tr>
+<tr>
+<td>核心设计</td>
+<td>复杂，支持乱序执行，强大的控制逻辑</td>
+<td>相对简单，更多晶体管用于计算单元</td>
+</tr>
+<tr>
+<td>缓存大小</td>
+<td>大（MB级别，多级缓存）</td>
+<td>较小（KB级别，但有特殊的共享内存和纹理缓存）</td>
+</tr>
+<tr>
+<td>优化目标</td>
+<td>低延迟（单个任务快速完成）</td>
+<td>高吞吐量（单位时间完成更多任务）</td>
+</tr>
+<tr>
+<td>分支预测</td>
+<td>先进且复杂</td>
+<td>有限，更倾向于一致的执行路径</td>
+</tr>
+<tr>
+<td>指令流</td>
+<td>多样化，适合复杂的控制流（MIMD趋势）</td>
+<td>统一（SIMT模型是主流）</td>
+</tr>
+<tr>
+<td>主要任务</td>
+<td>通用计算，操作系统，复杂逻辑，串行任务</td>
+<td>大规模并行计算，如图形渲染，科学计算，AI</td>
+</tr>
+</tbody>
+</table>
+<p>这种设计差异使GPU特别适合于可以分解为大量相似计算的数据并行任务，如矩阵运算、图像处理、深度学习模型的训练与推理等。</p>
+<h2 id="cuda">第二部分：理解CUDA概览<a class="headerlink" href="#cuda" title="Permanent link">&para;</a></h2>
+<p><img alt="" src="../attachments/Pasted%20image%2020250510231257.png" /></p>
+<h3 id="2-cuda">2. CUDA简介<a class="headerlink" href="#2-cuda" title="Permanent link">&para;</a></h3>
+<h4 id="cuda_1">什么是CUDA？<a class="headerlink" href="#cuda_1" title="Permanent link">&para;</a></h4>
+<p>CUDA (Compute Unified Device Architecture，计算统一设备架构) 是由NVIDIA推出的并行计算平台和编程模型。它允许软件开发者和软件工程师使用NVIDIA GPU进行通用目的处理 (GPGPU)。CUDA平台提供了一套完整的开发工具，包括编译器、库和API，支持使用C、C++、Fortran等高级编程语言编写可在GPU上执行的程序。</p>
+<h4 id="kernel-function">内核函数（Kernel Function）的概念<a class="headerlink" href="#kernel-function" title="Permanent link">&para;</a></h4>
+<p>在CUDA编程中， <strong>内核函数 (Kernel Function)</strong>  是在GPU上并行执行的函数。当一个内核函数从CPU（主机端 Host）启动时，它会在GPU（设备端 Device）上由成千上万个线程并行执行。开发者通过定义内核函数的行为来指定每个线程需要完成的工作。</p>
+<h3 id="3-cuda">3. CUDA编程模型：并行层次结构<a class="headerlink" href="#3-cuda" title="Permanent link">&para;</a></h3>
+<p>CUDA编程模型的核心在于其如何组织和管理并行执行的线程。这种层次结构使得开发者能够有效地将计算任务映射到GPU的并行硬件上。</p>
+<p><img alt="" src="../attachments/Pasted%20image%2020250510231736.png" /></p>
+<h4 id="thread">线程（Thread）<a class="headerlink" href="#thread" title="Permanent link">&para;</a></h4>
+<p>线程是CUDA编程模型中的 <strong>基本执行单元</strong>  ，是最小的计算单位。</p>
+<p><strong>详细特性</strong> ：</p>
+<ul>
+<li>执行单个指令序列。</li>
+<li>每个线程有唯一的线程ID（<code>threadIdx</code>），可用于确定其处理的数据。这个ID通常是一维、二维或三维的，方便映射到多维数据。</li>
+<li>拥有私有寄存器状态和私有内存（局部内存）。</li>
+<li>线程执行由编译器从CUDA C/C++转换而来的SASS（Streaming ASSembler）或PTX（Parallel Thread eXecution）代码。</li>
+<li>相比CPU线程，GPU线程更轻量级，上下文切换开销极低。</li>
+<li>理论上可以有独立的指令指针/程序计数器，但出于SIMT模型的性能考虑，通常线程束（Warp）内的线程共享同一指令指针。</li>
+</ul>
+<p>在CUDA核函数中，可以通过内置变量获取线程在其线程块内的索引：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>// 在核函数中获取线程索引 (通常threadIdx.x用于一维，(threadIdx.x, threadIdx.y)用于二维等)
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>int tx = threadIdx.x;
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>int ty = threadIdx.y;
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>int tz = threadIdx.z;
+</span></code></pre></div>
+<h4 id="block-thread-block-cta">线程块（Block / Thread Block / 协作线程阵列 CTA）<a class="headerlink" href="#block-thread-block-cta" title="Permanent link">&para;</a></h4>
+<p>线程块是 <strong>一组线程的集合</strong>  。同一线程块内的线程被组织在一起，可以相互协作。在硬件实现上，线程块也被称为协作线程阵列(CTA - Cooperative Thread Array)。</p>
+<p><strong>详细特性</strong> ：</p>
+<ul>
+<li>一个线程块可以包含多个线程（例如，最多1024个线程，具体限制取决于GPU的计算能力）。</li>
+<li><strong>协作</strong>  ：</li>
+<li><strong>共享内存 (Shared Memory)</strong>  ：块内线程可以通过高速的片上共享内存交换数据。</li>
+<li><strong>同步 (Synchronization)</strong>  ：块内线程可以使用同步原语（如 <code>__syncthreads()</code>）进行同步，确保某些操作在所有块内线程都到达某个点之后才继续执行。</li>
+<li>线程块可以组织成一维、二维或三维的结构，由内置变量 <code>blockDim</code>（<code>blockDim.x</code>, <code>blockDim.y</code>, <code>blockDim.z</code>）指定块的维度。</li>
+<li>每个线程块在网格中也有一个唯一的ID，称为 <code>blockIdx</code>（<code>blockIdx.x</code>, <code>blockIdx.y</code>, <code>blockIdx.z</code>）。</li>
+<li>一个线程块会被完整地调度到 <strong>单个流多处理器 (SM)</strong>  上执行，并且一旦分配，就会在该SM上执行直到完成。块之间通常不能直接进行高效同步（除非使用全局原子操作或特定的高级同步原语）。</li>
+<li>选择合适的块大小（通常是线程束大小32的倍数）对于性能至关重要，以避免部分填充的线程束。</li>
+</ul>
+<p><strong>线程块标识与全局线程ID计算示例 (一维)</strong> ：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>// 线程块内的线程ID
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>int tid_in_block = threadIdx.x;
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>// 线程块在网格中的ID (假设为一维网格和一维线程块)
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>int block_id = blockIdx.x;
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>// 线程块的维度 (每块有多少线程)
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>int threads_per_block = blockDim.x;
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>// 计算全局线程ID
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>int global_tid = block_id * threads_per_block + tid_in_block;
+</span></code></pre></div>
+<h4 id="grid">网格（Grid）<a class="headerlink" href="#grid" title="Permanent link">&para;</a></h4>
+<p>网格是 <strong>一组线程块的集合</strong>  。当你从CPU调用一个CUDA内核函数时，你实际上是在启动一个网格。</p>
+<p><strong>详细特性</strong> ：</p>
+<ul>
+<li>一个网格可以包含非常多的线程块，从而使得数百万个线程能够并行执行，覆盖整个计算任务。</li>
+<li>网格也可以组织成一维、二维或三维的结构，由内置变量 <code>gridDim</code>（<code>gridDim.x</code>, <code>gridDim.y</code>, <code>gridDim.z</code>）指定网格的维度。</li>
+<li>网格的维度通常根据输入数据的大小和希望的并行粒度来决定。</li>
+</ul>
+<p>内核启动语法：</p>
+<p>在CUDA C/C++中，使用三个尖括号 &lt;&lt;&lt; &gt;&gt;&gt; 语法来配置网格和块的维度并启动内核函数：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>// 定义线程块和网格维度
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>dim3 blockDim(16, 16);  // 每个块包含16×16=256个线程 (假设为2D块)
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>dim3 gridDim((width + blockDim.x - 1) / blockDim.x,
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>             (height + blockDim.y - 1) / blockDim.y); // 根据数据大小计算网格维度 (假设为2D网格)
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>// 启动内核
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>myKernel&lt;&lt;&lt;gridDim, blockDim&gt;&gt;&gt;(/* kernel arguments */);
+</span></code></pre></div>
+<p>这里的 <code>(width + blockDim.x - 1) / blockDim.x</code> 是一种常用的向上取整方法，确保有足够的线程块来处理所有数据。</p>
+<h4 id="warp">线程束（Warp）<a class="headerlink" href="#warp" title="Permanent link">&para;</a></h4>
+<p>线程束是GPU硬件执行线程的 <strong>基本调度和执行单位</strong>  。它是一组 <strong>固定数量（目前所有NVIDIA GPU上都是32个）的线程</strong>  。</p>
+<p><strong>详细特性</strong> ：</p>
+<ul>
+<li>虽然开发者以线程和线程块的逻辑结构组织代码，但SM实际上是以线程束为单位来管理和执行这些线程的。</li>
+<li><strong>SIMT (Single Instruction, Multiple Thread) 执行</strong>  ：同一个Warp中的32个线程同时（或在概念上同时）执行相同的指令。每个线程有自己的寄存器和数据，因此可以对不同的数据执行相同的操作。</li>
+<li><strong>线程分化 (Thread Divergence)</strong>  ：如果一个Warp中的线程遇到条件分支（如 <code>if-else</code> 语句），并且线程走向了不同的分支路径，Warp会依次执行每个分支路径。在该Warp执行某个特定分支路径时，只有走向该路径的线程是激活的，其他线程则处于禁用（masked out）状态。这会降低执行效率，因为不是所有32个线程都在同时做有用的工作。因此，在CUDA编程中，应尽量避免或减少Warp内的分支分化。</li>
+<li><strong>线程束同步</strong>  ：</li>
+<li>同一Warp内的线程在执行指令时具有隐式的同步性。</li>
+<li>CUDA提供了线程束级别的同步原语（如 <code>__syncwarp()</code>，或<code>_sync()</code>后缀的warp内shuffle、vote等指令），允许Warp内的线程进行更细粒度的同步和数据交换，而无需等待整个线程块。</li>
+<li>线程束的形成和调度对CUDA编程者来说通常是透明的，由硬件自动管理。但理解Warp的行为对于编写高性能CUDA代码至关重要，尤其是在内存访问和分支控制方面。</li>
+</ul>
+<h2 id="gpu_3">第三部分：深入探索 —— GPU架构揭秘<a class="headerlink" href="#gpu_3" title="Permanent link">&para;</a></h2>
+<h3 id="4-gpu">4. 关键GPU硬件组件<a class="headerlink" href="#4-gpu" title="Permanent link">&para;</a></h3>
+<h4 id="streaming-multiprocessor-sm">流多处理器（Streaming Multiprocessor, SM）：执行的核心引擎<a class="headerlink" href="#streaming-multiprocessor-sm" title="Permanent link">&para;</a></h4>
+<p>SM是NVIDIA GPU的主要计算单元，是执行CUDA内核的核心。可以将SM看作GPU内部的一个小型并行处理器。</p>
+<p><strong>作用</strong> ：</p>
+<ul>
+<li>一个或多个线程块会被调度到单个SM上执行。</li>
+<li>SM负责管理、调度和执行其上驻留的线程块中的线程束（Warps）。</li>
+</ul>
+<p>SM内部关键组件：</p>
+<p>SM是一个复杂的单元，集成了多种执行资源和内存：</p>
+<ul>
+<li><strong>CUDA核心 (CUDA Cores)</strong>  ：执行实际的算术和逻辑运算。</li>
+<li><strong>线程束调度器 (Warp Schedulers)</strong>  ：选择就绪的Warp并分发指令。</li>
+<li><strong>分发单元 (Dispatch Units)</strong>  ：将指令发送给执行单元。</li>
+<li><strong>寄存器文件 (Register File)</strong>  ：供线程存储私有数据，数量庞大。</li>
+<li><strong>L1缓存/共享内存 (L1 Cache / Shared Memory)</strong>  ：一块可配置的高速片上内存，一部分用作L1数据缓存，另一部分用作线程块内线程共享的内存。</li>
+<li><strong>特殊功能单元 (SFUs)</strong>  ：用于执行超越函数（如sin, cos, sqrt, rsqrt, log, exp）。</li>
+<li><strong>加载/存储单元 (LSUs)</strong>  ：负责处理对内存（如全局内存）的读写请求。</li>
+<li><strong>张量核心 (Tensor Cores)</strong>  (在支持的架构中)：专门用于加速深度学习中常见的矩阵乘加运算。</li>
+</ul>
+<p>资源分配：</p>
+<p>SM是资源分配的基本单位。一个SM可以同时处理多个线程块，只要SM上的可用资源（如寄存器数量、共享内存大小、最大线程数/块数限制）能够满足这些线程块的需求。这些资源在分配给线程块后，由块内的线程共享或分配给线程。</p>
+<h4 id="cudacuda-core">CUDA核心（CUDA Core）<a class="headerlink" href="#cudacuda-core" title="Permanent link">&para;</a></h4>
+<p>CUDA核心是NVIDIA GPU的基本计算单元，主要负责执行浮点数和整数算术指令。</p>
+<p><strong>详细特性</strong> ：</p>
+<ul>
+<li>执行标量算术指令，如加法、乘法、乘加等。</li>
+<li>每个CUDA核心通常包含一个整数算术逻辑单元 (ALU) 和一个浮点单元 (FPU)。</li>
+<li>不同GPU架构的CUDA核心设计和能力可能有所不同，例如支持的精度（FP32, FP64, INT32等）和每周期指令数。</li>
+<li><strong>与CPU核心的区别</strong>  ：CPU核心是设计用来独立执行复杂指令序列的，拥有复杂的控制逻辑、分支预测、乱序执行等。而CUDA核心更为简单，专注于高吞吐量的算术运算，并且不是独立调度的，而是作为SM内Warp的一部分被调度。</li>
+<li>例如，NVIDIA H100 GPU的每个SM包含128个主要用于FP32运算的CUDA核心，但对于32位整数或64位浮点运算，可能只有部分核心（如64个）能够同时执行。</li>
+</ul>
+<h4 id="tensor-core">张量核心（Tensor Core）<a class="headerlink" href="#tensor-core" title="Permanent link">&para;</a></h4>
+<p>张量核心是NVIDIA从Volta架构开始引入的专用硬件单元，旨在显著加速深度学习训练和推理中常见的矩阵乘加（Matrix Multiply-Accumulate, MMA）运算，即 <span class="arithmatex">\(D=A\times B+C\)</span>。</p>
+<p><strong>详细特性</strong> ：</p>
+<ul>
+<li>一次操作可以处理一个小型的矩阵块（例如4x4或8x8，取决于架构和精度）。</li>
+<li>相比CUDA核心，SM内的张量核心数量较少，但每个张量核心的计算能力（尤其对于特定矩阵运算）非常强大。</li>
+<li>支持多种数据精度，包括FP16（半精度浮点）、BF16（BFloat16）、TF32（TensorFloat-32，Ampere架构引入）、FP64（双精度，部分高端计算卡支持）以及INT8、INT4等整数类型，以平衡性能和精度需求。</li>
+<li>例如，Hopper架构的第四代张量核心，在使用FP8精度时，其理论峰值运算能力非常惊人。</li>
+</ul>
+<p><strong>应用场景</strong> ：</p>
+<ul>
+<li>深度学习模型的训练和推理（卷积层、全连接层等）。</li>
+<li>高性能计算（HPC）中涉及大规模矩阵运算的领域。</li>
+<li>计算机视觉和自然语言处理中的某些算法。</li>
+</ul>
+<h4 id="sfu-special-function-unit">特殊功能单元（SFU - Special Function Unit）<a class="headerlink" href="#sfu-special-function-unit" title="Permanent link">&para;</a></h4>
+<p>特殊功能单元（SFU）负责执行比基本加法和乘法更复杂的单操作数数学运算。</p>
+<p><strong>功能</strong> ：</p>
+<ul>
+<li>计算超越函数，如正弦 (sin)、余弦 (cos)、指数 (exp)、对数 (log)、平方根倒数 (rsqrt)、平方根 (sqrt) 等。</li>
+<li>每个SM通常包含多个SFU（例如，一个SM可能有4个SFU）。</li>
+<li>这些函数的执行通常需要比简单算术运算更多的时钟周期。</li>
+</ul>
+<h4 id="lsu-loadstore-unit">加载/存储单元（LSU - Load/Store Unit）<a class="headerlink" href="#lsu-loadstore-unit" title="Permanent link">&para;</a></h4>
+<p>加载/存储单元（LSU）负责处理GPU核心与各级内存（如全局内存、共享内存、L1缓存）之间的数据传输请求。</p>
+<p><strong>特性</strong> ：</p>
+<ul>
+<li>执行从内存加载数据到寄存器，或从寄存器存储数据到内存的指令。</li>
+<li>支持合并内存访问（Coalesced Memory Access）：当一个Warp中的线程访问连续的内存地址时，LSU可以将这些访问合并成更少、更高效的内存事务，从而提高内存带宽利用率。</li>
+<li>对内存访问模式高度敏感。非合并的、随机的内存访问会导致性能显著下降。</li>
+</ul>
+<h3 id="5-gpucompute-capability">5. GPU架构演进与计算能力（Compute Capability）<a class="headerlink" href="#5-gpucompute-capability" title="Permanent link">&para;</a></h3>
+<p>NVIDIA GPU架构随着时间的推移不断演进，每一代新架构都会带来性能提升、能效改进以及新的硬件功能。</p>
+<p><strong>主要架构世代示例</strong> ：</p>
+<ol>
+<li><strong>Tesla</strong>  (2006-2010)：首个统一着色器架构，为GPGPU奠定了基础。</li>
+<li><strong>Fermi</strong>  (2010)：首个真正意义上为计算设计的架构，引入了L1/L2缓存层次、ECC内存支持等。</li>
+<li><strong>Kepler</strong>  (2012)：提升了SM（称为SMX）的设计，引入动态并行（Dynamic Parallelism）、Hyper-Q技术。</li>
+<li><strong>Maxwell</strong>  (2014)：显著提升能效，改进调度器。</li>
+<li><strong>Pascal</strong>  (2016)：引入NVLink高速互联技术，支持HBM2内存，原生支持FP16（半精度）计算。</li>
+<li><strong>Volta</strong>  (2017)：引入张量核心（Tensor Cores），支持独立线程调度。</li>
+<li><strong>Turing</strong>  (2018)：在消费级市场引入RT核心（用于光线追踪加速）和增强的张量核心。</li>
+<li><strong>Ampere</strong>  (2020)：第二代RT核心，第三代张量核心（支持TF32、BF16等更多精度），更大的L2缓存，SM设计进一步优化。</li>
+<li><strong>Hopper</strong>  (2022, 数据中心架构)：第四代张量核心，引入Transformer引擎，支持FP8精度，显著提升AI和HPC性能。</li>
+<li><strong>Ada Lovelace</strong>  (2022, 消费级架构)：改进的光线追踪性能，DLSS 3.0，SM优化。</li>
+</ol>
+<p><strong>计算能力 (Compute Capability, CC)</strong> ：</p>
+<ul>
+<li>计算能力是一个版本号（如7.5, 8.6, 9.0），用于标识NVIDIA GPU的硬件架构特性和支持的CUDA功能集。</li>
+<li>它由一个主版本号和一个次版本号组成。主版本号通常代表一个主要的架构系列（例如，CC 8.x 对应Ampere架构，CC 9.x 对应Hopper架构）。次版本号表示该主架构系列内的增量改进或特性差异。</li>
+<li>开发者需要根据目标GPU的计算能力来编译CUDA代码，以确保使用了GPU支持的功能，并可能针对特定架构进行优化。较新的计算能力通常意味着更强的性能和更多的特性（如新的指令、更大的共享内存、更多的寄存器等）。</li>
+<li>注意：有时主版本号可能跨越一个以上的架构名称，或者一个架构名称下可能有略微不同的计算能力版本（例如Ada Lovelace架构的消费级GPU计算能力为8.9，虽然主版本号与Ampere的8.x系列相同，但特性有所不同）。</li>
+</ul>
+<h2 id="_1">第四部分：协同工作原理 —— 执行与内存<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<h3 id="6">6. 内核执行流程与调度<a class="headerlink" href="#6" title="Permanent link">&para;</a></h3>
+<h4 id="sm">网格/线程块到SM的映射<a class="headerlink" href="#sm" title="Permanent link">&para;</a></h4>
+<p>当一个内核函数启动时，其对应的线程块网格（Grid of Thread Blocks）会被GPU的硬件调度器分配到可用的流多处理器（SMs）上。</p>
+<ul>
+<li>一个线程块（Block/CTA）总是被完整地分配给 <strong>一个</strong> SM执行，并且在该SM上运行直至完成。</li>
+<li>一个SM可以同时执行一个或多个线程块，这取决于SM的资源（如寄存器、共享内存、最大线程数）以及每个线程块的资源需求。这种并发执行多个线程块的能力称为SM的 <strong>占用率（Occupancy）</strong>  。</li>
+</ul>
+<h4 id="warp-scheduler">线程束调度器（Warp Scheduler）与延迟隐藏<a class="headerlink" href="#warp-scheduler" title="Permanent link">&para;</a></h4>
+<p>SM内部包含一个或多个线程束调度器（Warp Scheduler）。</p>
+<p>详细功能：</p>
+<ul>
+<li>每个SM通常有多个（例如4个在现代GPU中）线程束调度器。</li>
+<li>线程束调度器负责从当前分配给该SM的线程块中，选择就绪（Ready) 的线程束（Warps）并将其指令分发到SM的执行单元（如CUDA核心、SFU、Tensor Core）。一个线程束是就绪的，意味着它的下一条指令的操作数已经准备好，并且执行单元也可用。</li>
+<li><strong>延迟隐藏（Latency Hiding）</strong>  ：这是GPU实现高吞吐量的关键机制。当一个Warp执行一条长延迟指令时（例如，从全局内存加载数据，这可能需要数百个时钟周期），它会暂停执行并等待数据返回。此时，线程束调度器并不会让SM空闲，而是会 <strong>立即切换</strong> 到另一个就绪的Warp并执行其指令。由于一个SM上通常驻留着许多Warp（来自一个或多个线程块），调度器总能找到可执行的Warp。这种快速的、几乎零开销的Warp上下文切换有效地隐藏了内存访问和其他长延迟操作的延迟，使得计算单元能够持续保持繁忙。</li>
+<li>调度器使用 <strong>记分板（Scoreboarding)</strong>  或类似的机制来跟踪指令的操作数依赖关系，以确保只有当操作数可用时才分发指令。</li>
+</ul>
+<h4 id="simt">SIMT执行模型（硬件视角）<a class="headerlink" href="#simt" title="Permanent link">&para;</a></h4>
+<p>单指令多线程（SIMT）是GPU的基本执行模型。</p>
+<p>详细特性：</p>
+<ul>
+<li>在硬件层面，一个Warp（32个线程）在任何给定时刻都执行相同的指令。</li>
+<li>SM的执行单元是按照Warp为单位进行操作的。</li>
+<li>每个线程在Warp内有自己的程序计数器（逻辑上）和私有数据（寄存器），因此虽然指令相同，但每个线程可以在不同的数据上操作。</li>
+<li><strong>执行掩码（Execution Mask）</strong>  ：当Warp遇到分支（如<code>if-else</code>）且线程走向不同路径时（线程分化），硬件使用执行掩码来控制哪些线程实际执行当前的指令。例如，先执行<code>if</code>路径，此时走向<code>else</code>路径的线程被掩码（禁用）；然后执行<code>else</code>路径，此时走向<code>if</code>路径的线程被掩码。这会导致串行化执行不同的分支路径，降低了Warp的有效计算效率。</li>
+<li><strong>独立线程调度（Independent Thread Scheduling）</strong>  ：从Volta架构开始，NVIDIA引入了更灵活的线程调度机制。虽然Warp仍然是基本的调度单位，但在某些情况下（如分支分化后），线程可以在Warp内以更独立的方式重新汇合或管理程序计数器，这有助于在某些复杂控制流场景下提高效率，但SIMT的基本原则依然存在。</li>
+</ul>
+<p>指令流水线：</p>
+<p>GPU的执行单元也采用流水线技术来提高指令吞吐量。一条指令的执行通常分为多个阶段，如：</p>
+<ol>
+<li>指令获取 (Fetch)</li>
+<li>指令解码 (Decode)</li>
+<li>操作数读取 (Operand Read)</li>
+<li>执行 (Execute)</li>
+<li>写回结果 (Write-back) 流水线深度和具体阶段因GPU架构而异。</li>
+</ol>
+<h3 id="7-gpu">7. GPU内存层次结构：导览<a class="headerlink" href="#7-gpu" title="Permanent link">&para;</a></h3>
+<p>GPU拥有一个复杂的内存层次结构，了解各类内存的特性、访问速度和作用域对于编写高性能CUDA程序至关重要。内存层次结构从最快但最小的寄存器到最大但最慢的全局内存。</p>
+<p><em>(NVIDIA官方文档中经典的内存层次结构图，建议参考)</em></p>
+<h4 id="registers">寄存器（Registers）<a class="headerlink" href="#registers" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>特性</strong>  ：寄存器是GPU上 <strong>最快</strong> 的内存，位于SM内部。</li>
+<li><strong>作用域</strong>  ：每个线程拥有自己的一组私有寄存器。一个线程的寄存器对其他线程不可见。</li>
+<li><strong>生命周期</strong>  ：与线程的生命周期相同。</li>
+<li><strong>访问延迟</strong>  ：极低，通常0-1个时钟周期（如果操作数已在寄存器中）。</li>
+<li><strong>容量</strong>  ：每个SM拥有一个寄存器文件（例如64K个32位寄存器或更多），由该SM上活动的所有线程共享。每个线程可使用的寄存器数量是有限制的（例如，每个线程最多255个，具体取决于计算能力）。</li>
+<li><strong>使用</strong>  ：编译器会自动将内核函数中的大部分标量变量（未被<code>volatile</code>修饰或数组形式的局部变量）分配到寄存器中。如果内核使用的寄存器过多（称为“寄存器压力”），可能会限制SM上可以同时活动的线程块数量（即降低占用率），因为SM的总寄存器数量是固定的。开发者可以通过编译选项（如<code>-maxrregcount</code>）或<code>__launch_bounds__</code>来控制每个线程的最大寄存器使用量。</li>
+<li><strong>溢出</strong>  ：当内核需要的寄存器数量超过硬件限制，或者编译器策略决定将某些变量移出寄存器时，这些变量会被“溢出”到 <strong>局部内存（Local Memory）</strong>  。局部内存虽然在逻辑上是线程私有的，但物理上通常位于全局内存中，因此访问速度远慢于寄存器。</li>
+</ul>
+<h4 id="shared-memory">共享内存（Shared Memory）<a class="headerlink" href="#shared-memory" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>特性</strong>  ：共享内存是位于SM芯片上的一块高速读写内存，其访问速度远快于全局内存，接近寄存器的访问速度（如果无bank冲突）。</li>
+<li><strong>作用域</strong>  ：每个线程块（Block/CTA）拥有一块私有的共享内存。块内的所有线程都可以访问该块的共享内存。不同线程块之间的共享内存是隔离的。</li>
+<li><strong>生命周期</strong>  ：与线程块的生命周期相同。当线程块执行完毕，其共享内存中的数据也随之失效。</li>
+<li><strong>访问延迟</strong>  ：较低，通常几十个时钟周期（无bank冲突时）。</li>
+<li><strong>容量</strong>  ：每个SM的共享内存容量是有限的（例如，Volta/Turing/Ampere架构通常每个SM可配置高达48KB、64KB或96KB，部分数据中心卡如A100可达164KB，与L1缓存共享物理空间，可按需分配比例）。一个线程块可以使用的共享内存量也有限制。</li>
+<li><strong>使用</strong>  ：开发者需要使用 <code>__shared__</code> 关键字在内核函数中显式声明共享内存变量。它对于线程块内的线程协作至关重要，常用于：</li>
+<li>缓存从全局内存中读取的数据，以供块内线程多次重用。</li>
+<li>实现高效的并行算法，如规约（reduction）、扫描（scan）、矩阵转置等。</li>
+<li>作为线程间交换中间结果的暂存区。</li>
+<li><strong>Bank冲突（Bank Conflict）</strong>  ：共享内存被组织成多个等大小的内存模块，称为bank（通常是32个，对应Warp的大小）。如果一个Warp中的多个线程同时访问同一个bank中的不同地址（或某些特定模式下的相同地址），就会发生bank冲突，导致访问被串行化，从而降低共享内存的访问带宽。优化共享内存访问模式以避免bank冲突是性能调优的关键点。</li>
+</ul>
+<h4 id="l1l1-cachetexture-cache">L1缓存（L1 Cache）与纹理缓存（Texture Cache）<a class="headerlink" href="#l1l1-cachetexture-cache" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>L1缓存</strong>  ：</li>
+<li><strong>特性</strong>  ：每个SM内部都有一个L1数据缓存。在现代NVIDIA GPU中，L1缓存通常与共享内存在同一块物理SRAM上，其大小可以根据内核的需求进行配置（例如，优先分配给L1缓存还是共享内存）。</li>
+<li><strong>作用域</strong>  ：L1缓存对于单个SM是私有的。</li>
+<li><strong>功能</strong>  ：主要用于缓存对 <strong>局部内存（Local Memory）</strong> 和 <strong>全局内存（Global Memory）</strong> 的访问。当线程访问这些内存时，数据可能会被加载到L1缓存中，后续对相同数据的访问如果命中L1缓存，则速度会快很多。</li>
+<li><strong>访问延迟</strong>  ：比访问全局内存快得多，但慢于寄存器和共享内存（如果命中，几十个时钟周期）。</li>
+<li><strong>纹理缓存（Texture Cache）</strong>  ：</li>
+<li><strong>特性</strong>  ：每个SM还拥有专门为纹理内存访问优化的只读缓存。</li>
+<li><strong>功能</strong>  ：纹理内存和纹理缓存设计用于图形渲染中的纹理采样，具有空间局部性优化、硬件插值、边界模式处理等特性。在通用计算中，当内存访问模式具有良好的空间局部性（尤其是2D）时，使用纹理内存（通过纹理对象或绑定纹理）可以利用纹理缓存获得性能优势。</li>
+</ul>
+<h4 id="l2l2-cache">L2缓存（L2 Cache）<a class="headerlink" href="#l2l2-cache" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>特性</strong>  ：L2缓存是位于GPU芯片上，被 <strong>所有SM共享</strong> 的一级缓存。</li>
+<li><strong>作用域</strong>  ：对整个GPU设备可见。</li>
+<li><strong>功能</strong>  ：作为全局内存访问的下一级缓存。当L1缓存未命中时，会尝试从L2缓存获取数据。L2缓存的命中也能显著减少对慢速全局内存的直接访问。它是连接SM和设备内存（全局内存）的重要桥梁。</li>
+<li><strong>容量</strong>  ：比L1缓存大得多，通常为几MB到几十MB（例如，消费级GPU可能有4-6MB，数据中心GPU如A100有40MB，H100有50MB）。</li>
+<li><strong>访问延迟</strong>  ：慢于L1缓存，但仍远快于全局内存（约200个时钟周期）。</li>
+</ul>
+<h4 id="global-memory-device-memory">全局内存（Global Memory / Device Memory）<a class="headerlink" href="#global-memory-device-memory" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>特性</strong>  ：全局内存是GPU上 <strong>最大</strong> 的内存空间，但也是访问延迟 <strong>最高</strong> 的。它通常指GPU板载的DRAM（如GDDR6, HBM2/HBM3）。</li>
+<li><strong>作用域</strong>  ：所有SM上的所有线程都可以访问全局内存。CPU（主机）也可以通过CUDA API（如 <code>cudaMemcpy</code>）与GPU的全局内存进行数据传输。</li>
+<li><strong>生命周期</strong>  ：在CUDA上下文中分配的全局内存，其生命周期可以跨越多个内核函数的调用，直到被显式释放（如 <code>cudaFree</code>）或CUDA上下文销毁。</li>
+<li><strong>容量</strong>  ：通常为几GB到几十GB，甚至更多（例如，消费级GPU有8GB-24GB，专业卡和数据中心GPU可达48GB, 80GB, 甚至更高）。</li>
+<li><strong>访问延迟</strong>  ：非常高，可能需要400-800个时钟周期。</li>
+<li><strong>带宽</strong>  ：尽管延迟高，但现代GPU的全局内存带宽非常大（数百GB/s到几TB/s），通过大规模并行访问和合并访问来摊销延迟，实现高吞吐量。</li>
+<li><strong>使用</strong>  ：</li>
+<li>在主机端使用 <code>cudaMalloc()</code> 分配，使用 <code>cudaMemcpy()</code> 进行数据传输。</li>
+<li>在内核中直接通过指针访问。</li>
+<li><strong>合并访问（Coalesced Access）</strong>  ：当一个Warp中的32个线程访问全局内存时，如果它们访问的内存地址是连续的、对齐的，并且符合特定模式（例如，32个线程访问一个连续的128字节块），这些访问可以被硬件合并成一次或少数几次内存事务。合并访问是最大化全局内存带宽利用率和性能的关键。非合并的、随机的访问会导致大量独立的内存事务，严重降低性能。</li>
+</ul>
+<h4 id="constant-memory">常量内存（Constant Memory）<a class="headerlink" href="#constant-memory" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>特性</strong>  ：常量内存是一块专用的、 <strong>只读</strong> 的内存空间，位于设备内存中，但有专门的片上 <strong>常量缓存（Constant Cache）</strong>  。</li>
+<li><strong>作用域</strong>  ：对所有线程可见。</li>
+<li><strong>生命周期</strong>  ：数据在主机端定义（使用 <code>__constant__</code> 关键字声明全局范围的变量），并通过 <code>cudaMemcpyToSymbol()</code> 从主机复制到设备的常量内存空间。其内容在内核执行期间保持不变。</li>
+<li><strong>容量</strong>  ：通常较小，例如每个设备64KB。</li>
+<li><strong>使用</strong>  ：当一个Warp中的所有线程都从相同的内存地址读取数据时，常量内存非常高效。这是因为数据可以从常量缓存中广播给Warp中的所有线程，只需要一次读取操作。适用于存储内核执行期间不变的配置参数、查找表等。</li>
+</ul>
+<h4 id="texture-memory">纹理内存（Texture Memory） (概念重申，与缓存关联)<a class="headerlink" href="#texture-memory" title="Permanent link">&para;</a></h4>
+<ul>
+<li><strong>特性</strong>  ：纹理内存不是一种独立的物理内存类型，而是通过纹理引用（Texture Reference）或纹理对象（Texture Object）来访问设备内存（通常是全局内存）的一种特殊方式。它利用了SM内部的专用 <strong>纹理缓存</strong>  。</li>
+<li><strong>功能</strong>  ：</li>
+<li><strong>缓存优化</strong>  ：纹理缓存针对2D（甚至1D、3D）空间局部性进行了优化。这意味着如果线程访问邻近的纹理元素，命中缓存的概率很高。</li>
+<li><strong>硬件特性</strong>  ：支持硬件级别的数据类型转换、地址计算（例如，归一化坐标）、边界处理（如钳位、环绕）和滤波（如线性插值）。</li>
+<li><strong>使用</strong>  ：特别适用于图像处理、信号处理等领域，其中内存访问模式具有空间局部性，或者需要硬件插值等功能。通过将全局内存数据绑定到纹理，可以利用这些硬件特性来简化代码并可能提高性能。</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="上一页: Resources">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Resources
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../SFU/sfu_design_and_implementation/" class="md-footer__link md-footer__link--next" aria-label="下一页: SFU 硬件设计与实现">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                SFU 硬件设计与实现
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["content.action.edit", "content.action.view", "content.code.copy", "navigation.footer", "navigation.tabs", "content.code.annotate", "navigation.indexes", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "search.share"], "search": "../../../assets/javascripts/workers/search.7a47a382.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.e71a0d61.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
