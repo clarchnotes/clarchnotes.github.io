@@ -134,6 +134,9 @@ nav:
               - "TLB 同步与 SFENCE.VMA": CPU/Backend/MMU/tlb_synchronization.md
   - RISCV:
       - RISCV/index.md
+      - "Baremetal Programming":
+          - RISCV/Baremetal/index.md
+          - "Complete Programming Guide": RISCV/Baremetal/programming_guide.md
       - "Spike Simulator":
           - RISCV/Spike/index.md
           - "Boot Process Deep Dive": RISCV/Spike/boot_process_detailed.md
